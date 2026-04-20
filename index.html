@@ -1313,16 +1313,13 @@ body {
 <script>
 // ==================== 音频配置（内置） ====================
 const AUDIO_CONFIG = {
-    // HTTPS兼容的TTS地址列表（按优先级排序）
+    // 在线TTS地址列表（仅作为Web Speech API的后备方案）
     ttsSources: [
-        // 方案1: Google TTS - HTTPS兼容，最可靠
-        { url: 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q={word}', name: 'google' },
-        // 方案2: 有道词典美式发音 - HTTP可能被HTTPS阻止，但国内可用
         { url: 'https://dict.youdao.com/dictvoice?audio={word}&type=1', name: 'youdao' },
     ]
 };
 
-// ==================== 音频管理器 - HTTPS/移动端全面优化 ====================
+// ==================== 音频管理器 - 优化版：零延迟+精确匹配 ====================
 class AudioManager {
     constructor() {
         this.audioContext = null;
@@ -1330,12 +1327,14 @@ class AudioManager {
         this.audioCache = {};
         this.mobileInitialized = false;
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        this.isHTTPS = window.location.protocol === 'https:';
         this.speechVoicesLoaded = false;
-        this.initPromise = null; // 防止重复初始化
+        this.initPromise = null;
+        this.bestVoice = null; // 缓存最佳语音
+        this.currentSpeech = null; // 当前正在播放的语音
+        this.currentAudio = null; // 当前正在播放的Audio
     }
 
-    // 初始化音频上下文（必须在用户交互中调用）
+    // 初始化音频上下文
     async init() {
         if (this.isInitialized) return true;
         if (this.initPromise) return this.initPromise;
@@ -1344,12 +1343,9 @@ class AudioManager {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) { resolve(false); return; }
-
                 this.audioContext = new AudioContext();
 
-                // 解锁AudioContext（桌面+移动端都需要）
                 if (this.audioContext.state === 'suspended') {
-                    // 创建静音缓冲区解锁
                     const buffer = this.audioContext.createBuffer(1, 1, 22050);
                     const source = this.audioContext.createBufferSource();
                     source.buffer = buffer;
@@ -1366,57 +1362,55 @@ class AudioManager {
                 resolve(false);
             }
         });
-
         return this.initPromise;
     }
 
-    // 移动端音频初始化（由用户点击触发）
+    // 移动端音频初始化
     async initMobile() {
         if (this.mobileInitialized) return;
         await this.init();
 
-        // 用HTML5 Audio播放静音来解锁移动端音频
         try {
             const audio = new Audio();
             audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
             audio.volume = 0.001;
             document.body.appendChild(audio);
-            const playPromise = audio.play();
-            if (playPromise) {
-                await playPromise.catch(() => {});
-            }
+            const p = audio.play();
+            if (p) await p.catch(() => {});
             audio.pause();
             audio.remove();
-        } catch (e) { /* 静音预热失败可忽略 */ }
+        } catch (e) {}
 
-        // 预加载Web Speech语音列表
         this.preloadSpeechVoices();
-
         this.mobileInitialized = true;
     }
 
-    // 预加载Web Speech语音列表
+    // 预加载Web Speech语音列表（关键！确保语音立即可用）
     preloadSpeechVoices() {
         if (!('speechSynthesis' in window)) return;
         const loadVoices = () => {
             const voices = speechSynthesis.getVoices();
-            if (voices.length > 0) this.speechVoicesLoaded = true;
+            if (voices.length > 0) {
+                this.speechVoicesLoaded = true;
+                // 找到最佳英语声音并缓存
+                this.bestVoice = voices.find(v => v.lang === 'en-US' && v.localService) ||
+                                 voices.find(v => v.lang === 'en-US') ||
+                                 voices.find(v => v.lang.startsWith('en-')) ||
+                                 voices.find(v => v.lang.startsWith('en')) ||
+                                 voices.find(v => v.name.includes('English'));
+                console.log('✅ 语音列表加载完成，最佳语音:', this.bestVoice?.name || '默认');
+            }
         };
         loadVoices();
         speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // 预加载所有单词音频
+    // 预加载所有单词音频（后台静默进行，不阻塞游戏）
     async preloadAllWords() {
-        // 先预热Web Speech
         this.preloadSpeechVoices();
-        // 异步预加载TTS音频（不阻塞）
-        VOCABULARY.forEach(v => {
-            this.preloadWord(v.word).catch(() => {});
-        });
+        VOCABULARY.forEach(v => this.preloadWord(v.word).catch(() => {}));
     }
 
-    // 预加载单个单词
     async preloadWord(word) {
         if (this.audioCache[word]) return this.audioCache[word];
         for (const source of AUDIO_CONFIG.ttsSources) {
@@ -1425,177 +1419,161 @@ class AudioManager {
                 const audio = await this.loadAudioFile(url);
                 if (audio) {
                     this.audioCache[word] = audio;
-                    console.log('✓ 预加载成功:', word, '(' + source.name + ')');
                     return audio;
                 }
-            } catch (e) {
-                console.log('✗ 预加载失败:', word, '(' + source.name + ')');
-            }
+            } catch (e) {}
         }
         return null;
     }
 
-    // 加载音频文件（不设crossOrigin避免CORS问题）
     loadAudioFile(url) {
         return new Promise((resolve, reject) => {
             const audio = new Audio();
-            // 不设 crossOrigin，避免HTTPS下的CORS阻止
             audio.preload = 'auto';
             audio.volume = 1;
-
-            const timeout = setTimeout(() => {
-                reject(new Error('加载超时'));
-            }, 6000); // 缩短超时到6秒
-
-            audio.oncanplaythrough = () => {
-                clearTimeout(timeout);
-                resolve(audio);
-            };
-
-            audio.onerror = () => {
-                clearTimeout(timeout);
-                reject(new Error('加载失败'));
-            };
-
+            const timeout = setTimeout(() => reject(new Error('加载超时')), 5000);
+            audio.oncanplaythrough = () => { clearTimeout(timeout); resolve(audio); };
+            audio.onerror = () => { clearTimeout(timeout); reject(new Error('加载失败')); };
             audio.src = url;
             audio.load();
         });
     }
 
-    // ===== 播放单词发音 - 主方法（多重容错） =====
+    // 停止当前所有音频播放（防止叠加和混乱）
+    stopAllPlayback() {
+        // 停止Web Speech
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+        // 停止HTML5 Audio
+        if (this.currentAudio) {
+            try { this.currentAudio.pause(); this.currentAudio.currentTime = 0; } catch(e) {}
+            this.currentAudio = null;
+        }
+    }
+
+    // ===== 播放单词发音 - 优先Web Speech（零延迟+精确匹配） =====
     async playWord(word) {
         console.log('🔊 播放单词:', word);
 
-        // 确保初始化
         if (!this.isInitialized) await this.init();
         if (this.audioContext?.state === 'suspended') {
             await this.audioContext.resume().catch(() => {});
         }
 
-        // 方案1: 使用缓存的TTS音频
+        // 先停止之前的播放，防止声音叠加
+        this.stopAllPlayback();
+
+        // ★ 方案1（首选）: Web Speech API - 零延迟、100%匹配、不依赖网络
+        try {
+            await this.speakWithWebSpeech(word);
+            return;
+        } catch (e) {
+            console.log('Web Speech失败，尝试在线TTS');
+        }
+
+        // ★ 方案2: 缓存的TTS音频
         if (this.audioCache[word]) {
             try {
                 await this.playCachedAudio(this.audioCache[word]);
                 return;
-            } catch (e) {
-                console.log('缓存播放失败，尝试其他方案');
-            }
+            } catch (e) {}
         }
 
-        // 方案2: 逐个尝试在线TTS
+        // ★ 方案3: 在线TTS实时播放
         for (const source of AUDIO_CONFIG.ttsSources) {
             try {
                 const url = source.url.replace('{word}', encodeURIComponent(word));
                 const audio = await this.playAudioUrl(url);
                 if (audio) {
-                    this.audioCache[word] = audio; // 缓存成功的结果
+                    this.audioCache[word] = audio;
                     return;
                 }
-            } catch (e) {
-                console.log(source.name + ' TTS播放失败');
-            }
-        }
-
-        // 方案3: Web Speech API（浏览器内置，最可靠的后备方案）
-        try {
-            await this.speakWithWebSpeech(word);
-            return;
-        } catch (e) {
-            console.log('Web Speech也失败');
+            } catch (e) {}
         }
 
         console.log('⚠️ 所有发音方案均失败');
+    }
+
+    // Web Speech API - 浏览器内置，最可靠
+    speakWithWebSpeech(word) {
+        return new Promise((resolve, reject) => {
+            if (!('speechSynthesis' in window)) { reject(); return; }
+
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;   // 稍慢一点，适合小学生
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+
+            // 使用缓存的最佳语音
+            if (this.bestVoice) {
+                utterance.voice = this.bestVoice;
+            }
+
+            let resolved = false;
+            utterance.onend = () => { if (!resolved) { resolved = true; resolve(); } };
+            utterance.onerror = (e) => { if (!resolved) { resolved = true; reject(e); } };
+
+            // 立即播放，不延迟
+            try {
+                speechSynthesis.speak(utterance);
+            } catch(e) {
+                reject(e);
+            }
+
+            // 安全超时：5秒后自动resolve，防止卡住
+            setTimeout(() => { if (!resolved) { resolved = true; resolve(); } }, 5000);
+        });
     }
 
     // 播放缓存的音频
     playCachedAudio(audio) {
         return new Promise((resolve, reject) => {
             if (!audio) { reject(); return; }
-            const newAudio = audio.cloneNode(true);
+            const newAudio = new Audio();
+            newAudio.src = audio.src;
             newAudio.volume = 1;
-            newAudio.currentTime = 0;
-            newAudio.onended = () => resolve();
-            newAudio.onerror = () => reject();
+            this.currentAudio = newAudio;
+            newAudio.onended = () => { this.currentAudio = null; resolve(); };
+            newAudio.onerror = () => { this.currentAudio = null; reject(); };
             newAudio.play().then(() => {}).catch(e => {
-                // 移动端可能需要重新创建Audio
-                console.log('clone播放失败，尝试新建Audio');
-                const freshAudio = new Audio();
-                freshAudio.src = audio.src;
-                freshAudio.volume = 1;
-                freshAudio.onended = () => resolve();
-                freshAudio.onerror = () => reject();
-                freshAudio.play().then(() => {}).catch(reject);
+                this.currentAudio = null;
+                reject(e);
             });
         });
     }
 
-    // 播放URL音频（不设crossOrigin）
+    // 播放URL音频
     playAudioUrl(url) {
         return new Promise((resolve, reject) => {
             const audio = new Audio();
-            // 不设 crossOrigin，HTTPS页面下加载外部音频更可靠
             audio.preload = 'auto';
             audio.volume = 1;
+            this.currentAudio = audio;
 
-            const timeout = setTimeout(() => reject(new Error('播放超时')), 6000);
+            const timeout = setTimeout(() => {
+                this.currentAudio = null;
+                reject(new Error('播放超时'));
+            }, 5000);
 
             audio.oncanplaythrough = () => {
                 clearTimeout(timeout);
                 audio.play().then(() => resolve(audio)).catch(e => {
+                    this.currentAudio = null;
                     clearTimeout(timeout);
                     reject(e);
                 });
             };
 
-            audio.onended = () => { clearTimeout(timeout); resolve(audio); };
-            audio.onerror = () => { clearTimeout(timeout); reject(new Error('音频错误')); };
-
+            audio.onended = () => { clearTimeout(timeout); this.currentAudio = null; resolve(audio); };
+            audio.onerror = () => { clearTimeout(timeout); this.currentAudio = null; reject(new Error('音频错误')); };
             audio.src = url;
             audio.load();
         });
     }
 
-    // Web Speech API（最重要的后备方案）
-    speakWithWebSpeech(word) {
-        return new Promise((resolve, reject) => {
-            if (!('speechSynthesis' in window)) { reject(); return; }
-
-            // 取消之前的语音
-            speechSynthesis.cancel();
-
-            const utterance = new SpeechSynthesisUtterance(word);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            utterance.pitch = 1.0;
-            utterance.volume = 1.0;
-
-            // 尝试找到最佳英语声音
-            const voices = speechSynthesis.getVoices();
-            // 优先级：en-US > en > English
-            let bestVoice = voices.find(v => v.lang === 'en-US' && !v.localService === false);
-            if (!bestVoice) bestVoice = voices.find(v => v.lang === 'en-US');
-            if (!bestVoice) bestVoice = voices.find(v => v.lang.startsWith('en'));
-            if (!bestVoice) bestVoice = voices.find(v => v.name.includes('English'));
-            if (bestVoice) {
-                utterance.voice = bestVoice;
-                console.log('使用语音:', bestVoice.name);
-            }
-
-            utterance.onend = () => resolve();
-            utterance.onerror = (e) => reject(e);
-
-            // 短延迟确保系统准备好
-            setTimeout(() => {
-                try {
-                    speechSynthesis.speak(utterance);
-                } catch(e) {
-                    reject(e);
-                }
-            }, 100);
-        });
-    }
-
-    // ===== 以下为音效方法（全部基于Web Audio API，不依赖外部资源） =====
+    // ===== 音效方法（基于Web Audio API，即时播放无延迟） =====
 
     playTone(frequency, startTime, duration, type = 'sine', volume = 0.3) {
         if (!this.audioContext) return;
@@ -1614,13 +1592,18 @@ class AudioManager {
         } catch(e) {}
     }
 
-    async playCorrect() {
-        await this.init();
+    // 答对音效 - 短促悦耳，不阻塞
+    playCorrectTone() {
         if (!this.audioContext) return;
         const now = this.audioContext.currentTime;
-        this.playTone(523.25, now, 0.2, 'sine', 0.25);
-        this.playTone(659.25, now + 0.08, 0.2, 'sine', 0.25);
-        this.playTone(783.99, now + 0.16, 0.2, 'sine', 0.25);
+        this.playTone(523.25, now, 0.15, 'sine', 0.2);
+        this.playTone(659.25, now + 0.06, 0.15, 'sine', 0.2);
+        this.playTone(783.99, now + 0.12, 0.15, 'sine', 0.2);
+    }
+
+    async playCorrect() {
+        await this.init();
+        this.playCorrectTone();
     }
 
     async playWrong() {
@@ -2000,7 +1983,8 @@ function showNextQuestion() {
                 `).join('')}
             </div>`;
         document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
-        setTimeout(() => playWord(gameState.currentQuestion.correct.word), 300);
+        // 听音选词：立即播放发音，不延迟
+        playWord(gameState.currentQuestion.correct.word);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
@@ -2039,13 +2023,16 @@ async function checkAnswer(answer) {
         const points = CONFIG.pointsCorrect + comboBonus;
         gameState.score += points;
         updateScore(); updateCombo();
-        await audioManager.playCorrect();
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 300);
+
+        // 答对音效（不等待） + 单词发音（立即播放，不延迟）
+        audioManager.playCorrect();
+        audioManager.playWord(gameState.currentQuestion.correct.word);
+
         if (gameState.combo >= 5) {
-            await audioManager.playCelebration();
+            setTimeout(() => audioManager.playCelebration(), 600);
             showCelebration('mega', `🔥 ${gameState.combo}连击！+${points}分！`);
         } else if (gameState.combo >= 3) {
-            await audioManager.playApplause();
+            setTimeout(() => audioManager.playApplause(), 600);
             showCelebration('big', `🎉 太棒了！+${points}分！`);
         } else {
             showCelebration('normal', `✓ 正确！+${points}分`);
@@ -2054,6 +2041,8 @@ async function checkAnswer(answer) {
         gameState.combo = 0;
         updateCombo();
         await audioManager.playWrong();
+        // 答错时也播放正确单词的发音帮助记忆
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 500);
         showCelebration('wrong', `正确答案: ${gameState.currentQuestion.correct.word}`);
     }
 
@@ -2231,7 +2220,6 @@ function showPkQuestion() {
                 `).join('')}
             </div>`;
     } else {
-        setTimeout(() => playWord(gameState.currentQuestion.correct.word), 300);
         gameArea.innerHTML = `
             <div class="question-display">
                 <button class="play-sound-btn" id="play-btn">
@@ -2248,6 +2236,8 @@ function showPkQuestion() {
                 `).join('')}
             </div>`;
         document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
+        // PK模式听音：立即播放
+        playWord(gameState.currentQuestion.correct.word);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
@@ -2271,8 +2261,9 @@ async function checkPkAnswer(answer) {
     if (correct) {
         gameState.score += CONFIG.pointsCorrect;
         gameState.correct++;
-        await audioManager.playCorrect();
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
+        // 音效+发音立即并行播放，不等待
+        audioManager.playCorrect();
+        audioManager.playWord(gameState.currentQuestion.correct.word);
         showPkFeedback('✅ 正确！', true);
     } else {
         await audioManager.playWrong();
