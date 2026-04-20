@@ -1461,8 +1461,10 @@ class AudioManager {
             await this.audioContext.resume().catch(() => {});
         }
 
-        // 先停止之前的播放，防止声音叠加
+        // 先停止之前的播放
         this.stopAllPlayback();
+        // 等待一帧确保cancel()完全生效，防止播旧词
+        await new Promise(r => setTimeout(r, 50));
 
         // ★ 方案1（首选）: Web Speech API - 零延迟、100%匹配、不依赖网络
         try {
@@ -1493,6 +1495,47 @@ class AudioManager {
         }
 
         console.log('⚠️ 所有发音方案均失败');
+    }
+
+    // 仅播放单词发音（不停止其他音效，用于答题正确时）
+    async playWordOnly(word) {
+        console.log('🔊 仅播放单词:', word);
+
+        if (!this.isInitialized) await this.init();
+        if (this.audioContext?.state === 'suspended') {
+            await this.audioContext.resume().catch(() => {});
+        }
+
+        // 只停止之前的语音（不停止音效）
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+
+        // 等一帧让cancel生效
+        await new Promise(r => setTimeout(r, 50));
+
+        try {
+            await this.speakWithWebSpeech(word);
+            return;
+        } catch (e) {}
+
+        if (this.audioCache[word]) {
+            try {
+                await this.playCachedAudio(this.audioCache[word]);
+                return;
+            } catch (e) {}
+        }
+
+        for (const source of AUDIO_CONFIG.ttsSources) {
+            try {
+                const url = source.url.replace('{word}', encodeURIComponent(word));
+                const audio = await this.playAudioUrl(url);
+                if (audio) {
+                    this.audioCache[word] = audio;
+                    return;
+                }
+            } catch (e) {}
+        }
     }
 
     // Web Speech API - 浏览器内置，最可靠
@@ -1951,6 +1994,9 @@ function showNextQuestion() {
     const idx = gameState.answeredQuestions.length;
     if (idx >= gameState.questions.length) { endGame(); return; }
 
+    // 切题时先停止所有音频
+    audioManager.stopAllPlayback();
+
     gameState.currentQuestion = gameState.questions[idx];
     gameState.isAnswered = false;
     const gameArea = document.getElementById('game-area');
@@ -1966,13 +2012,15 @@ function showNextQuestion() {
                     <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
                 `).join('')}
             </div>`;
+        // 看图选词也播放单词发音帮助学习
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 100);
     } else {
+        // 听音选词：去掉喇叭按钮，直接自动播放，提供小重播按钮
         gameArea.innerHTML = `
             <div class="question-display">
-                <button class="play-sound-btn" id="play-btn">
-                    <span class="sound-icon">🔊</span>
-                </button>
-                <p class="sound-hint">👆 点击喇叭听发音，然后选择正确的图片</p>
+                <div class="question-image" style="background: linear-gradient(135deg, #4ECDC4, #3DB9B0); font-size: 50px; color: white;">🎧</div>
+                <p class="sound-hint">仔细听发音，选择正确的图片</p>
+                <button id="replay-btn" style="background:#4ECDC4;color:white;border:none;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;">🔄 再听一次</button>
             </div>
             <div class="options-grid">
                 ${gameState.currentQuestion.options.map(opt => `
@@ -1982,9 +2030,9 @@ function showNextQuestion() {
                     </button>
                 `).join('')}
             </div>`;
-        document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
-        // 听音选词：立即播放发音，不延迟
-        playWord(gameState.currentQuestion.correct.word);
+        document.getElementById('replay-btn').onclick = () => audioManager.playWord(gameState.currentQuestion.correct.word);
+        // 自动播放发音
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
@@ -2024,9 +2072,9 @@ async function checkAnswer(answer) {
         gameState.score += points;
         updateScore(); updateCombo();
 
-        // 答对音效（不等待） + 单词发音（立即播放，不延迟）
+        // 答对音效 + 单词发音（答对后只读一遍单词）
         audioManager.playCorrect();
-        audioManager.playWord(gameState.currentQuestion.correct.word);
+        setTimeout(() => audioManager.playWordOnly(gameState.currentQuestion.correct.word), 400);
 
         if (gameState.combo >= 5) {
             setTimeout(() => audioManager.playCelebration(), 600);
@@ -2041,8 +2089,8 @@ async function checkAnswer(answer) {
         gameState.combo = 0;
         updateCombo();
         await audioManager.playWrong();
-        // 答错时也播放正确单词的发音帮助记忆
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 500);
+        // 答错时播放正确单词发音帮助记忆
+        setTimeout(() => audioManager.playWordOnly(gameState.currentQuestion.correct.word), 500);
         showCelebration('wrong', `正确答案: ${gameState.currentQuestion.correct.word}`);
     }
 
@@ -2226,15 +2274,15 @@ function showPkQuestion() {
                     <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
                 `).join('')}
             </div>`;
-        // 看图PK模式：也播放单词发音帮助学习
-        audioManager.playWord(gameState.currentQuestion.correct.word);
+        // 看图PK模式：播放单词发音帮助学习
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 100);
     } else {
+        // 听音PK：直接自动播放，不点喇叭
         gameArea.innerHTML = `
             <div class="question-display">
-                <button class="play-sound-btn" id="play-btn">
-                    <span class="sound-icon">🔊</span>
-                </button>
-                <p class="sound-hint">👆 听音选图</p>
+                <div class="question-image" style="background: linear-gradient(135deg, #4ECDC4, #3DB9B0); font-size: 40px; color: white;">🎧</div>
+                <p class="sound-hint">仔细听发音，选择正确的图片</p>
+                <button id="replay-btn" style="background:#4ECDC4;color:white;border:none;padding:6px 16px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;font-family:inherit;">🔄 再听一次</button>
             </div>
             <div class="options-grid">
                 ${gameState.currentQuestion.options.map(opt => `
@@ -2244,9 +2292,9 @@ function showPkQuestion() {
                     </button>
                 `).join('')}
             </div>`;
-        document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
-        // 听音PK：立即播放发音
-        audioManager.playWord(gameState.currentQuestion.correct.word);
+        document.getElementById('replay-btn').onclick = () => audioManager.playWord(gameState.currentQuestion.correct.word);
+        // 自动播放发音（延迟确保stopAllPlayback完全生效）
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
