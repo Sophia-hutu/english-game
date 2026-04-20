@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🍎 食物英语大冒险 🍰</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ==================== 基础样式 ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    --primary-color: #FF6B9D;
+    --secondary-color: #FFE66D;
+    --accent-color: #4ECDC4;
+    --success-color: #95E1A3;
+    --error-color: #FF8B94;
+    --bg-gradient: linear-gradient(135deg, #FFF5E6 0%, #FFE5EC 50%, #E8F4F8 100%);
+    --card-shadow: 0 8px 32px rgba(255, 107, 157, 0.2);
+    --btn-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #4A4A4A;
+}
+
+/* 音乐开关按钮 */
+.music-toggle {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-toggle:hover { transform: scale(1.1); }
+
+.music-toggle.active {
+    background: linear-gradient(135deg, var(--secondary-color), #FFD93D);
+    animation: musicPulse 1s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* 星星背景动画 */
+.stars-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.stars-bg::before {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    background-image:
+        radial-gradient(2px 2px at 20px 30px, #FFD700, transparent),
+        radial-gradient(2px 2px at 40px 70px, #FFD700, transparent),
+        radial-gradient(2px 2px at 50px 160px, #FFD700, transparent),
+        radial-gradient(2px 2px at 90px 40px, #FFD700, transparent),
+        radial-gradient(2px 2px at 130px 80px, #FFD700, transparent),
+        radial-gradient(2px 2px at 160px 120px, #FFD700, transparent);
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    animation: twinkle 3s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* 屏幕容器 */
+.screen {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.screen.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== 首页样式 ==================== */
+#home-screen { background: var(--bg-gradient); }
+
+.container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 2;
+}
+
+.logo-container { text-align: center; padding: 30px 0 20px; }
+.food-icons { margin-bottom: 15px; }
+
+.food-icon {
+    display: inline-block;
+    font-size: 28px;
+    margin: 0 5px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+.food-icon.f1 { animation-delay: 0s; }
+.food-icon.f2 { animation-delay: 0.2s; }
+.food-icon.f3 { animation-delay: 0.4s; }
+.food-icon.f4 { animation-delay: 0.6s; }
+.food-icon.f5 { animation-delay: 0.8s; }
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.game-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 0 #fff, 3px 3px 0 rgba(255, 107, 157, 0.3);
+    margin-bottom: 5px;
+}
+
+.title-star { display: inline-block; animation: spin 3s linear infinite; }
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.subtitle { font-size: 14px; color: #888; font-weight: 600; margin-bottom: 10px; }
+
+.grade-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--secondary-color), #FFD93D);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5A4A00;
+    box-shadow: 0 3px 10px rgba(255, 230, 109, 0.4);
+}
+
+/* 玩家信息 */
+.player-info {
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.avatar-selector { display: flex; align-items: center; gap: 15px; }
+
+.avatar {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, #FFE5EC, #FFF5E6);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    border: 3px solid var(--primary-color);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.avatar:hover { transform: scale(1.1); }
+
+#player-name {
+    flex: 1;
+    border: none;
+    border-bottom: 2px dashed #ddd;
+    font-size: 16px;
+    padding: 8px;
+    font-family: inherit;
+    outline: none;
+    color: #4A4A4A;
+    font-weight: 600;
+}
+
+#player-name:focus { border-color: var(--primary-color); }
+#player-name::placeholder { color: #bbb; }
+
+/* 菜单按钮 */
+.menu-buttons { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: none;
+    border-radius: 16px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--btn-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.menu-btn:hover::before { left: 100%; }
+.menu-btn:hover { transform: translateX(5px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); }
+.menu-btn:active { transform: scale(0.98); }
+
+.btn-icon { font-size: 32px; margin-right: 15px; }
+.btn-text { flex: 1; text-align: left; }
+.btn-title { display: block; font-size: 18px; font-weight: 700; color: #4A4A4A; }
+.btn-desc { display: block; font-size: 12px; color: #999; margin-top: 2px; }
+.btn-arrow { font-size: 24px; color: #ddd; transition: transform 0.3s; }
+.menu-btn:hover .btn-arrow { transform: translateX(5px); color: var(--primary-color); }
+
+.picture-btn { border-left: 4px solid #FF6B9D; }
+.sound-btn { border-left: 4px solid #4ECDC4; }
+.pk-btn { border-left: 4px solid #FFE66D; }
+.rank-btn { border-left: 4px solid #95E1A3; }
+
+/* 词汇预览 */
+.vocab-preview {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.vocab-title { font-size: 14px; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; text-align: center; }
+.vocab-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+
+.vocab-item {
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: transform 0.2s;
+}
+
+.vocab-item:hover { transform: scale(1.05); }
+.vocab-item .emoji { font-size: 16px; }
+
+/* ==================== 游戏界面样式 ==================== */
+.game-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 15px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 15px;
+}
+
+.back-btn {
+    background: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    box-shadow: var(--btn-shadow);
+    transition: all 0.2s;
+}
+
+.back-btn:hover { background: #f5f5f5; }
+
+.game-info { display: flex; gap: 15px; }
+
+.score-display, .combo-display, .timer-display {
+    background: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: var(--btn-shadow);
+}
+
+.star-icon, .fire-icon, .time-icon { font-size: 16px; }
+#score { color: var(--primary-color); font-size: 18px; }
+#combo { color: #FF6B00; }
+#timer { color: #FF6B6B; font-size: 18px; }
+.combo-display { transition: transform 0.2s; }
+.combo-display.active { animation: pulse 0.3s ease-out; }
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 进度条 */
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* 游戏区域 */
+.game-area {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    min-height: 400px;
+    box-shadow: var(--card-shadow);
+}
+
+/* 问题显示 */
+.question-display { text-align: center; margin-bottom: 25px; }
+
+.question-image {
+    width: 150px; height: 150px;
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border-radius: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 80px;
+    box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.05);
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.question-text { font-size: 16px; color: #888; }
+
+.play-sound-btn {
+    background: linear-gradient(135deg, var(--accent-color), #3DB9B0);
+    border: none;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 15px;
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+    transition: all 0.3s;
+    animation: popIn 0.3s ease-out;
+}
+
+.play-sound-btn:hover { transform: scale(1.05); }
+.play-sound-btn:active { transform: scale(0.95); }
+.play-sound-btn .sound-icon { font-size: 40px; }
+.sound-hint { font-size: 14px; color: #888; }
+
+/* 选项 */
+.options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+.option-btn {
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: #4A4A4A;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    font-family: inherit;
+}
+
+.option-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.option-btn:hover { border-color: var(--primary-color); transform: translateY(-2px); }
+.option-btn:active { transform: scale(0.98); }
+
+.option-btn.correct {
+    background: var(--success-color);
+    border-color: #4CAF50;
+    animation: correctBounce 0.5s ease-out;
+}
+
+@keyframes correctBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.option-btn.wrong {
+    background: var(--error-color);
+    border-color: #E57373;
+    animation: shake 0.5s ease-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+.option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+/* 反馈覆盖层 */
+.feedback-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.feedback-overlay.show { display: flex; animation: fadeIn 0.2s ease-out; }
+
+.feedback-content {
+    background: white;
+    border-radius: 24px;
+    padding: 40px 50px;
+    text-align: center;
+    animation: popIn 0.3s ease-out;
+}
+
+.feedback-icon { font-size: 60px; margin-bottom: 15px; }
+.feedback-text { font-size: 20px; font-weight: 700; color: #4A4A4A; }
+
+/* ==================== PK选择界面 ==================== */
+.pk-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+}
+
+.pk-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+.pk-header h2 { font-size: 22px; color: var(--primary-color); }
+
+.pk-mode-select, .opponent-select {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.pk-mode-select h3, .opponent-select h3 { font-size: 16px; color: #666; margin-bottom: 20px; text-align: center; }
+.pk-modes { display: flex; flex-direction: column; gap: 12px; }
+
+.pk-mode-btn {
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 15px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.pk-mode-btn:hover { transform: translateX(5px); box-shadow: var(--btn-shadow); }
+.pk-mode-btn .mode-icon { font-size: 28px; }
+.pk-mode-btn .mode-name { font-size: 16px; font-weight: 700; color: #4A4A4A; }
+
+.ai-opponents { display: flex; gap: 15px; justify-content: center; }
+
+.opponent-card {
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 3px solid transparent;
+}
+
+.opponent-card:hover { transform: translateY(-5px); border-color: var(--primary-color); box-shadow: var(--card-shadow); }
+.opponent-avatar { font-size: 50px; margin-bottom: 10px; }
+.opponent-name { font-size: 14px; font-weight: 700; color: #4A4A4A; margin-bottom: 5px; }
+.opponent-level { font-size: 11px; color: #FFB800; }
+
+/* ==================== PK对战界面 ==================== */
+.pk-battle-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 15px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #FFE5EC 0%, #E8F4F8 50%, #FFF5E6 100%);
+}
+
+.pk-battle-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 10px;
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    box-shadow: var(--card-shadow);
+}
+
+.pk-player { text-align: center; flex: 1; }
+.pk-player.you .pk-avatar { border-color: var(--primary-color); }
+.pk-player.opponent .pk-avatar { border-color: var(--accent-color); }
+
+.pk-avatar {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 35px;
+    border: 3px solid;
+}
+
+.pk-name { font-size: 12px; color: #888; margin-bottom: 5px; }
+.pk-score { font-size: 24px; font-weight: 800; color: var(--primary-color); }
+.pk-player.opponent .pk-score { color: var(--accent-color); }
+.pk-vs { font-size: 20px; font-weight: 800; color: #ddd; padding: 0 10px; }
+
+.pk-timer { margin-bottom: 15px; }
+.pk-timer-bar { height: 10px; background: white; border-radius: 5px; overflow: hidden; box-shadow: var(--btn-shadow); }
+
+.pk-timer-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    width: 100%;
+    transition: width 1s linear;
+}
+
+.pk-timer-text { text-align: center; font-size: 18px; font-weight: 700; color: var(--primary-color); margin-top: 8px; }
+
+.pk-game-area {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    min-height: 350px;
+    box-shadow: var(--card-shadow);
+}
+
+.pk-feedback {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 15px 30px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    font-weight: 700;
+    display: none;
+}
+
+.pk-feedback.show { display: block; animation: slideUp 0.3s ease-out; }
+
+@keyframes slideUp {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ==================== 排行榜界面 ==================== */
+.rank-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+}
+
+.rank-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.rank-header h2 { font-size: 22px; color: var(--primary-color); }
+.rank-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+
+.rank-tab {
+    flex: 1;
+    background: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.rank-tab.active {
+    background: linear-gradient(135deg, var(--primary-color), #FF8FBB);
+    color: white;
+    box-shadow: var(--card-shadow);
+}
+
+.rank-list {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.rank-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+.rank-item:nth-child(1) { background: linear-gradient(135deg, #FFD700, #FFF3CD); }
+.rank-item:nth-child(2) { background: linear-gradient(135deg, #E8E8E8, #F5F5F5); }
+.rank-item:nth-child(3) { background: linear-gradient(135deg, #CD7F32, #FFE4C4); }
+.rank-item:nth-child(n+4) { background: linear-gradient(135deg, #FFF5E6, #FFE5EC); }
+.rank-item:hover { transform: translateX(5px); }
+
+.rank-position {
+    width: 35px; height: 35px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.rank-item:nth-child(1) .rank-position { color: #FFD700; }
+.rank-item:nth-child(2) .rank-position { color: #A0A0A0; }
+.rank-item:nth-child(3) .rank-position { color: #CD7F32; }
+
+.rank-avatar { font-size: 30px; margin-right: 12px; }
+.rank-info { flex: 1; }
+.rank-name { font-weight: 700; color: #4A4A4A; font-size: 14px; }
+.rank-stats { font-size: 11px; color: #888; }
+.rank-score { font-size: 18px; font-weight: 800; color: var(--primary-color); }
+
+/* ==================== 结果界面 ==================== */
+.result-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    text-align: center;
+}
+
+.result-animation { padding: 30px 0; }
+
+.result-stars {
+    font-size: 40px;
+    letter-spacing: 10px;
+    animation: starPop 0.5s ease-out;
+}
+
+@keyframes starPop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.result-content {
+    background: white;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: var(--card-shadow);
+}
+
+.result-title { font-size: 28px; color: var(--primary-color); margin-bottom: 25px; }
+
+.result-stats { display: flex; justify-content: center; gap: 25px; margin-bottom: 25px; }
+.stat-item { text-align: center; }
+.stat-icon { font-size: 30px; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 800; color: var(--primary-color); }
+.stat-label { font-size: 12px; color: #888; }
+
+.result-words {
+    background: linear-gradient(135deg, #FFF5E6, #FFE5EC);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.result-words h3 { font-size: 14px; color: var(--primary-color); margin-bottom: 15px; }
+.words-review { max-height: 150px; overflow-y: auto; }
+
+.word-review-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(0,0,0,0.1);
+}
+
+.word-review-item:last-child { border-bottom: none; }
+.word-review-item .word { display: flex; align-items: center; gap: 8px; }
+.word-review-item .status { font-size: 16px; }
+.result-buttons { display: flex; gap: 15px; }
+
+.result-btn {
+    flex: 1;
+    border: none;
+    padding: 15px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.retry-btn { background: linear-gradient(135deg, var(--primary-color), #FF8FBB); color: white; }
+.home-btn { background: linear-gradient(135deg, #E0E0E0, #F5F5F5); color: #666; }
+.result-btn:hover { transform: translateY(-2px); box-shadow: var(--btn-shadow); }
+
+/* ==================== PK结果界面 ==================== */
+.pk-result-container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    text-align: center;
+}
+
+.pk-result-banner { padding: 40px 20px; margin-bottom: 20px; }
+.pk-result-banner.win { background: linear-gradient(135deg, #FFD700, #FFF3CD); border-radius: 24px; }
+.pk-result-banner.lose { background: linear-gradient(135deg, #E8E8E8, #F5F5F5); border-radius: 24px; }
+.pk-result-icon { font-size: 60px; margin-bottom: 15px; }
+.pk-result-title { font-size: 32px; font-weight: 800; color: #4A4A4A; }
+
+.pk-result-players {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.pk-result-player { text-align: center; }
+.pk-result-avatar { font-size: 50px; margin-bottom: 8px; }
+.pk-result-name { font-size: 14px; color: #888; margin-bottom: 5px; }
+.pk-result-score { font-size: 32px; font-weight: 800; color: var(--primary-color); }
+.pk-result-player.opponent .pk-result-score { color: var(--accent-color); }
+.pk-result-vs { font-size: 20px; font-weight: 800; color: #ddd; }
+
+.pk-reward {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.reward-icon { font-size: 30px; margin-bottom: 8px; }
+.reward-text { font-size: 16px; color: #4A4A4A; }
+.reward-text span { color: var(--primary-color); font-weight: 800; font-size: 20px; }
+.pk-result-buttons { display: flex; gap: 15px; }
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 420px) {
+    .game-title { font-size: 24px; }
+    .menu-btn { padding: 12px 15px; }
+    .btn-icon { font-size: 28px; }
+    .btn-title { font-size: 16px; }
+    .question-image { width: 120px; height: 120px; font-size: 60px; }
+    .options-grid { gap: 10px; }
+    .option-btn { padding: 15px; font-size: 14px; }
+    .ai-opponents { flex-direction: column; }
+    .result-stats { gap: 15px; }
+    .stat-value { font-size: 24px; }
+}
+
+/* ==================== 特效和动画 ==================== */
+.sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: sparkleAnim 0.6s ease-out forwards;
+}
+
+@keyframes sparkleAnim {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1) rotate(180deg); opacity: 0; }
+}
+
+.confetti {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--primary-color);
+    animation: confettiFall 3s ease-out forwards;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+@keyframes confettiFall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.timer-warning { animation: timerPulse 1s ease-in-out infinite; }
+
+@keyframes timerPulse {
+    0%, 100% { color: #FF6B6B; }
+    50% { color: #FF0000; }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #FF4B7D; }
+
+/* 使用提示样式 */
+.usage-tips {
+    background: white;
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-top: 20px;
+    box-shadow: var(--btn-shadow);
+}
+
+.usage-tips p { font-size: 12px; color: #888; margin: 5px 0; line-height: 1.6; }
+.usage-tips strong { color: var(--primary-color); }
+
+.play-sound-btn.playing { animation: soundPulse 0.5s ease-in-out infinite; }
+
+@keyframes soundPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4); }
+    50% { transform: scale(1.08); box-shadow: 0 12px 35px rgba(78, 205, 196, 0.6); }
+}
+
+/* ==================== 增强的庆祝效果 ==================== */
+.feedback-content.celebration-big {
+    padding: 50px 70px;
+    animation: popIn 0.3s ease-out, celebrationPulse 0.5s ease-out;
+}
+
+.feedback-content.celebration-mega {
+    padding: 60px 90px;
+    background: linear-gradient(135deg, #FFE5EC, #FFF5E6);
+    animation: popIn 0.3s ease-out, celebrationMega 0.8s ease-out;
+    border: 4px solid #FFD700;
+}
+
+@keyframes celebrationPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes celebrationMega {
+    0% { transform: scale(0.8); opacity: 0; }
+    30% { transform: scale(1.1); }
+    50% { transform: scale(0.95); }
+    70% { transform: scale(1.02); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.feedback-icon.correct-icon { animation: iconBounce 0.6s ease-out; }
+.feedback-icon.wrong-icon { animation: iconShake 0.5s ease-out; }
+
+@keyframes iconBounce {
+    0% { transform: scale(0) rotate(-180deg); }
+    50% { transform: scale(1.3) rotate(10deg); }
+    70% { transform: scale(0.9) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes iconShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px) rotate(-5deg); }
+    40% { transform: translateX(10px) rotate(5deg); }
+    60% { transform: translateX(-5px) rotate(-3deg); }
+    80% { transform: translateX(5px) rotate(3deg); }
+}
+
+.star-burst {
+    position: fixed;
+    font-size: 30px;
+    pointer-events: none;
+    z-index: 2000;
+    animation: starBurst 1s ease-out forwards;
+}
+
+@keyframes starBurst {
+    0% { transform: translate(-50%, -50%) rotate(0deg) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateX(150px) scale(1.5) rotate(360deg); opacity: 0; }
+}
+
+.confetti.celebration { animation: confettiFallEnhanced 3s ease-out forwards; }
+
+@keyframes confettiFallEnhanced {
+    0% { transform: translateY(-20vh) rotate(0deg) scale(0); opacity: 1; }
+    10% { transform: translateY(-10vh) rotate(180deg) scale(1); }
+    100% { transform: translateY(110vh) rotate(1080deg) scale(0.5); opacity: 0; }
+}
+
+@keyframes rainbowBg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.combo-display.mega-combo {
+    animation: megaCombo 0.3s ease-out;
+    background: linear-gradient(135deg, #FF6B00, #FFD700);
+    color: white;
+}
+
+@keyframes megaCombo {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+
+/* ==================== 确保所有正确答案都是彩色的 ==================== */
+.feedback-content.celebration-normal {
+    background: linear-gradient(135deg, #E8FFE8, #D4FFD4);
+    border: 3px solid #4CAF50;
+    animation: popIn 0.3s ease-out;
+}
+
+.feedback-content.celebration-normal .feedback-icon {
+    color: #4CAF50;
+    font-size: 60px;
+    animation: iconBounce 0.6s ease-out;
+}
+
+.feedback-content.wrong-answer {
+    background: linear-gradient(135deg, #FFF0F0, #FFE8E8);
+    border: 3px solid #FF8B94;
+    animation: popIn 0.3s ease-out;
+}
+
+.feedback-content.wrong-answer .feedback-icon { color: #FF6B6B; }
+
+.feedback-icon.celebration-icon { animation: celebrationIconBounce 0.8s ease-out; }
+
+@keyframes celebrationIconBounce {
+    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+    30% { transform: scale(1.4) rotate(10deg); opacity: 1; }
+    50% { transform: scale(0.9) rotate(-5deg); }
+    70% { transform: scale(1.1) rotate(3deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 1000; opacity: 1 !important; }
+.confetti.celebration { opacity: 1 !important; visibility: visible !important; }
+.feedback-overlay { opacity: 1 !important; }
+.feedback-overlay.show { opacity: 1 !important; visibility: visible !important; }
+
+.correct-icon { color: #4CAF50 !important; font-size: 70px !important; }
+
+/* 音频初始化提示 */
+.audio-init-hint {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #FF6B9D, #FF8FBB);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 2000;
+    animation: pulse 1s ease-in-out infinite;
+    box-shadow: 0 10px 40px rgba(255, 107, 157, 0.5);
+}
+
+.audio-init-hint p { margin: 0; }
+
+/* 确保 emoji 显示正确 */
+.emoji, .food-icon, .question-image, .feedback-icon {
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+</style>
+</head>
+<body>
+    <!-- 音乐开关（全局） -->
+    <button id="music-toggle" class="music-toggle" onclick="toggleBackgroundMusic()" title="背景音乐">🔇</button>
+
+    <!-- 首页 -->
+    <div id="home-screen" class="screen active">
+        <div class="stars-bg"></div>
+        <div class="container">
+            <div class="logo-container">
+                <div class="food-icons">
+                    <span class="food-icon f1">🍎</span>
+                    <span class="food-icon f2">🍌</span>
+                    <span class="food-icon f3">🍊</span>
+                    <span class="food-icon f4">🍰</span>
+                    <span class="food-icon f5">🍦</span>
+                </div>
+                <h1 class="game-title">
+                    <span class="title-star">⭐</span>
+                    食物英语大冒险
+                    <span class="title-star">⭐</span>
+                </h1>
+                <p class="subtitle">Food English Adventure</p>
+                <div class="grade-badge">📚 小学三年级</div>
+            </div>
+
+            <div class="player-info" id="player-info">
+                <div class="avatar-selector">
+                    <div class="avatar" id="player-avatar">👧</div>
+                    <input type="text" id="player-name" placeholder="输入你的名字" maxlength="8">
+                </div>
+            </div>
+
+            <div class="menu-buttons">
+                <button class="menu-btn picture-btn" onclick="startGame('picture')">
+                    <span class="btn-icon">🖼️</span>
+                    <span class="btn-text">
+                        <span class="btn-title">看图选词</span>
+                        <span class="btn-desc">看图片选单词</span>
+                    </span>
+                    <span class="btn-arrow">›</span>
+                </button>
+                <button class="menu-btn sound-btn" onclick="startGame('sound')">
+                    <span class="btn-icon">🔊</span>
+                    <span class="btn-text">
+                        <span class="btn-title">听音选词</span>
+                        <span class="btn-desc">听发音选单词</span>
+                    </span>
+                    <span class="btn-arrow">›</span>
+                </button>
+                <button class="menu-btn pk-btn" onclick="startPkSelect()">
+                    <span class="btn-icon">⚔️</span>
+                    <span class="btn-text">
+                        <span class="btn-title">好友PK</span>
+                        <span class="btn-desc">和朋友比一比</span>
+                    </span>
+                    <span class="btn-arrow">›</span>
+                </button>
+                <button class="menu-btn rank-btn" onclick="showRanking()">
+                    <span class="btn-icon">🏆</span>
+                    <span class="btn-text">
+                        <span class="btn-title">排行榜</span>
+                        <span class="btn-desc">查看高手榜</span>
+                    </span>
+                    <span class="btn-arrow">›</span>
+                </button>
+            </div>
+
+            <div class="vocab-preview">
+                <div class="vocab-title">📖 今日词汇</div>
+                <div class="vocab-list" id="vocab-preview-list"></div>
+            </div>
+
+            <div class="usage-tips">
+                <p>🎓 <strong>标准发音：</strong>支持在线TTS自动朗读</p>
+                <p>💡 <strong>小提示：</strong>点击右上角 🔊 开启背景音乐</p>
+                <p>📱 <strong>移动端：</strong>首次点击任意位置开启声音</p>
+                <p>✅ <strong>答对奖励：</strong>播放单词发音帮助记忆！</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <button class="back-btn" onclick="goHome()">← 返回</button>
+                <div class="game-info">
+                    <div class="score-display">
+                        <span class="star-icon">⭐</span>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="combo-display" id="combo-display">
+                        <span class="fire-icon">🔥</span>
+                        <span id="combo">0</span>连击
+                    </div>
+                </div>
+                <div class="timer-display">
+                    <span class="time-icon">⏱️</span>
+                    <span id="timer">60</span>s
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="game-area" id="game-area"></div>
+            <div class="feedback-overlay" id="feedback-overlay">
+                <div class="feedback-content">
+                    <div class="feedback-icon" id="feedback-icon"></div>
+                    <div class="feedback-text" id="feedback-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PK选择界面 -->
+    <div id="pk-screen" class="screen">
+        <div class="pk-container">
+            <div class="pk-header">
+                <button class="back-btn" onclick="goHome()">← 返回</button>
+                <h2>⚔️ 好友PK对战</h2>
+            </div>
+            <div class="pk-mode-select">
+                <h3>选择对战模式</h3>
+                <div class="pk-modes">
+                    <button class="pk-mode-btn" onclick="startPkGame('picture')">
+                        <span class="mode-icon">🖼️</span>
+                        <span class="mode-name">看图选词PK</span>
+                    </button>
+                    <button class="pk-mode-btn" onclick="startPkGame('sound')">
+                        <span class="mode-icon">🔊</span>
+                        <span class="mode-name">听音选词PK</span>
+                    </button>
+                    <button class="pk-mode-btn" onclick="startPkGame('mixed')">
+                        <span class="mode-icon">🎲</span>
+                        <span class="mode-name">混合挑战PK</span>
+                    </button>
+                </div>
+            </div>
+            <div class="opponent-select">
+                <h3>选择对手</h3>
+                <div class="ai-opponents">
+                    <div class="opponent-card" onclick="selectOpponent('easy')">
+                        <div class="opponent-avatar">🐣</div>
+                        <div class="opponent-name">小萌新</div>
+                        <div class="opponent-level">⭐ 初级</div>
+                    </div>
+                    <div class="opponent-card" onclick="selectOpponent('medium')">
+                        <div class="opponent-avatar">🐥</div>
+                        <div class="opponent-name">小学霸</div>
+                        <div class="opponent-level">⭐⭐ 中级</div>
+                    </div>
+                    <div class="opponent-card" onclick="selectOpponent('hard')">
+                        <div class="opponent-avatar">🦅</div>
+                        <div class="opponent-name">大神级</div>
+                        <div class="opponent-level">⭐⭐⭐ 高级</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PK对战界面 -->
+    <div id="pk-battle-screen" class="screen">
+        <div class="pk-battle-container">
+            <div class="pk-battle-header">
+                <div class="pk-player you">
+                    <div class="pk-avatar" id="pk-you-avatar">👧</div>
+                    <div class="pk-name" id="pk-you-name">你</div>
+                    <div class="pk-score" id="pk-you-score">0</div>
+                </div>
+                <div class="pk-vs">VS</div>
+                <div class="pk-player opponent">
+                    <div class="pk-avatar" id="pk-opponent-avatar">🐣</div>
+                    <div class="pk-name" id="pk-opponent-name">小萌新</div>
+                    <div class="pk-score" id="pk-opponent-score">0</div>
+                </div>
+            </div>
+            <div class="pk-timer">
+                <div class="pk-timer-bar">
+                    <div class="pk-timer-fill" id="pk-timer-fill"></div>
+                </div>
+                <div class="pk-timer-text" id="pk-timer-text">30</div>
+            </div>
+            <div class="pk-game-area" id="pk-game-area"></div>
+            <div class="pk-feedback" id="pk-feedback"></div>
+        </div>
+    </div>
+
+    <!-- 排行榜界面 -->
+    <div id="rank-screen" class="screen">
+        <div class="rank-container">
+            <div class="rank-header">
+                <button class="back-btn" onclick="goHome()">← 返回</button>
+                <h2>🏆 排行榜</h2>
+            </div>
+            <div class="rank-tabs">
+                <button class="rank-tab active" onclick="switchRankTab('picture')">🖼️ 看图选词</button>
+                <button class="rank-tab" onclick="switchRankTab('sound')">🔊 听音选词</button>
+                <button class="rank-tab" onclick="switchRankTab('pk')">⚔️ PK王者</button>
+            </div>
+            <div class="rank-list" id="rank-list"></div>
+        </div>
+    </div>
+
+    <!-- 结果界面 -->
+    <div id="result-screen" class="screen">
+        <div class="result-container">
+            <div class="result-animation">
+                <div class="result-stars" id="result-stars"></div>
+            </div>
+            <div class="result-content">
+                <h2 class="result-title" id="result-title">太棒了！</h2>
+                <div class="result-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-value" id="result-score">0</div>
+                        <div class="stat-label">总得分</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="result-correct">0</div>
+                        <div class="stat-label">答对题数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value" id="result-combo">0</div>
+                        <div class="stat-label">最高连击</div>
+                    </div>
+                </div>
+                <div class="result-words" id="result-words">
+                    <h3>📝 学习记录</h3>
+                    <div class="words-review" id="words-review"></div>
+                </div>
+                <div class="result-buttons">
+                    <button class="result-btn retry-btn" onclick="retryGame()">🔄 再玩一次</button>
+                    <button class="result-btn home-btn" onclick="goHome()">🏠 返回首页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PK结果界面 -->
+    <div id="pk-result-screen" class="screen">
+        <div class="pk-result-container">
+            <div class="pk-result-banner" id="pk-result-banner">
+                <div class="pk-result-icon" id="pk-result-icon">🏆</div>
+                <h2 class="pk-result-title" id="pk-result-title">胜利！</h2>
+            </div>
+            <div class="pk-result-players">
+                <div class="pk-result-player you">
+                    <div class="pk-result-avatar" id="pk-result-you-avatar">👧</div>
+                    <div class="pk-result-name">你</div>
+                    <div class="pk-result-score" id="pk-result-you-score">0</div>
+                </div>
+                <div class="pk-result-vs">VS</div>
+                <div class="pk-result-player opponent">
+                    <div class="pk-result-avatar" id="pk-result-opponent-avatar">🐣</div>
+                    <div class="pk-result-name" id="pk-result-opponent-name">小萌新</div>
+                    <div class="pk-result-score" id="pk-result-opponent-score">0</div>
+                </div>
+            </div>
+            <div class="pk-reward" id="pk-reward">
+                <div class="reward-icon">🎁</div>
+                <div class="reward-text">获得 <span id="reward-points">10</span> 积分！</div>
+            </div>
+            <div class="pk-result-buttons">
+                <button class="result-btn retry-btn" onclick="retryPkGame()">🔄 再来一局</button>
+                <button class="result-btn home-btn" onclick="goHome()">🏠 返回首页</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ==================== 音频配置（内置） ====================
+const AUDIO_CONFIG = {
+    useLocalAudio: false, // 单文件版不使用本地音频，直接用在线TTS
+    localAudioFiles: {},
+    onlineTTS: {
+        youdao: 'https://dict.youdao.com/dictvoice?audio={word}&type=1',
+        youdaoUK: 'https://dict.youdao.com/dictvoice?audio={word}&type=2',
+        baidu: 'https://fanyi.baidu.com/gettts?lan=en&text={word}&spd=3&source=web'
+    }
+};
+
+// ==================== 音频管理器 ====================
+class AudioManager {
+    constructor() {
+        this.audioContext = null;
+        this.isInitialized = false;
+        this.audioCache = {};
+        this.mobileInitialized = false;
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    async init() {
+        if (this.isInitialized) return true;
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioContext = new AudioContext();
+            if (this.isMobile || this.audioContext.state === 'suspended') {
+                const buffer = this.audioContext.createBuffer(1, 1, 22050);
+                const source = this.audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(this.audioContext.destination);
+                source.start(0);
+                if (this.audioContext.state === 'suspended') {
+                    await this.audioContext.resume();
+                }
+            }
+            this.isInitialized = true;
+            return true;
+        } catch (e) {
+            console.error('音频初始化失败:', e);
+            return false;
+        }
+    }
+
+    async initMobile() {
+        if (this.mobileInitialized) return;
+        await this.init();
+        try {
+            const audio = new Audio();
+            audio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
+            audio.volume = 0.01;
+            await audio.play();
+            audio.pause();
+        } catch (e) { }
+        this.mobileInitialized = true;
+    }
+
+    async preloadAllWords() {
+        VOCABULARY.forEach(v => this.preloadWord(v.word));
+    }
+
+    async preloadWord(word) {
+        if (this.audioCache[word]) return this.audioCache[word];
+        const onlineUrl = this.getOnlineTTSUrl(word);
+        if (onlineUrl) {
+            try {
+                const audio = await this.loadAudioFile(onlineUrl);
+                if (audio) { this.audioCache[word] = audio; return audio; }
+            } catch (e) { }
+        }
+        return null;
+    }
+
+    loadAudioFile(url) {
+        return new Promise((resolve, reject) => {
+            const audio = new Audio();
+            audio.crossOrigin = 'anonymous';
+            audio.preload = 'auto';
+            const timeout = setTimeout(() => reject(new Error('加载超时')), 8000);
+            audio.oncanplaythrough = () => { clearTimeout(timeout); resolve(audio); };
+            audio.onerror = () => { clearTimeout(timeout); reject(new Error('加载失败')); };
+            audio.src = url;
+            audio.load();
+        });
+    }
+
+    getOnlineTTSUrl(word) {
+        const encodedWord = encodeURIComponent(word);
+        return AUDIO_CONFIG.onlineTTS.youdao.replace('{word}', encodedWord);
+    }
+
+    async playWord(word) {
+        if (!this.isInitialized) await this.init();
+        if (this.audioContext?.state === 'suspended') await this.audioContext.resume();
+
+        // 缓存
+        if (this.audioCache[word]) {
+            await this.playCachedAudio(this.audioCache[word]);
+            return;
+        }
+
+        // 在线TTS
+        const onlineUrl = this.getOnlineTTSUrl(word);
+        if (onlineUrl) {
+            try {
+                await this.playAudioUrl(onlineUrl);
+                return;
+            } catch (e) { }
+        }
+
+        // Web Speech API
+        try {
+            await this.speakWithWebSpeech(word);
+            return;
+        } catch (e) { }
+    }
+
+    playCachedAudio(audio) {
+        return new Promise((resolve, reject) => {
+            if (!audio) { reject(); return; }
+            const newAudio = audio.cloneNode(true);
+            newAudio.volume = 1;
+            newAudio.currentTime = 0;
+            newAudio.onended = () => resolve();
+            newAudio.onerror = (e) => reject(e);
+            newAudio.play().then(() => { }).catch(reject);
+        });
+    }
+
+    playAudioUrl(url, isLocal = false) {
+        return new Promise((resolve, reject) => {
+            const audio = new Audio();
+            audio.crossOrigin = isLocal ? null : 'anonymous';
+            audio.preload = 'auto';
+            audio.volume = 1;
+            const timeout = setTimeout(() => reject(new Error('播放超时')), 8000);
+            audio.oncanplaythrough = () => {
+                clearTimeout(timeout);
+                audio.play().then(() => { this.audioCache[url] = audio; resolve(); }).catch(reject);
+            };
+            audio.onended = () => { clearTimeout(timeout); resolve(); };
+            audio.onerror = () => { clearTimeout(timeout); reject(new Error('音频错误')); };
+            audio.src = url;
+            audio.load();
+        });
+    }
+
+    speakWithWebSpeech(word) {
+        return new Promise((resolve, reject) => {
+            if (!('speechSynthesis' in window)) { reject(); return; }
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            const voices = speechSynthesis.getVoices();
+            const englishVoice = voices.find(v => v.lang.includes('en-US') || v.lang.includes('en_US') || v.name.includes('English'));
+            if (englishVoice) utterance.voice = englishVoice;
+            utterance.onend = () => resolve();
+            utterance.onerror = (e) => reject(e);
+            setTimeout(() => speechSynthesis.speak(utterance), 50);
+        });
+    }
+
+    playTone(frequency, startTime, duration, type = 'sine', volume = 0.3) {
+        if (!this.audioContext) return;
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        oscillator.type = type;
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+    }
+
+    async playCorrect() {
+        await this.init();
+        if (!this.audioContext) return;
+        const now = this.audioContext.currentTime;
+        this.playTone(523.25, now, 0.2, 'sine', 0.25);
+        this.playTone(659.25, now + 0.08, 0.2, 'sine', 0.25);
+        this.playTone(783.99, now + 0.16, 0.2, 'sine', 0.25);
+    }
+
+    async playWrong() {
+        await this.init();
+        if (!this.audioContext) return;
+        const now = this.audioContext.currentTime;
+        this.playTone(200, now, 0.15, 'sawtooth', 0.15);
+        this.playTone(150, now + 0.15, 0.2, 'sawtooth', 0.12);
+    }
+
+    async playApplause() {
+        await this.init();
+        if (!this.audioContext) return;
+        const duration = 1.2;
+        const sampleRate = this.audioContext.sampleRate;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = this.audioContext.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            const t = i / sampleRate;
+            let sample = 0;
+            for (let j = 0; j < 10; j++) {
+                const clapTime = j * 0.1 + Math.random() * 0.08;
+                if (t > clapTime && t < clapTime + 0.08) {
+                    const localT = t - clapTime;
+                    const envelope = Math.exp(-localT * 30) * Math.sin(localT * 100);
+                    sample += (Math.random() * 2 - 1) * envelope * 0.4;
+                }
+            }
+            sample += (Math.random() * 2 - 1) * Math.exp(-t * 2) * 0.15;
+            data[i] = Math.max(-1, Math.min(1, sample));
+        }
+        const source = this.audioContext.createBufferSource();
+        source.buffer = buffer;
+        const gainNode = this.audioContext.createGain();
+        gainNode.gain.value = 0.6;
+        source.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        source.start();
+    }
+
+    async playCheer() {
+        await this.init();
+        if (!this.audioContext) return;
+        const duration = 1.5;
+        const sampleRate = this.audioContext.sampleRate;
+        const bufferSize = Math.floor(sampleRate * duration);
+        const buffer = this.audioContext.createBuffer(1, bufferSize, sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            const t = i / sampleRate;
+            let sample = 0;
+            for (let j = 0; j < 6; j++) {
+                const freq = 250 + j * 80 + Math.random() * 50;
+                const envelope = Math.exp(-t * 1.5) * (1 + Math.sin(t * 8 + j) * 0.3);
+                sample += Math.sin(t * freq * 2 * Math.PI) * envelope * 0.12;
+            }
+            sample += (Math.random() * 2 - 1) * Math.exp(-t * 3) * 0.15;
+            data[i] = Math.max(-1, Math.min(1, sample * 0.7));
+        }
+        const source = this.audioContext.createBufferSource();
+        source.buffer = buffer;
+        const filter = this.audioContext.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 3000;
+        const gainNode = this.audioContext.createGain();
+        gainNode.gain.value = 0.4;
+        source.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        source.start();
+    }
+
+    async playWinMelody() {
+        await this.init();
+        if (!this.audioContext) return;
+        const notes = [
+            { freq: 523.25, delay: 0 }, { freq: 659.25, delay: 0.15 },
+            { freq: 783.99, delay: 0.3 }, { freq: 1046.50, delay: 0.45 },
+            { freq: 783.99, delay: 0.6 }, { freq: 1046.50, delay: 0.75 }
+        ];
+        notes.forEach(note => {
+            this.playTone(note.freq, this.audioContext.currentTime + note.delay, 0.25, 'sine', 0.2);
+        });
+    }
+
+    async playLoseMelody() {
+        await this.init();
+        if (!this.audioContext) return;
+        [392, 349.23, 311.13, 261.63].forEach((freq, i) => {
+            this.playTone(freq, this.audioContext.currentTime + i * 0.2, 0.25, 'sawtooth', 0.12);
+        });
+    }
+
+    async playCelebration() {
+        await this.init();
+        this.playApplause();
+        setTimeout(() => this.playCheer(), 300);
+        setTimeout(() => this.playWinMelody(), 100);
+    }
+}
+
+const audioManager = new AudioManager();
+
+// ==================== 背景音乐 ====================
+class BackgroundMusic {
+    constructor() {
+        this.isPlaying = false;
+        this.audioContext = null;
+        this.gainNode = null;
+        this.nextNoteTime = 0;
+        this.timerID = null;
+    }
+
+    init() {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.gainNode = this.audioContext.createGain();
+            this.gainNode.connect(this.audioContext.destination);
+            this.gainNode.gain.value = 0.12;
+        }
+        return this;
+    }
+
+    getMelody() {
+        return [
+            { note: 262, duration: 0.25 }, { note: 294, duration: 0.25 },
+            { note: 330, duration: 0.25 }, { note: 349, duration: 0.25 },
+            { note: 392, duration: 0.5 }, { note: 392, duration: 0.25 },
+            { note: 440, duration: 0.25 }, { note: 392, duration: 0.25 },
+            { note: 349, duration: 0.25 }, { note: 330, duration: 0.5 },
+            { note: 330, duration: 0.25 }, { note: 294, duration: 0.25 },
+            { note: 262, duration: 0.5 }, { note: 0, duration: 0.25 },
+        ];
+    }
+
+    async play() {
+        if (this.isPlaying) return;
+        this.init();
+        if (this.audioContext.state === 'suspended') await this.audioContext.resume();
+        this.isPlaying = true;
+        this.nextNoteTime = this.audioContext.currentTime;
+        this.scheduleNotes();
+        this.updateButton(true);
+    }
+
+    scheduleNotes() {
+        const melody = this.getMelody();
+        let index = 0;
+        const scheduleNext = () => {
+            if (!this.isPlaying) return;
+            const currentTime = this.audioContext.currentTime;
+            while (this.nextNoteTime < currentTime + 0.1) {
+                const note = melody[index];
+                if (note.note > 0) this.playNote(note.note, this.nextNoteTime, note.duration * 0.9);
+                this.nextNoteTime += note.duration;
+                index = (index + 1) % melody.length;
+            }
+            this.timerID = setTimeout(scheduleNext, 50);
+        };
+        scheduleNext();
+    }
+
+    playNote(freq, time, duration) {
+        if (!this.audioContext) return;
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(this.gainNode);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, time);
+        gain.gain.setValueAtTime(0, time);
+        gain.gain.linearRampToValueAtTime(0.3, time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + duration);
+        osc.start(time);
+        osc.stop(time + duration);
+    }
+
+    stop() {
+        this.isPlaying = false;
+        if (this.timerID) { clearTimeout(this.timerID); this.timerID = null; }
+        this.updateButton(false);
+    }
+
+    toggle() { this.isPlaying ? this.stop() : this.play(); }
+
+    updateButton(isPlaying) {
+        const btn = document.getElementById('music-toggle');
+        if (btn) { btn.textContent = isPlaying ? '🔊' : '🔇'; btn.classList.toggle('active', isPlaying); }
+    }
+}
+
+const bgMusic = new BackgroundMusic();
+
+// 移动端初始化
+if ('speechSynthesis' in window) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+
+// ==================== 游戏配置 ====================
+const CONFIG = {
+    gameDuration: 60,
+    pkDuration: 30,
+    questionsPerGame: 10,
+    pointsCorrect: 10,
+    bonusCombo: [5, 10, 15, 20, 25],
+};
+
+const VOCABULARY = [
+    { word: 'apple', emoji: '🍎', chinese: '苹果' },
+    { word: 'banana', emoji: '🍌', chinese: '香蕉' },
+    { word: 'orange', emoji: '🍊', chinese: '橙子' },
+    { word: 'pear', emoji: '🍐', chinese: '梨' },
+    { word: 'cake', emoji: '🍰', chinese: '蛋糕' },
+    { word: 'bread', emoji: '🍞', chinese: '面包' },
+    { word: 'milk', emoji: '🥛', chinese: '牛奶' },
+    { word: 'egg', emoji: '🥚', chinese: '鸡蛋' },
+    { word: 'rice', emoji: '🍚', chinese: '米饭' },
+    { word: 'fish', emoji: '🐟', chinese: '鱼' },
+    { word: 'chicken', emoji: '🍗', chinese: '鸡肉' },
+    { word: 'water', emoji: '💧', chinese: '水' },
+    { word: 'juice', emoji: '🧃', chinese: '果汁' },
+    { word: 'hamburger', emoji: '🍔', chinese: '汉堡' },
+    { word: 'ice cream', emoji: '🍦', chinese: '冰淇淋' },
+];
+
+const AI_OPPONENTS = {
+    easy: { name: '小萌新', avatar: '🐣', accuracy: 0.5, delay: 3000 },
+    medium: { name: '小学霸', avatar: '🐥', accuracy: 0.7, delay: 2000 },
+    hard: { name: '大神级', avatar: '🦅', accuracy: 0.9, delay: 1500 },
+};
+
+const AVATARS = ['👧', '👦', '🧒', '👶', '🧑', '👨', '👩', '🧓', '👴', '👵'];
+
+// ==================== 游戏状态 ====================
+let gameState = {
+    mode: '', score: 0, combo: 0, maxCombo: 0, correct: 0, total: 0,
+    timeLeft: CONFIG.gameDuration, currentQuestion: null, questions: [],
+    answeredQuestions: [], player: { name: '', avatar: '👧' },
+    pk: { opponent: null, opponentScore: 0, mode: '' },
+    timer: null, isPlaying: false, isAnswered: false
+};
+
+// ==================== 音乐控制 ====================
+function toggleBackgroundMusic() { bgMusic.toggle(); }
+
+// ==================== 初始化 ====================
+document.addEventListener('DOMContentLoaded', () => {
+    initPlayer();
+    renderVocabPreview();
+    loadRankings();
+
+    const initAudio = async () => {
+        await audioManager.init();
+        await audioManager.initMobile();
+        audioManager.preloadAllWords();
+    };
+
+    ['click', 'touchstart', 'touchend'].forEach(event => {
+        document.body.addEventListener(event, initAudio, { once: true, passive: true });
+    });
+});
+
+function initPlayer() {
+    const savedName = localStorage.getItem('playerName');
+    const savedAvatar = localStorage.getItem('playerAvatar');
+    if (savedName) { gameState.player.name = savedName; document.getElementById('player-name').value = savedName; }
+    if (savedAvatar) { gameState.player.avatar = savedAvatar; document.getElementById('player-avatar').textContent = savedAvatar; }
+
+    document.getElementById('player-name').addEventListener('change', (e) => {
+        gameState.player.name = e.target.value.trim() || '小朋友';
+        localStorage.setItem('playerName', gameState.player.name);
+    });
+
+    document.getElementById('player-avatar').addEventListener('click', () => {
+        const idx = AVATARS.indexOf(gameState.player.avatar);
+        gameState.player.avatar = AVATARS[(idx + 1) % AVATARS.length];
+        document.getElementById('player-avatar').textContent = gameState.player.avatar;
+        localStorage.setItem('playerAvatar', gameState.player.avatar);
+    });
+}
+
+function renderVocabPreview() {
+    document.getElementById('vocab-preview-list').innerHTML =
+        VOCABULARY.map(v => `<div class="vocab-item"><span class="emoji">${v.emoji}</span><span>${v.word}</span></div>`).join('');
+}
+
+// ==================== 屏幕切换 ====================
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function goHome() { stopTimer(); gameState.isPlaying = false; showScreen('home-screen'); }
+
+// ==================== 游戏开始 ====================
+async function startGame(mode) {
+    await audioManager.init();
+    await audioManager.initMobile();
+    audioManager.preloadAllWords();
+
+    if (!gameState.player.name) { gameState.player.name = '小朋友'; document.getElementById('player-name').value = '小朋友'; }
+
+    gameState.mode = mode;
+    gameState.score = 0; gameState.combo = 0; gameState.maxCombo = 0;
+    gameState.correct = 0; gameState.total = 0;
+    gameState.timeLeft = CONFIG.gameDuration;
+    gameState.answeredQuestions = [];
+    gameState.isPlaying = true; gameState.isAnswered = false;
+
+    gameState.questions = generateQuestions(CONFIG.questionsPerGame);
+
+    updateScore(); updateCombo(); updateTimer();
+    document.getElementById('progress-fill').style.width = '0%';
+    showScreen('game-screen');
+    showNextQuestion();
+    startTimer();
+}
+
+function generateQuestions(count) {
+    const shuffled = [...VOCABULARY].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count).map(vocab => ({ correct: vocab, options: generateOptions(vocab) }));
+}
+
+function generateOptions(correctWord) {
+    const options = [correctWord];
+    const others = VOCABULARY.filter(v => v.word !== correctWord.word);
+    while (options.length < 4) {
+        const rand = others[Math.floor(Math.random() * others.length)];
+        if (!options.find(o => o.word === rand.word)) options.push(rand);
+    }
+    return options.sort(() => Math.random() - 0.5);
+}
+
+// ==================== 题目显示 ====================
+function showNextQuestion() {
+    if (!gameState.isPlaying) return;
+    const idx = gameState.answeredQuestions.length;
+    if (idx >= gameState.questions.length) { endGame(); return; }
+
+    gameState.currentQuestion = gameState.questions[idx];
+    gameState.isAnswered = false;
+    const gameArea = document.getElementById('game-area');
+
+    if (gameState.mode === 'picture') {
+        gameArea.innerHTML = `
+            <div class="question-display">
+                <div class="question-image">${gameState.currentQuestion.correct.emoji}</div>
+                <p class="question-text">这是什么食物？</p>
+            </div>
+            <div class="options-grid">
+                ${gameState.currentQuestion.options.map(opt => `
+                    <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
+                `).join('')}
+            </div>`;
+    } else {
+        gameArea.innerHTML = `
+            <div class="question-display">
+                <button class="play-sound-btn" id="play-btn">
+                    <span class="sound-icon">🔊</span>
+                </button>
+                <p class="sound-hint">👆 点击喇叭听发音，然后选择正确的图片</p>
+            </div>
+            <div class="options-grid">
+                ${gameState.currentQuestion.options.map(opt => `
+                    <button class="option-btn" data-word="${opt.word}">
+                        <span style="font-size: 32px;">${opt.emoji}</span>
+                        <br><span style="font-size: 14px;">${opt.chinese}</span>
+                    </button>
+                `).join('')}
+            </div>`;
+        document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
+        setTimeout(() => playWord(gameState.currentQuestion.correct.word), 300);
+    }
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.onclick = () => checkAnswer(btn.dataset.word);
+    });
+
+    document.getElementById('progress-fill').style.width = (idx / gameState.questions.length * 100) + '%';
+}
+
+async function playWord(word) {
+    const btn = document.getElementById('play-btn');
+    if (btn) { btn.classList.add('playing'); setTimeout(() => btn.classList.remove('playing'), 1000); }
+    await audioManager.playWord(word);
+}
+
+// ==================== 答案检查 ====================
+async function checkAnswer(answer) {
+    if (gameState.isAnswered || !gameState.isPlaying) return;
+    gameState.isAnswered = true;
+    const correct = answer === gameState.currentQuestion.correct.word;
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.word === gameState.currentQuestion.correct.word) btn.classList.add('correct');
+        else if (btn.dataset.word === answer && !correct) btn.classList.add('wrong');
+    });
+
+    gameState.answeredQuestions.push({ ...gameState.currentQuestion, userAnswer: answer, isCorrect: correct });
+    gameState.total++;
+
+    if (correct) {
+        gameState.correct++;
+        gameState.combo++;
+        gameState.maxCombo = Math.max(gameState.maxCombo, gameState.combo);
+        const comboBonus = CONFIG.bonusCombo[Math.min(gameState.combo - 1, CONFIG.bonusCombo.length - 1)];
+        const points = CONFIG.pointsCorrect + comboBonus;
+        gameState.score += points;
+        updateScore(); updateCombo();
+        await audioManager.playCorrect();
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 300);
+        if (gameState.combo >= 5) {
+            await audioManager.playCelebration();
+            showCelebration('mega', `🔥 ${gameState.combo}连击！+${points}分！`);
+        } else if (gameState.combo >= 3) {
+            await audioManager.playApplause();
+            showCelebration('big', `🎉 太棒了！+${points}分！`);
+        } else {
+            showCelebration('normal', `✓ 正确！+${points}分`);
+        }
+    } else {
+        gameState.combo = 0;
+        updateCombo();
+        await audioManager.playWrong();
+        showCelebration('wrong', `正确答案: ${gameState.currentQuestion.correct.word}`);
+    }
+
+    setTimeout(() => { hideCelebration(); showNextQuestion(); }, 1500);
+}
+
+// ==================== 庆祝效果 ====================
+function showCelebration(type, text) {
+    const overlay = document.getElementById('feedback-overlay');
+    const content = overlay.querySelector('.feedback-content');
+    const icon = document.getElementById('feedback-icon');
+    const textEl = document.getElementById('feedback-text');
+
+    content.className = 'feedback-content';
+    if (type === 'wrong') {
+        icon.textContent = '😅';
+        icon.className = 'feedback-icon';
+        content.classList.add('wrong-answer');
+    } else if (type === 'mega') {
+        icon.textContent = '🏆';
+        icon.className = 'feedback-icon celebration-icon';
+        content.classList.add('celebration-mega');
+        createConfetti(60);
+        createStarBurst();
+    } else if (type === 'big') {
+        icon.textContent = '🎉';
+        icon.className = 'feedback-icon celebration-icon';
+        content.classList.add('celebration-big');
+        createConfetti(40);
+    } else {
+        icon.textContent = '✓';
+        icon.className = 'feedback-icon correct-icon';
+        content.classList.add('celebration-normal');
+        createConfetti(15);
+    }
+    textEl.textContent = text;
+    overlay.classList.add('show');
+}
+
+function hideCelebration() { document.getElementById('feedback-overlay').classList.remove('show'); }
+
+function createConfetti(count) {
+    const colors = ['#FF6B9D', '#FFE66D', '#4ECDC4', '#95E1A3', '#FF8B94', '#FFD700', '#FF69B4'];
+    for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti celebration';
+        confetti.style.cssText = `left:${Math.random()*100}vw;background:${colors[Math.floor(Math.random()*colors.length)]};width:${Math.random()*12+6}px;height:${Math.random()*12+6}px;border-radius:${Math.random()>0.5?'50%':'2px'};animation-duration:${Math.random()*2+2}s;animation-delay:${Math.random()*0.3}s;`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
+    }
+}
+
+function createStarBurst() {
+    for (let i = 0; i < 12; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-burst';
+        star.textContent = '⭐';
+        star.style.cssText = `left:50%;top:50%;--angle:${i*30}deg;`;
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 1000);
+    }
+}
+
+// ==================== 计时器 ====================
+function startTimer() {
+    gameState.timer = setInterval(() => {
+        gameState.timeLeft--;
+        updateTimer();
+        if (gameState.timeLeft <= 0) { gameState.mode === 'pk' ? endPkGame() : endGame(); }
+        if (gameState.mode === 'pk' && gameState.pk.opponent) aiAnswer();
+    }, 1000);
+}
+
+function stopTimer() { if (gameState.timer) { clearInterval(gameState.timer); gameState.timer = null; } }
+
+function updateTimer() {
+    const el = document.getElementById('timer');
+    if (el) { el.textContent = gameState.timeLeft; if (gameState.timeLeft <= 10) el.parentElement.classList.add('timer-warning'); }
+}
+
+function updateScore() { document.getElementById('score').textContent = gameState.score; }
+
+function updateCombo() {
+    const comboEl = document.getElementById('combo');
+    comboEl.textContent = gameState.combo;
+    if (gameState.combo >= 3) {
+        const display = document.getElementById('combo-display');
+        display.classList.add('active');
+        if (gameState.combo >= 5) display.classList.add('mega-combo');
+        setTimeout(() => display.classList.remove('active', 'mega-combo'), 300);
+    }
+}
+
+// ==================== 游戏结束 ====================
+async function endGame() {
+    stopTimer();
+    gameState.isPlaying = false;
+    saveScore(gameState.mode, gameState.score, gameState.correct, gameState.maxCombo);
+    const stars = gameState.correct >= 8 ? '⭐⭐⭐' : gameState.correct >= 5 ? '⭐⭐' : '⭐';
+
+    document.getElementById('result-stars').textContent = stars;
+    document.getElementById('result-title').textContent = getResultTitle(gameState.correct);
+    document.getElementById('result-score').textContent = gameState.score;
+    document.getElementById('result-correct').textContent = gameState.correct;
+    document.getElementById('result-combo').textContent = gameState.maxCombo;
+
+    document.getElementById('words-review').innerHTML = gameState.answeredQuestions.map(q => `
+        <div class="word-review-item">
+            <div class="word"><span>${q.correct.emoji}</span><span>${q.correct.word}</span></div>
+            <span class="status">${q.isCorrect ? '✅' : '❌'}</span>
+        </div>`).join('');
+
+    if (gameState.correct >= 7) { await audioManager.playCelebration(); createConfetti(80); }
+    else if (gameState.correct >= 5) { await audioManager.playApplause(); createConfetti(40); }
+    showScreen('result-screen');
+}
+
+function getResultTitle(correct) {
+    if (correct >= 9) return '太棒了！你是单词小天才！🌟';
+    if (correct >= 7) return '真厉害！继续加油！👏';
+    if (correct >= 5) return '不错哦！再接再厉！💪';
+    return '加油！多多练习就会进步！📚';
+}
+
+function retryGame() { startGame(gameState.mode); }
+
+// ==================== PK模式 ====================
+function startPkSelect() { showScreen('pk-screen'); }
+function startPkGame(mode) { gameState.pk.mode = mode; selectOpponent('easy'); }
+
+async function selectOpponent(level) {
+    await audioManager.init();
+    gameState.pk.opponent = AI_OPPONENTS[level];
+
+    document.getElementById('pk-you-avatar').textContent = gameState.player.avatar;
+    document.getElementById('pk-you-name').textContent = gameState.player.name;
+    document.getElementById('pk-opponent-avatar').textContent = gameState.pk.opponent.avatar;
+    document.getElementById('pk-opponent-name').textContent = gameState.pk.opponent.name;
+
+    gameState.mode = 'pk';
+    gameState.score = 0; gameState.pk.opponentScore = 0;
+    gameState.timeLeft = CONFIG.pkDuration;
+    gameState.combo = 0; gameState.maxCombo = 0;
+    gameState.correct = 0; gameState.total = 0;
+    gameState.answeredQuestions = [];
+    gameState.isPlaying = true;
+    gameState.questions = generateQuestions(20);
+
+    updatePkScore(); updatePkTimer();
+    document.getElementById('pk-timer-fill').style.width = '100%';
+    showScreen('pk-battle-screen');
+    showPkQuestion();
+    startTimer();
+}
+
+function showPkQuestion() {
+    if (!gameState.isPlaying) return;
+    const idx = gameState.answeredQuestions.length;
+    if (idx >= gameState.questions.length) { endPkGame(); return; }
+
+    gameState.currentQuestion = gameState.questions[idx];
+    gameState.isAnswered = false;
+    const gameArea = document.getElementById('pk-game-area');
+    const usePicture = Math.random() > 0.5;
+
+    if (usePicture) {
+        gameArea.innerHTML = `
+            <div class="question-display">
+                <div class="question-image">${gameState.currentQuestion.correct.emoji}</div>
+                <p class="question-text">快速选择！</p>
+            </div>
+            <div class="options-grid">
+                ${gameState.currentQuestion.options.map(opt => `
+                    <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
+                `).join('')}
+            </div>`;
+    } else {
+        setTimeout(() => playWord(gameState.currentQuestion.correct.word), 300);
+        gameArea.innerHTML = `
+            <div class="question-display">
+                <button class="play-sound-btn" id="play-btn">
+                    <span class="sound-icon">🔊</span>
+                </button>
+                <p class="sound-hint">👆 听音选图</p>
+            </div>
+            <div class="options-grid">
+                ${gameState.currentQuestion.options.map(opt => `
+                    <button class="option-btn" data-word="${opt.word}">
+                        <span style="font-size: 32px;">${opt.emoji}</span>
+                        <br><span style="font-size: 14px;">${opt.chinese}</span>
+                    </button>
+                `).join('')}
+            </div>`;
+        document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
+    }
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.onclick = () => checkPkAnswer(btn.dataset.word);
+    });
+}
+
+async function checkPkAnswer(answer) {
+    if (gameState.isAnswered) return;
+    gameState.isAnswered = true;
+    const correct = answer === gameState.currentQuestion.correct.word;
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.word === gameState.currentQuestion.correct.word) btn.classList.add('correct');
+        else if (btn.dataset.word === answer && !correct) btn.classList.add('wrong');
+    });
+
+    gameState.answeredQuestions.push({ ...gameState.currentQuestion, userAnswer: answer, isCorrect: correct });
+
+    if (correct) {
+        gameState.score += CONFIG.pointsCorrect;
+        gameState.correct++;
+        await audioManager.playCorrect();
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
+        showPkFeedback('✅ 正确！', true);
+    } else {
+        await audioManager.playWrong();
+        showPkFeedback('❌ 错误', false);
+    }
+
+    updatePkScore();
+    setTimeout(() => { hidePkFeedback(); showPkQuestion(); }, 800);
+}
+
+let aiAnswerTimeout = null;
+
+function aiAnswer() {
+    if (aiAnswerTimeout) return;
+    const opponent = gameState.pk.opponent;
+    aiAnswerTimeout = setTimeout(() => {
+        if (!gameState.isPlaying || !gameState.currentQuestion) { aiAnswerTimeout = null; return; }
+        if (Math.random() < opponent.accuracy) {
+            gameState.pk.opponentScore += CONFIG.pointsCorrect;
+            updatePkScore();
+            showPkFeedback(`${opponent.avatar} 答对了！`, true);
+        }
+        aiAnswerTimeout = null;
+    }, opponent.delay + Math.random() * 1000);
+}
+
+function updatePkScore() {
+    document.getElementById('pk-you-score').textContent = gameState.score;
+    document.getElementById('pk-opponent-score').textContent = gameState.pk.opponentScore;
+}
+
+function updatePkTimer() {
+    document.getElementById('pk-timer-text').textContent = gameState.timeLeft;
+    document.getElementById('pk-timer-fill').style.width = (gameState.timeLeft / CONFIG.pkDuration * 100) + '%';
+}
+
+function showPkFeedback(text, isGood) {
+    const el = document.getElementById('pk-feedback');
+    el.textContent = text;
+    el.style.background = isGood ? 'linear-gradient(135deg, #95E1A3, #7FD38A)' : 'linear-gradient(135deg, #FF8B94, #FF7A84)';
+    el.style.color = 'white';
+    el.classList.add('show');
+}
+
+function hidePkFeedback() { document.getElementById('pk-feedback').classList.remove('show'); }
+
+async function endPkGame() {
+    stopTimer();
+    gameState.isPlaying = false;
+    if (aiAnswerTimeout) { clearTimeout(aiAnswerTimeout); aiAnswerTimeout = null; }
+
+    const won = gameState.score > gameState.pk.opponentScore;
+    const reward = won ? 10 + Math.floor(gameState.score / 5) : 5;
+    savePkScore(gameState.score, won);
+
+    const banner = document.getElementById('pk-result-banner');
+    banner.className = 'pk-result-banner ' + (won ? 'win' : 'lose');
+    document.getElementById('pk-result-icon').textContent = won ? '🏆' : '😢';
+    document.getElementById('pk-result-title').textContent = won ? '胜利！' : '再接再厉！';
+    document.getElementById('pk-result-you-avatar').textContent = gameState.player.avatar;
+    document.getElementById('pk-result-opponent-avatar').textContent = gameState.pk.opponent.avatar;
+    document.getElementById('pk-result-opponent-name').textContent = gameState.pk.opponent.name;
+    document.getElementById('pk-result-you-score').textContent = gameState.score;
+    document.getElementById('pk-result-opponent-score').textContent = gameState.pk.opponentScore;
+    document.getElementById('reward-points').textContent = reward;
+
+    if (won) { await audioManager.playCelebration(); createConfetti(80); }
+    else { await audioManager.playLoseMelody(); }
+    showScreen('pk-result-screen');
+}
+
+function retryPkGame() { startPkGame(gameState.pk.mode); }
+
+// ==================== 排行榜 ====================
+function showRanking() { showScreen('rank-screen'); loadRankings('picture'); }
+
+function switchRankTab(type) {
+    document.querySelectorAll('.rank-tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    loadRankings(type);
+}
+
+function loadRankings(type) {
+    const rankings = JSON.parse(localStorage.getItem(`rankings_${type}`) || '[]');
+    const list = rankings.length ? rankings : generateMockRankings();
+    list.sort((a, b) => b.score - a.score);
+
+    document.getElementById('rank-list').innerHTML = list.slice(0, 10).map((item, i) => `
+        <div class="rank-item">
+            <div class="rank-position">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</div>
+            <div class="rank-avatar">${item.avatar}</div>
+            <div class="rank-info">
+                <div class="rank-name">${item.name}</div>
+                <div class="rank-stats">正确: ${item.correct || '-'}题 | 连击: ${item.combo || '-'}</div>
+            </div>
+            <div class="rank-score">${item.score}</div>
+        </div>`).join('');
+}
+
+function generateMockRankings() {
+    return ['小明', '小红', '小华', '小丽', '小刚', '小芳'].map((name, i) => ({
+        name, avatar: AVATARS[i % AVATARS.length],
+        score: Math.floor(Math.random() * 150) + 50,
+        correct: Math.floor(Math.random() * 10) + 5,
+        combo: Math.floor(Math.random() * 5) + 1
+    }));
+}
+
+function saveScore(mode, score, correct, combo) {
+    if (!gameState.player.name || !score) return;
+    const rankings = JSON.parse(localStorage.getItem(`rankings_${mode}`) || '[]');
+    rankings.push({ name: gameState.player.name, avatar: gameState.player.avatar, score, correct, combo, date: new Date().toISOString() });
+    rankings.sort((a, b) => b.score - a.score);
+    localStorage.setItem(`rankings_${mode}`, JSON.stringify(rankings.slice(0, 50)));
+}
+
+function savePkScore(score, won) {
+    const rankings = JSON.parse(localStorage.getItem('rankings_pk') || '[]');
+    rankings.push({ name: gameState.player.name, avatar: gameState.player.avatar, score, won: won ? 1 : 0, date: new Date().toISOString() });
+    rankings.sort((a, b) => b.score - a.score);
+    localStorage.setItem('rankings_pk', JSON.stringify(rankings.slice(0, 50)));
+}
+
+// ==================== 防止双击缩放 ====================
+document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) e.preventDefault();
+    lastTouchEnd = now;
+}, false);
+</script>
+</body>
+</html>
