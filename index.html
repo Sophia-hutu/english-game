@@ -2205,6 +2205,13 @@ function showPkQuestion() {
 
     gameState.currentQuestion = gameState.questions[idx];
     gameState.isAnswered = false;
+
+    // 切题时先停止所有音频，防止声音叠加
+    audioManager.stopAllPlayback();
+
+    // 清除AI的旧定时器
+    if (aiAnswerTimeout) { clearTimeout(aiAnswerTimeout); aiAnswerTimeout = null; }
+
     const gameArea = document.getElementById('pk-game-area');
     const usePicture = Math.random() > 0.5;
 
@@ -2219,6 +2226,8 @@ function showPkQuestion() {
                     <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
                 `).join('')}
             </div>`;
+        // 看图PK模式：也播放单词发音帮助学习
+        audioManager.playWord(gameState.currentQuestion.correct.word);
     } else {
         gameArea.innerHTML = `
             <div class="question-display">
@@ -2236,8 +2245,8 @@ function showPkQuestion() {
                 `).join('')}
             </div>`;
         document.getElementById('play-btn').onclick = () => playWord(gameState.currentQuestion.correct.word);
-        // PK模式听音：立即播放
-        playWord(gameState.currentQuestion.correct.word);
+        // 听音PK：立即播放发音
+        audioManager.playWord(gameState.currentQuestion.correct.word);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
@@ -2258,35 +2267,37 @@ async function checkPkAnswer(answer) {
 
     gameState.answeredQuestions.push({ ...gameState.currentQuestion, userAnswer: answer, isCorrect: correct });
 
+    // PK模式：答题后只播放简短音效，不再重复播放单词发音（切题时会播放）
     if (correct) {
         gameState.score += CONFIG.pointsCorrect;
         gameState.correct++;
-        // 音效+发音立即并行播放，不等待
         audioManager.playCorrect();
-        audioManager.playWord(gameState.currentQuestion.correct.word);
         showPkFeedback('✅ 正确！', true);
     } else {
-        await audioManager.playWrong();
+        gameState.combo = 0;
+        audioManager.playWrong();
         showPkFeedback('❌ 错误', false);
     }
 
     updatePkScore();
-    setTimeout(() => { hidePkFeedback(); showPkQuestion(); }, 800);
+    // PK模式给更长时间让音效播完再切题
+    setTimeout(() => { hidePkFeedback(); showPkQuestion(); }, 1200);
 }
 
 let aiAnswerTimeout = null;
 
 function aiAnswer() {
     if (aiAnswerTimeout) return;
+    if (!gameState.isPlaying || !gameState.currentQuestion) return;
     const opponent = gameState.pk.opponent;
     aiAnswerTimeout = setTimeout(() => {
-        if (!gameState.isPlaying || !gameState.currentQuestion) { aiAnswerTimeout = null; return; }
+        aiAnswerTimeout = null;
+        if (!gameState.isPlaying || !gameState.currentQuestion) return;
         if (Math.random() < opponent.accuracy) {
             gameState.pk.opponentScore += CONFIG.pointsCorrect;
             updatePkScore();
-            showPkFeedback(`${opponent.avatar} 答对了！`, true);
+            // AI答对只更新分数，不播放音效避免干扰玩家
         }
-        aiAnswerTimeout = null;
     }, opponent.delay + Math.random() * 1000);
 }
 
