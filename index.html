@@ -1441,18 +1441,16 @@ class AudioManager {
 
     // 停止当前所有音频播放（防止叠加和混乱）
     stopAllPlayback() {
-        // 停止Web Speech
         if ('speechSynthesis' in window) {
             speechSynthesis.cancel();
         }
-        // 停止HTML5 Audio
         if (this.currentAudio) {
             try { this.currentAudio.pause(); this.currentAudio.currentTime = 0; } catch(e) {}
             this.currentAudio = null;
         }
     }
 
-    // ===== 播放单词发音 - 优先Web Speech（零延迟+精确匹配） =====
+    // ===== 播放单词发音（切题时用，会先停止旧声音） =====
     async playWord(word) {
         console.log('🔊 播放单词:', word);
 
@@ -1461,43 +1459,32 @@ class AudioManager {
             await this.audioContext.resume().catch(() => {});
         }
 
-        // 先停止之前的播放
         this.stopAllPlayback();
-        // 等待一帧确保cancel()完全生效，防止播旧词
-        await new Promise(r => setTimeout(r, 50));
+        // 等待cancel完全生效
+        await new Promise(r => setTimeout(r, 80));
 
-        // ★ 方案1（首选）: Web Speech API - 零延迟、100%匹配、不依赖网络
+        // 方案1: Web Speech API
         try {
             await this.speakWithWebSpeech(word);
             return;
-        } catch (e) {
-            console.log('Web Speech失败，尝试在线TTS');
-        }
+        } catch (e) {}
 
-        // ★ 方案2: 缓存的TTS音频
+        // 方案2: 缓存TTS
         if (this.audioCache[word]) {
-            try {
-                await this.playCachedAudio(this.audioCache[word]);
-                return;
-            } catch (e) {}
+            try { await this.playCachedAudio(this.audioCache[word]); return; } catch (e) {}
         }
 
-        // ★ 方案3: 在线TTS实时播放
+        // 方案3: 在线TTS
         for (const source of AUDIO_CONFIG.ttsSources) {
             try {
                 const url = source.url.replace('{word}', encodeURIComponent(word));
                 const audio = await this.playAudioUrl(url);
-                if (audio) {
-                    this.audioCache[word] = audio;
-                    return;
-                }
+                if (audio) { this.audioCache[word] = audio; return; }
             } catch (e) {}
         }
-
-        console.log('⚠️ 所有发音方案均失败');
     }
 
-    // 仅播放单词发音（不停止其他音效，用于答题正确时）
+    // 仅播单词发音（答对/答错后用，只停语音不停音效）
     async playWordOnly(word) {
         console.log('🔊 仅播放单词:', word);
 
@@ -1506,34 +1493,48 @@ class AudioManager {
             await this.audioContext.resume().catch(() => {});
         }
 
-        // 只停止之前的语音（不停止音效）
         if ('speechSynthesis' in window) {
             speechSynthesis.cancel();
         }
+        await new Promise(r => setTimeout(r, 80));
 
-        // 等一帧让cancel生效
-        await new Promise(r => setTimeout(r, 50));
-
-        try {
-            await this.speakWithWebSpeech(word);
-            return;
-        } catch (e) {}
-
+        try { await this.speakWithWebSpeech(word); return; } catch (e) {}
         if (this.audioCache[word]) {
-            try {
-                await this.playCachedAudio(this.audioCache[word]);
-                return;
-            } catch (e) {}
+            try { await this.playCachedAudio(this.audioCache[word]); return; } catch (e) {}
         }
-
         for (const source of AUDIO_CONFIG.ttsSources) {
             try {
                 const url = source.url.replace('{word}', encodeURIComponent(word));
                 const audio = await this.playAudioUrl(url);
-                if (audio) {
-                    this.audioCache[word] = audio;
-                    return;
-                }
+                if (audio) { this.audioCache[word] = audio; return; }
+            } catch (e) {}
+        }
+    }
+
+    // 点击喇叭重播（不需要stopAll，因为用户主动点击，直接播放即可）
+    async replayWord(word) {
+        console.log('🔊 重播单词:', word);
+
+        if (!this.isInitialized) await this.init();
+        if (this.audioContext?.state === 'suspended') {
+            await this.audioContext.resume().catch(() => {});
+        }
+
+        // 停止之前的语音
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+        await new Promise(r => setTimeout(r, 50));
+
+        try { await this.speakWithWebSpeech(word); return; } catch (e) {}
+        if (this.audioCache[word]) {
+            try { await this.playCachedAudio(this.audioCache[word]); return; } catch (e) {}
+        }
+        for (const source of AUDIO_CONFIG.ttsSources) {
+            try {
+                const url = source.url.replace('{word}', encodeURIComponent(word));
+                const audio = await this.playAudioUrl(url);
+                if (audio) { this.audioCache[word] = audio; return; }
             } catch (e) {}
         }
     }
@@ -1994,8 +1995,9 @@ function showNextQuestion() {
     const idx = gameState.answeredQuestions.length;
     if (idx >= gameState.questions.length) { endGame(); return; }
 
-    // 切题时先停止所有音频
-    audioManager.stopAllPlayback();
+    // 注意：不在这里统一调stopAllPlayback，由各分支自行管理
+    // 看图选词不需要播放发音，无需停止
+    // 听音选词由playWord内部处理stopAllPlayback
 
     gameState.currentQuestion = gameState.questions[idx];
     gameState.isAnswered = false;
@@ -2012,15 +2014,14 @@ function showNextQuestion() {
                     <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
                 `).join('')}
             </div>`;
-        // 看图选词也播放单词发音帮助学习
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 100);
+        // 看图选词不播放发音（避免泄露答案）
     } else {
-        // 听音选词：去掉喇叭按钮，直接自动播放，提供小重播按钮
+        // 听音选词：自动播放，提供🔊喇叭可重播
         gameArea.innerHTML = `
             <div class="question-display">
                 <div class="question-image" style="background: linear-gradient(135deg, #4ECDC4, #3DB9B0); font-size: 50px; color: white;">🎧</div>
                 <p class="sound-hint">仔细听发音，选择正确的图片</p>
-                <button id="replay-btn" style="background:#4ECDC4;color:white;border:none;padding:8px 20px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;font-family:inherit;">🔄 再听一次</button>
+                <button id="replay-btn" style="background:none;border:none;font-size:32px;cursor:pointer;margin-top:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));transition:transform 0.2s;" title="再听一次">🔊</button>
             </div>
             <div class="options-grid">
                 ${gameState.currentQuestion.options.map(opt => `
@@ -2030,7 +2031,10 @@ function showNextQuestion() {
                     </button>
                 `).join('')}
             </div>`;
-        document.getElementById('replay-btn').onclick = () => audioManager.playWord(gameState.currentQuestion.correct.word);
+        const replayBtn = document.getElementById('replay-btn');
+        replayBtn.onmouseover = () => replayBtn.style.transform = 'scale(1.2)';
+        replayBtn.onmouseout = () => replayBtn.style.transform = 'scale(1)';
+        replayBtn.onclick = () => audioManager.replayWord(gameState.currentQuestion.correct.word);
         // 自动播放发音
         setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
     }
@@ -2254,9 +2258,6 @@ function showPkQuestion() {
     gameState.currentQuestion = gameState.questions[idx];
     gameState.isAnswered = false;
 
-    // 切题时先停止所有音频，防止声音叠加
-    audioManager.stopAllPlayback();
-
     // 清除AI的旧定时器
     if (aiAnswerTimeout) { clearTimeout(aiAnswerTimeout); aiAnswerTimeout = null; }
 
@@ -2274,15 +2275,14 @@ function showPkQuestion() {
                     <button class="option-btn" data-word="${opt.word}">${opt.word}</button>
                 `).join('')}
             </div>`;
-        // 看图PK模式：播放单词发音帮助学习
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 100);
+        // 看图PK模式：不播放发音（避免泄露答案）
     } else {
-        // 听音PK：直接自动播放，不点喇叭
+        // 听音PK：自动播放，提供🔊喇叭可重播
         gameArea.innerHTML = `
             <div class="question-display">
                 <div class="question-image" style="background: linear-gradient(135deg, #4ECDC4, #3DB9B0); font-size: 40px; color: white;">🎧</div>
                 <p class="sound-hint">仔细听发音，选择正确的图片</p>
-                <button id="replay-btn" style="background:#4ECDC4;color:white;border:none;padding:6px 16px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;margin-top:8px;font-family:inherit;">🔄 再听一次</button>
+                <button id="replay-btn" style="background:none;border:none;font-size:28px;cursor:pointer;margin-top:8px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.2));transition:transform 0.2s;" title="再听一次">🔊</button>
             </div>
             <div class="options-grid">
                 ${gameState.currentQuestion.options.map(opt => `
@@ -2292,9 +2292,12 @@ function showPkQuestion() {
                     </button>
                 `).join('')}
             </div>`;
-        document.getElementById('replay-btn').onclick = () => audioManager.playWord(gameState.currentQuestion.correct.word);
-        // 自动播放发音（延迟确保stopAllPlayback完全生效）
-        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 200);
+        const replayBtn = document.getElementById('replay-btn');
+        replayBtn.onmouseover = () => replayBtn.style.transform = 'scale(1.2)';
+        replayBtn.onmouseout = () => replayBtn.style.transform = 'scale(1)';
+        replayBtn.onclick = () => audioManager.replayWord(gameState.currentQuestion.correct.word);
+        // 自动播放发音（playWord内部会先stopAllPlayback再播放，确保干净切换）
+        setTimeout(() => audioManager.playWord(gameState.currentQuestion.correct.word), 300);
     }
 
     document.querySelectorAll('.option-btn').forEach(btn => {
