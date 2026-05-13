@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hot Seat - 英语滚词游戏</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #00d4ff;
+            --accent: #8b5cf6;
+            --glow: #00d4ff;
+            --purple: #8b5cf6;
+        }
+        
+        html, body { height: 100%; overflow-x: hidden; }
+        
+        body {
+            font-family: 'Poppins', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #FFFFFF;
+            position: relative;
+        }
+        
+        #bgCanvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+        
+        /* 输入页面 */
+        .input-page {
+            position: relative; z-index: 10; min-height: 100%;
+            padding: 20px; padding-bottom: 40px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .input-page.hidden { display: none; }
+        
+        .title {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            color: #FFFFFF;
+            text-shadow: 
+                0 0 10px #00d4ff, 
+                0 0 20px #00d4ff, 
+                0 0 40px #8b5cf6, 
+                4px 4px 0 #FF6B6B;
+            margin-bottom: 5px; letter-spacing: 4px; text-align: center;
+        }
+        
+        .subtitle {
+            background: linear-gradient(90deg, #00d4ff, #8b5cf6);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            margin-bottom: 15px; letter-spacing: 2px; font-weight: 600;
+        }
+        
+        .input-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px; padding: 15px; margin-bottom: 15px;
+            width: 100%; max-width: 500px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .input-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; gap: 10px;
+        }
+        
+        .input-label { color: #FFFFFF; font-size: 0.95rem; flex: 1; }
+        
+        .btn-save {
+            font-family: 'Bangers', cursive; font-size: 1rem;
+            padding: 8px 20px; border: none; border-radius: 25px;
+            cursor: pointer; background: linear-gradient(135deg, #00d4ff, #8b5cf6);
+            color: #FFFFFF; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+            transition: all 0.15s ease; -webkit-tap-highlight-color: transparent; white-space: nowrap;
+        }
+        .btn-save:hover { transform: translateY(-1px); }
+        .btn-save:active { transform: scale(0.96); }
+        .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .word-input {
+            width: 100%; min-height: 120px; padding: 12px; font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95); color: #2C3E50;
+            resize: vertical; font-family: 'Poppins', sans-serif;
+        }
+        .word-input:focus { outline: none; border-color: #00d4ff; box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+        
+        .input-hint { color: rgba(255, 255, 255, 0.7); font-size: 0.75rem; margin-top: 8px; }
+        
+        .saved-section { width: 100%; max-width: 500px; margin-top: 25px; }
+        
+        .saved-title {
+            color: #FFE66D; font-size: 0.95rem; margin-bottom: 10px;
+            font-weight: bold; text-align: center;
+        }
+        
+        .data-actions {
+            display: flex; gap: 12px; justify-content: center;
+            margin: 25px 0;
+        }
+        .btn-action {
+            font-size: 0.85rem; padding: 6px 16px; border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px; background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8); cursor: pointer; transition: all 0.15s ease;
+        }
+        .btn-action:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); }
+        .btn-action:active { transform: scale(0.95); }
+        
+        .saved-list { display: flex; flex-direction: column; gap: 10px; }
+        
+        .saved-empty {
+            color: rgba(255, 255, 255, 0.5); font-size: 0.9rem;
+            text-align: center; padding: 20px;
+            background: rgba(255, 255, 255, 0.05); border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+        }
+        
+        .saved-card {
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            border-radius: 12px; padding: 12px 15px;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer; transition: all 0.15s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .saved-card:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.15); }
+        
+        .saved-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: linear-gradient(135deg, #FF6B6B, #00d4ff);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        
+        .saved-info { flex: 1; min-width: 0; }
+        .saved-name { color: #FFFFFF; font-size: 1rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .saved-count { color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; }
+        
+        .saved-delete {
+            width: 36px; height: 36px; border: none; border-radius: 50%;
+            background: rgba(255, 100, 100, 0.2); color: #FF6B6B;
+            font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s ease; flex-shrink: 0;
+        }
+        .saved-delete:hover { background: rgba(255, 100, 100, 0.4); transform: scale(1.1); }
+        
+        .btn-start-page {
+            font-family: 'Bangers', cursive; font-size: 1.6rem;
+            padding: 14px 50px; border: none; border-radius: 50px;
+            cursor: pointer; letter-spacing: 3px;
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: #FFFFFF; box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+            transition: all 0.15s ease; -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation; min-height: 50px; margin-top: 15px;
+        }
+        .btn-start-page:hover { transform: translateY(-2px) scale(1.02); }
+        .btn-start-page:active { transform: scale(0.96); }
+        
+        /* 游戏页面 */
+        .game-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; display: none; flex-direction: column;
+        }
+        .game-page.active { display: flex; }
+        
+        /* 游戏头部 - 左中右三栏布局 */
+        .game-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 18px 15px 12px; gap: 10px; flex-shrink: 0;
+            position: relative;
+        }
+        
+        .header-left { flex-shrink: 0; }
+        
+        .header-center {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            text-align: center; margin-top: 8px;
+        }
+        
+        .game-title {
+            font-family: 'Bangers', cursive; font-size: 1.8rem;
+            color: #FFFFFF; 
+            text-shadow: 
+                0 0 10px #00d4ff, 
+                0 0 20px #00d4ff, 
+                0 0 30px #8b5cf6,
+                3px 3px 0 #FF6B6B;
+            letter-spacing: 3px;
+        }
+        
+        .brand-name {
+            font-size: 0.7rem; color: rgba(255, 255, 255, 0.32);
+            letter-spacing: 1px;
+        }
+        
+        .header-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+        
+        /* 全屏按钮 */
+        .btn-fullscreen {
+            width: 36px; height: 36px; border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px; background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.3); font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+        }
+        .btn-fullscreen:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
+        .btn-fullscreen:active { transform: scale(0.95); }
+        
+        .fullscreen-icon { width: 18px; height: 18px; position: relative; }
+        .fullscreen-icon::before, .fullscreen-icon::after { content: ''; position: absolute; border: 1.5px solid currentColor; }
+        .fullscreen-icon::before { width: 9px; height: 9px; top: 0; left: 0; border-right: none; border-bottom: none; }
+        .fullscreen-icon::after { width: 9px; height: 9px; bottom: 0; right: 0; border-left: none; border-top: none; }
+        .btn-fullscreen.active .fullscreen-icon::before { border: none; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; }
+        .btn-fullscreen.active .fullscreen-icon::after { border: none; border-right: 2px solid currentColor; border-top: 2px solid currentColor; }
+        
+        /* 游戏主体 */
+        .game-main {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 10px; overflow: hidden; min-height: 0;
+        }
+        
+        .word-display {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 100%; flex: 1; min-height: 0;
+        }
+        
+        .current-word {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(3.5rem, 20vw, 12rem);
+            color: #FFFFFF;
+            text-shadow: 
+                0 0 10px #00d4ff,
+                0 0 20px #00d4ff,
+                0 0 40px #00d4ff,
+                0 0 80px #8b5cf6,
+                0 0 120px #8b5cf6;
+            position: relative; letter-spacing: 4px;
+            will-change: transform, opacity;
+            text-align: center; word-break: break-word; max-width: 95%;
+            transition: text-shadow 0.3s ease;
+        }
+        
+        .current-word.rolling { animation: rollBounce 0.08s ease-out; }
+        @keyframes rollBounce { 0% { transform: scale(1.05) rotate(-1deg); } 100% { transform: scale(1) rotate(0deg); } }
+        
+        .current-word.stopping {
+            animation: stopCelebrate 0.5s ease-out forwards;
+            text-shadow: 
+                0 0 15px #00d4ff,
+                0 0 30px #00d4ff,
+                0 0 60px #00d4ff,
+                0 0 100px #8b5cf6,
+                0 0 150px #8b5cf6;
+            animation: stopCelebrate 0.5s ease-out forwards, wordGlow 1.5s ease-in-out infinite;
+        }
+        @keyframes wordGlow {
+            0%, 100% { 
+                text-shadow: 
+                    0 0 15px #00d4ff,
+                    0 0 30px #00d4ff,
+                    0 0 60px #00d4ff,
+                    0 0 100px #8b5cf6,
+                    0 0 150px #8b5cf6;
+            }
+            50% { 
+                text-shadow: 
+                    0 0 25px #00d4ff,
+                    0 0 50px #00d4ff,
+                    0 0 80px #00d4ff,
+                    0 0 130px #8b5cf6,
+                    0 0 180px #8b5cf6;
+            }
+        }
+        
+        .word-display.celebrating::after {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 350px; height: 350px; transform: translate(-50%, -50%);
+            background: radial-gradient(circle, #FFE66D 0%, transparent 60%);
+            opacity: 0; animation: pulseGlow 0.6s ease-out forwards; pointer-events: none;
+        }
+        @keyframes pulseGlow { 0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; } }
+        
+        .burst-particle {
+            position: absolute; width: 14px; height: 14px; border-radius: 50%;
+            will-change: transform, opacity;
+        }
+        @keyframes burst { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
+        
+        .counter {
+            background: linear-gradient(135deg, #FF6B6B, #00d4ff);
+            padding: 12px 30px; border-radius: 50px; margin: 12px 0 8px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); flex-shrink: 0;
+        }
+        .counter-label { color: #FFFFFF; font-size: 1rem; font-weight: bold; }
+        .counter-number {
+            font-family: 'Bangers', cursive; font-size: 2rem; color: #FFE66D;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2); min-width: 50px; text-align: center;
+        }
+        
+        .used-words {
+            background: rgba(0, 0, 0, 0.3); border-radius: 12px;
+            padding: 8px 12px; margin: 10px 0; max-width: 95%; width: 100%;
+            max-height: 100px; overflow-y: auto; flex-shrink: 0;
+        }
+        .used-words-title { color: #00d4ff; font-size: 0.8rem; margin-bottom: 4px; }
+        .used-words-list { display: flex; flex-wrap: wrap; gap: 4px; max-height: 70px; overflow-y: auto; }
+        .used-word {
+            background: rgba(0, 212, 255, 0.25); color: #FFFFFF;
+            padding: 3px 8px; border-radius: 15px; font-size: 0.8rem;
+            will-change: opacity; animation: fadeIn 0.2s ease;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        
+        .button-group {
+            display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+            margin: 10px 0; padding-bottom: 20px; flex-shrink: 0;
+        }
+        
+        .btn {
+            font-family: 'Bangers', cursive; font-size: 1.5rem;
+            padding: 14px 40px; border: none; border-radius: 50px;
+            cursor: pointer; letter-spacing: 2px; transition: all 0.15s ease;
+            will-change: transform; -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation; min-height: 52px; min-width: 140px;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:active { transform: scale(0.96); }
+        
+        .btn-main {
+            background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            color: #FFFFFF; box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+        }
+        .btn-main.rolling { background: linear-gradient(135deg, #00d4ff, #6EE7DF); box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5); }
+        
+        .btn-end {
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            color: #FFFFFF; border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem; padding: 14px 25px; min-width: 110px;
+        }
+        
+        .status-message {
+            color: #FFE66D; font-size: 1rem; margin: 8px 0;
+            text-align: center; padding: 0 10px; flex-shrink: 0;
+        }
+        
+        .complete-message {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #FF6B6B, #00d4ff);
+            padding: 35px 55px; border-radius: 20px;
+            text-align: center; z-index: 1000; animation: popIn 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.05); } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        .complete-message h2 { font-family: 'Bangers', cursive; font-size: 2.5rem; color: #FFFFFF; margin-bottom: 10px; }
+        .complete-message p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); z-index: 2000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px; padding: 25px; width: 100%; max-width: 400px;
+            border: 2px solid rgba(255, 255, 255, 0.2); animation: popIn 0.3s ease;
+        }
+        .modal-title { font-family: 'Bangers', cursive; font-size: 1.5rem; color: #FFFFFF; margin-bottom: 15px; text-align: center; }
+        .modal-input {
+            width: 100%; padding: 12px 15px; font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1); color: #FFFFFF;
+            margin-bottom: 20px; font-family: 'Poppins', sans-serif;
+        }
+        .modal-input:focus { outline: none; border-color: #00d4ff; }
+        .modal-input::placeholder { color: rgba(255, 255, 255, 0.5); }
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+        .modal-btn { font-family: 'Bangers', cursive; font-size: 1.2rem; padding: 10px 30px; border: none; border-radius: 25px; cursor: pointer; transition: all 0.15s ease; }
+        .modal-btn-cancel { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; border: 2px solid rgba(255, 255, 255, 0.2); }
+        .modal-btn-confirm { background: linear-gradient(135deg, #00d4ff, #FF6B6B); color: #FFFFFF; }
+        
+        /* 首次保存提示弹窗 */
+        .tips-content {
+            text-align: center; padding: 30px 25px;
+        }
+        .tips-icon { font-size: 3rem; margin-bottom: 15px; }
+        .tips-text {
+            color: rgba(255, 255, 255, 0.9); font-size: 0.95rem;
+            line-height: 1.6; margin-bottom: 15px;
+        }
+        .tips-warning {
+            color: rgba(255, 224, 102, 0.85); font-size: 0.85rem;
+            line-height: 1.5; background: rgba(255, 224, 102, 0.1);
+            padding: 12px; border-radius: 10px; margin-bottom: 20px;
+        }
+        .tips-content .modal-btn { font-size: 1rem; padding: 10px 40px; }
+        
+        .toast {
+            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.85); color: #FFFFFF;
+            padding: 14px 28px; border-radius: 25px; font-size: 1rem;
+            z-index: 3000; opacity: 0; transition: all 0.3s ease; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #00d4ff; border-radius: 4px; }
+        
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .input-page { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+            .button-group { padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+    
+    <!-- 输入页面 -->
+    <div class="input-page" id="inputPage">
+        <h1 class="title">HOT SEAT</h1>
+        <p class="subtitle">英语滚词游戏</p>
+        
+        <div class="input-section">
+            <div class="input-header">
+                <label class="input-label">📝 请输入词汇或名单：</label>
+                <button class="btn-save" id="btnSave">💾 保存</button>
+            </div>
+            <textarea class="word-input" id="wordInput">apple
+banana
+cat
+dog
+elephant
+fish
+green
+happy
+ice cream
+jump
+kite
+lion
+monkey
+notebook
+orange</textarea>
+            <p class="input-hint">💡 每行一个，可用于单词或随机点名</p>
+        </div>
+        
+        <button class="btn-start-page" id="btnStartPage">开 始</button>
+        
+        <div class="data-actions">
+            <button class="btn-action" id="btnExport">📤 导出</button>
+            <button class="btn-action" id="btnImport">📥 导入</button>
+        </div>
+        
+        <div class="saved-section">
+            <div class="saved-title">📋 已保存的列表</div>
+            <div class="saved-list" id="savedList"></div>
+        </div>
+        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+    
+    <!-- 游戏页面 -->
+    <div class="game-page" id="gamePage">
+        <div class="game-header">
+            <div class="header-left">
+                <span class="brand-name">韵哥英语工坊</span>
+            </div>
+            <div class="header-center">
+                <span class="game-title">HOT SEAT</span>
+            </div>
+            <div class="header-right">
+                <!-- 全屏按钮 -->
+                <button class="btn-fullscreen" id="btnFullscreen" title="全屏">
+                    <span class="fullscreen-icon"></span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="game-main">
+            <div class="word-display" id="wordDisplay">
+                <div class="current-word" id="currentWord">?</div>
+            </div>
+            
+            <div class="counter">
+                <span class="counter-label">剩余</span>
+                <span class="counter-number" id="counterNumber">15</span>
+            </div>
+            
+            <div class="used-words" id="usedWordsSection" style="display: none;">
+                <div class="used-words-title">已抽取：</div>
+                <div class="used-words-list" id="usedWordsList"></div>
+            </div>
+            
+            <p class="status-message" id="statusMessage">点击"开始"开始滚词</p>
+            
+            <div class="button-group">
+                <button class="btn btn-main" id="btnMain">开 始</button>
+                <button class="btn btn-end" id="btnEnd" style="display: none;">结束</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="complete-message" id="completeMessage" style="display: none;">
+        <h2>🎉 全部完成!</h2>
+        <p>所有词汇都已抽取完毕</p>
+    </div>
+    
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-title">保存当前列表</div>
+            <input type="text" class="modal-input" id="saveNameInput" placeholder="请输入名称，如：三年级2班">
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="btnCancelSave">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="btnConfirmSave">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="tipsModal">
+        <div class="modal-content tips-content">
+            <div class="tips-icon">💡</div>
+            <div class="tips-text">
+                你的词汇表自动保存在当前浏览器中，同一设备同一浏览器可反复使用。
+            </div>
+            <div class="tips-warning">
+                ⚠️ 如需换设备或换浏览器，请先「导出」保存文件，新设备「导入」即可恢复。
+            </div>
+            <button class="modal-btn modal-btn-confirm" id="btnCloseTips">知道了</button>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        (function() {
+            'use strict';
+            const $ = id => document.getElementById(id);
+            
+            // 本地存储
+            class Storage {
+                constructor() {
+                    this.key = 'hotseat_lists';
+                    this.init();
+                }
+                init() {
+                    if (this.getAll().length === 0) {
+                        this.save('🌟 Unit 3 词汇', ['apple','banana','cat','dog','elephant','fish','green','happy','ice cream','jump']);
+                        this.save('👥 三年级2班', ['张小明','李小红','王大力','刘美美','陈小明','杨丽丽','黄帅哥','周小芳']);
+                    }
+                }
+                getAll() { try { return JSON.parse(localStorage.getItem(this.key)) || []; } catch { return []; } }
+                save(name, items) {
+                    const lists = this.getAll();
+                    const idx = lists.findIndex(x => x.name === name);
+                    const item = { name, items, time: idx >= 0 ? lists[idx].time : Date.now() };
+                    if (idx >= 0) lists[idx] = item; else lists.unshift(item);
+                    localStorage.setItem(this.key, JSON.stringify(lists));
+                }
+                delete(name) { localStorage.setItem(this.key, JSON.stringify(this.getAll().filter(x => x.name !== name))); }
+                get(name) { return this.getAll().find(x => x.name === name); }
+                export() {
+                    const data = this.getAll();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'hot-seat-data.json';
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+                import(jsonStr) {
+                    try {
+                        const data = JSON.parse(jsonStr);
+                        if (!Array.isArray(data)) throw new Error('格式错误');
+                        data.forEach(item => {
+                            if (item.name && Array.isArray(item.items)) {
+                                this.save(item.name, item.items);
+                            }
+                        });
+                        return { success: true, count: data.length };
+                    } catch (e) {
+                        return { success: false, error: e.message };
+                    }
+                }
+            }
+            
+            // 全屏
+            class Fullscreen {
+                constructor() {
+                    this.btn = $('btnFullscreen');
+                    this.on = !!document.fullscreenElement;
+                    this.btn.addEventListener('click', this.toggle.bind(this), false);
+                    document.addEventListener('fullscreenchange', this.onChange.bind(this));
+                    this.updateBtn();
+                }
+                toggle() {
+                    if (this.on) {
+                        if (document.exitFullscreen) document.exitFullscreen();
+                        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+                    } else {
+                        var elem = document.documentElement;
+                        if (elem.requestFullscreen) elem.requestFullscreen();
+                        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                        else if (elem.webkitEnterFullscreen) elem.webkitEnterFullscreen(); // iOS Safari
+                    }
+                }
+                onChange() {
+                    this.on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+                    this.updateBtn();
+                }
+                updateBtn() {
+                    this.btn.classList.toggle('active', this.on);
+                    this.btn.title = this.on ? '退出全屏' : '全屏';
+                }
+            }
+            
+            // 音效
+            class Sound {
+                constructor() { this.ctx = null; }
+                init() { if (!this.ctx) try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch {} }
+                roll() {
+                    if (!this.ctx) return;
+                    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                    o.connect(g); g.connect(this.ctx.destination);
+                    o.frequency.value = [600,700,800,900,1000][Math.floor(Math.random()*5)];
+                    o.type = 'square';
+                    const t = this.ctx.currentTime;
+                    g.gain.setValueAtTime(0.05, t);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+                    o.start(t); o.stop(t + 0.04);
+                }
+                stop() {
+                    if (!this.ctx) return;
+                    [523.25,659.25,783.99,1046.50].forEach((f,i) => {
+                        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                        o.connect(g); g.connect(this.ctx.destination);
+                        o.frequency.value = f; o.type = 'sine';
+                        const t = this.ctx.currentTime + i * 0.06;
+                        g.gain.setValueAtTime(0, t);
+                        g.gain.linearRampToValueAtTime(0.18, t + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+                        o.start(t); o.stop(t + 0.3);
+                    });
+                }
+                complete() {
+                    if (!this.ctx) return;
+                    [523.25,587.33,659.25,783.99,880,1046.50,1174.66,1318.51].forEach((f,i) => {
+                        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+                        o.connect(g); g.connect(this.ctx.destination);
+                        o.frequency.value = f; o.type = 'sine';
+                        const t = this.ctx.currentTime + i * 0.1;
+                        g.gain.setValueAtTime(0.12, t);
+                        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+                        o.start(t); o.stop(t + 0.25);
+                    });
+                }
+            }
+            
+            // 粒子
+            class Burst {
+                constructor(c) { this.c = c; this.pool = []; }
+                fire(x, y) {
+                    const colors = ['#FF6B6B','#00d4ff','#8b5cf6','#00d4ff','#FF6B6B'];
+                    for (let i = 0; i < 20; i++) {
+                        let p = this.pool.pop() || document.createElement('div');
+                        p.className = 'burst-particle';
+                        p.style.left = x + 'px'; p.style.top = y + 'px';
+                        p.style.background = colors[i % colors.length];
+                        const a = Math.PI * 2 * i / 20, d = 80 + Math.random() * 100;
+                        p.style.setProperty('--tx', Math.cos(a) * d + 'px');
+                        p.style.setProperty('--ty', Math.sin(a) * d + 'px');
+                        p.style.animation = 'none'; p.style.opacity = '1';
+                        p.offsetHeight; p.style.animation = 'burst 0.8s ease-out forwards';
+                        this.c.appendChild(p);
+                    }
+                    setTimeout(() => {
+                        [...this.c.children].forEach(p => {
+                            if (p.classList.contains('burst-particle') && p.style.opacity === '0') this.pool.push(p);
+                        });
+                    }, 1000);
+                }
+            }
+            
+            // 背景
+            class Background {
+                constructor(canvas) {
+                    this.c = canvas; this.ctx = canvas.getContext('2d');
+                    this.ps = []; this.fc = 0;
+                    this.resize(); window.addEventListener('resize', () => this.resize());
+                    this.init(); this.animate();
+                }
+                resize() { this.c.width = window.innerWidth; this.c.height = window.innerHeight; }
+                init() {
+                    const n = Math.min(40, Math.floor((this.c.width * this.c.height) / 30000));
+                    this.ps = [];
+                    for (let i = 0; i < n; i++) {
+                        this.ps.push({ x: Math.random() * this.c.width, y: Math.random() * this.c.height,
+                            r: Math.random() * 2 + 0.5, sx: (Math.random() - 0.5) * 0.3, sy: (Math.random() - 0.5) * 0.3,
+                            o: Math.random() * 0.5 + 0.2, h: Math.random() * 80 + 200 });
+                    }
+                }
+                animate() {
+                    this.fc++;
+                    if (this.fc >= 3) {
+                        this.fc = 0;
+                        this.ctx.fillStyle = 'rgba(15, 12, 41, 0.15)';
+                        this.ctx.fillRect(0, 0, this.c.width, this.c.height);
+                        this.ps.forEach(p => {
+                            p.x += p.sx; p.y += p.sy;
+                            if (p.x < 0) p.x = this.c.width; if (p.x > this.c.width) p.x = 0;
+                            if (p.y < 0) p.y = this.c.height; if (p.y > this.c.height) p.y = 0;
+                            this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                            this.ctx.fillStyle = `hsla(${p.h},70%,60%,${p.o})`; this.ctx.fill();
+                        });
+                    }
+                    requestAnimationFrame(() => this.animate());
+                }
+            }
+            
+            function toast(msg) {
+                const t = $('toast'); t.textContent = msg; t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 2000);
+            }
+            
+            // 游戏主类
+            class Game {
+                constructor() {
+                    this.words = []; this.used = []; this.current = null;
+                    this.rolling = false; this.timer = null; this.started = false;
+                    this.storage = new Storage();
+                    this.sound = new Sound();
+                    this.fs = new Fullscreen();
+                    this.bg = new Background($('bgCanvas'));
+                    this.burst = new Burst($('wordDisplay'));
+                    this.init();
+                }
+                
+                init() {
+                    $('btnStartPage').onclick = () => this.start();
+                    $('btnMain').onclick = () => this.toggle();
+                    $('btnEnd').onclick = () => this.end();
+                    $('btnSave').onclick = () => this.showSave();
+                    $('btnCancelSave').onclick = () => $('saveModal').classList.remove('active');
+                    $('btnConfirmSave').onclick = () => this.confirmSave();
+                    $('saveNameInput').onkeyup = e => { if (e.key === 'Enter') this.confirmSave(); };
+                    $('saveModal').onclick = e => { if (e.target === $('saveModal')) $('saveModal').classList.remove('active'); };
+                    $('btnCloseTips').onclick = () => $('tipsModal').classList.remove('active');
+                    $('tipsModal').onclick = e => { if (e.target === $('tipsModal')) $('tipsModal').classList.remove('active'); };
+                    
+                    // 导出功能
+                    $('btnExport').onclick = () => {
+                        this.storage.export();
+                        toast('导出成功！');
+                    };
+                    
+                    // 导入功能
+                    $('btnImport').onclick = () => $('importFileInput').click();
+                    $('importFileInput').onchange = e => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = ev => {
+                            const result = this.storage.import(ev.target.result);
+                            if (result.success) {
+                                this.renderList();
+                                toast(`导入成功！共 ${result.count} 个列表`);
+                            } else {
+                                toast('导入失败：文件格式无效');
+                            }
+                        };
+                        reader.readAsText(file);
+                        e.target.value = ''; // 重置以便下次选择同一文件
+                    };
+                    
+                    $('wordInput').oninput = () => { $('btnSave').disabled = !$('wordInput').value.trim(); };
+                    $('btnSave').disabled = false;
+                    this.renderList();
+                }
+                
+                fmt(w) {
+                    return w;
+                }
+                
+                parse() { return ($('wordInput').value || '').split(/[,\n]/).map(x => x.trim()).filter(x => x); }
+                
+                start() {
+                    this.sound.init();
+                    this.words = this.parse();
+                    if (!this.words.length) { $('statusMessage').textContent = '请输入至少一个词汇！'; return; }
+                    this.used = []; this.started = true;
+                    $('inputPage').classList.add('hidden');
+                    $('gamePage').classList.add('active');
+                    $('usedWordsSection').style.display = 'block';
+                    $('btnEnd').style.display = 'block';
+                    this.update();
+                }
+                
+                toggle() {
+                    this.sound.init();
+                    if (!this.started) { this.start(); return; }
+                    if (this.rolling) this.stop(); else this.roll();
+                }
+                
+                roll() {
+                    this.rolling = true;
+                    this.updateBtn();
+                    $('statusMessage').textContent = '点击"停！"停止';
+                    this.timer = setInterval(() => {
+                        const rem = this.getRem();
+                        if (!rem.length) { this.stop(); return; }
+                        this.current = rem[Math.floor(Math.random() * rem.length)];
+                        $('currentWord').textContent = this.fmt(this.current);
+                        $('currentWord').classList.remove('stopping');
+                        $('currentWord').offsetHeight;
+                        $('currentWord').classList.add('rolling');
+                        this.sound.roll();
+                        setTimeout(() => $('currentWord').classList.remove('rolling'), 60);
+                    }, 100);
+                }
+                
+                stop() {
+                    if (!this.rolling) return;
+                    clearInterval(this.timer);
+                    this.rolling = false;
+                    this.used.push(this.current);
+                    $('currentWord').classList.remove('rolling');
+                    $('currentWord').classList.add('stopping');
+                    $('wordDisplay').classList.add('celebrating');
+                    const r = $('currentWord').getBoundingClientRect();
+                    const d = $('wordDisplay').getBoundingClientRect();
+                    this.burst.fire(r.left + r.width/2 - d.left, r.top + r.height/2 - d.top);
+                    this.sound.stop();
+                    setTimeout(() => $('wordDisplay').classList.remove('celebrating'), 600);
+                    this.updateList();
+                    this.update();
+                    const n = this.getRem().length;
+                    if (!n) this.done(); else $('statusMessage').textContent = `"${this.fmt(this.current)}" ✓ 还剩 ${n} 个`;
+                }
+                
+                getRem() { return this.words.filter(w => !this.used.includes(w)); }
+                update() { $('counterNumber').textContent = this.getRem().length; this.updateBtn(); }
+                
+                updateBtn() {
+                    if (this.rolling) { $('btnMain').textContent = '停！'; $('btnMain').classList.add('rolling'); }
+                    else { $('btnMain').textContent = this.started ? '继续' : '开 始'; $('btnMain').classList.remove('rolling'); }
+                }
+                
+                updateList() {
+                    $('usedWordsList').innerHTML = this.used.map(w => `<span class="used-word">${this.fmt(w)}</span>`).join('');
+                }
+                
+                done() {
+                    $('completeMessage').style.display = 'block';
+                    $('statusMessage').textContent = '🎉 全部完成！';
+                    this.sound.complete();
+                    $('btnMain').style.display = 'none';
+                    setTimeout(() => {
+                        $('completeMessage').style.display = 'none';
+                        $('btnMain').style.display = 'block';
+                        $('btnMain').textContent = '再来一轮';
+                        $('btnMain').classList.remove('rolling');
+                    }, 3000);
+                }
+                
+                end() {
+                    clearInterval(this.timer);
+                    this.rolling = false; this.started = false;
+                    this.words = []; this.used = []; this.current = null;
+                    $('inputPage').classList.remove('hidden');
+                    $('gamePage').classList.remove('active');
+                    $('btnMain').textContent = '开 始'; $('btnMain').classList.remove('rolling'); $('btnMain').style.display = 'block';
+                    $('btnEnd').style.display = 'none';
+                    $('usedWordsSection').style.display = 'none';
+                    $('wordDisplay').classList.remove('celebrating');
+                    $('completeMessage').style.display = 'none';
+                    $('currentWord').textContent = '?';
+                    $('currentWord').className = 'current-word';
+                    $('counterNumber').textContent = '15';
+                    $('statusMessage').textContent = '点击"开始"开始滚词';
+                    $('usedWordsList').innerHTML = '';
+                }
+                
+                showSave() {
+                    if (!$('wordInput').value.trim()) { toast('请先输入内容'); return; }
+                    $('saveModal').classList.add('active');
+                    $('saveNameInput').value = ''; $('saveNameInput').focus();
+                }
+                
+                confirmSave() {
+                    const name = $('saveNameInput').value.trim();
+                    if (!name) { toast('请输入名称'); return; }
+                    const items = this.parse();
+                    if (!items.length) { toast('内容不能为空'); return; }
+                    this.storage.save(name, items);
+                    $('saveModal').classList.remove('active');
+                    this.renderList();
+                    toast(`已保存"${name}" (${items.length}个)`);
+                    // 第一次保存后弹出数据保存提示
+                    if (!localStorage.getItem('hotseat_firstSaveShown')) {
+                        localStorage.setItem('hotseat_firstSaveShown', 'true');
+                        setTimeout(() => $('tipsModal').classList.add('active'), 300);
+                    }
+                }
+                
+                renderList() {
+                    const lists = this.storage.getAll();
+                    if (!lists.length) { $('savedList').innerHTML = '<div class="saved-empty">还没有保存的列表<br>输入内容后点击保存</div>'; return; }
+                    $('savedList').innerHTML = lists.map(item => `
+                        <div class="saved-card" data-name="${item.name.replace(/"/g, '&quot;')}">
+                            <div class="saved-icon">📋</div>
+                            <div class="saved-info">
+                                <div class="saved-name">${item.name}</div>
+                                <div class="saved-count">${item.items.length} 个</div>
+                            </div>
+                            <button class="saved-delete" data-name="${item.name.replace(/"/g, '&quot;')}" title="删除">✕</button>
+                        </div>
+                    `).join('');
+                    
+                    $('savedList').querySelectorAll('.saved-card').forEach(card => {
+                        card.onclick = e => {
+                            if (!e.target.classList.contains('saved-delete')) {
+                                const item = this.storage.get(card.dataset.name);
+                                if (item) { $('wordInput').value = item.items.join('\n'); $('btnSave').disabled = false; toast(`已加载"${item.name}"`); }
+                            }
+                        };
+                    });
+                    
+                    $('savedList').querySelectorAll('.saved-delete').forEach(btn => {
+                        btn.onclick = e => { e.stopPropagation(); this.storage.delete(btn.dataset.name); this.renderList(); toast(`已删除"${btn.dataset.name}"`); };
+                    });
+                }
+            }
+            
+            document.addEventListener('DOMContentLoaded', () => new Game());
+        })();
+    </script>
+</body>
+</html>
