@@ -460,6 +460,7 @@ orange</textarea>
         <div class="data-actions">
             <button class="btn-action" id="btnExport">📤 导出</button>
             <button class="btn-action" id="btnImport">📥 导入</button>
+            <button class="btn-action" id="btnDownload">💾 下载网页</button>
         </div>
         
         <div class="saved-section">
@@ -780,6 +781,18 @@ orange</textarea>
                         reader.readAsText(file);
                         e.target.value = ''; // 重置以便下次选择同一文件
                     };
+                    
+                    // 下载网页功能
+                    function downloadGame() {
+                        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                        const blob = new Blob([html], {type: 'text/html'});
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = 'hot-seat-free.html';
+                        a.click();
+                        URL.revokeObjectURL(a.href);
+                    }
+                    $('btnDownload').onclick = downloadGame;
                     
                     $('wordInput').oninput = () => { $('btnSave').disabled = !$('wordInput').value.trim(); };
                     $('btnSave').disabled = false;
