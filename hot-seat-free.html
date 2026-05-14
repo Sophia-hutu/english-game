@@ -47,7 +47,7 @@
                 0 0 20px #00d4ff, 
                 0 0 40px #8b5cf6, 
                 4px 4px 0 #FF6B6B;
-            margin-bottom: 5px; letter-spacing: 4px; text-align: center;
+            margin-top: 10px; margin-bottom: 5px; letter-spacing: 4px; text-align: center;
         }
         
         .subtitle {
@@ -181,7 +181,7 @@
         
         .header-center {
             position: absolute; left: 50%; transform: translateX(-50%);
-            text-align: center; margin-top: 8px;
+            text-align: center; margin-top: 50px;
         }
         
         .game-title {
@@ -196,8 +196,8 @@
         }
         
         .brand-name {
-            font-size: 0.7rem; color: rgba(255, 255, 255, 0.32);
-            letter-spacing: 1px;
+            font-size: 0.85rem; color: rgba(255, 255, 255, 0.32);
+            letter-spacing: 1px; margin-left: 8px;
         }
         
         .header-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
@@ -430,7 +430,6 @@
     <!-- 输入页面 -->
     <div class="input-page" id="inputPage">
         <h1 class="title">HOT SEAT</h1>
-        <p class="subtitle">英语滚词游戏</p>
         
         <div class="input-section">
             <div class="input-header">
@@ -556,7 +555,7 @@ orange</textarea>
                 init() {
                     if (this.getAll().length === 0) {
                         this.save('🌟 Unit 3 词汇', ['apple','banana','cat','dog','elephant','fish','green','happy','ice cream','jump']);
-                        this.save('👥 三年级2班', ['张小明','李小红','王大力','刘美美','陈小明','杨丽丽','黄帅哥','周小芳']);
+                        this.save('👥 三年级2班', ['张小明','李小红','王大力','刘美美','陈小明','杨丽丽','赵小宇','周小芳']);
                     }
                 }
                 getAll() { try { return JSON.parse(localStorage.getItem(this.key)) || []; } catch { return []; } }
@@ -666,17 +665,20 @@ orange</textarea>
                 }
             }
             
-            // 粒子
+            // 粒子（撒花效果）- v3-13：粒子数20→30，飞散距离80~180→150~300
             class Burst {
                 constructor(c) { this.c = c; this.pool = []; }
                 fire(x, y) {
                     const colors = ['#FF6B6B','#00d4ff','#8b5cf6','#00d4ff','#FF6B6B'];
-                    for (let i = 0; i < 20; i++) {
+                    // v3-13：粒子数从20改为30
+                    for (let i = 0; i < 30; i++) {
                         let p = this.pool.pop() || document.createElement('div');
                         p.className = 'burst-particle';
                         p.style.left = x + 'px'; p.style.top = y + 'px';
                         p.style.background = colors[i % colors.length];
-                        const a = Math.PI * 2 * i / 20, d = 80 + Math.random() * 100;
+                        const a = Math.PI * 2 * i / 30;
+                        // v3-13：飞散距离从 80 + Math.random() * 100 改为 150 + Math.random() * 150 (150~300px)
+                        const d = 150 + Math.random() * 150;
                         p.style.setProperty('--tx', Math.cos(a) * d + 'px');
                         p.style.setProperty('--ty', Math.sin(a) * d + 'px');
                         p.style.animation = 'none'; p.style.opacity = '1';
@@ -691,16 +693,19 @@ orange</textarea>
                 }
             }
             
-            // 背景
+            // 背景 - v3-15：霓虹灯光点数量翻倍（/80 → /40）
             class Background {
                 constructor(canvas) {
                     this.c = canvas; this.ctx = canvas.getContext('2d');
-                    this.ps = []; this.fc = 0;
+                    this.ps = []; // 原有小光点
+                    this.neonPs = []; // v3-13新增：霓虹灯光点
+                    this.fc = 0;
                     this.resize(); window.addEventListener('resize', () => this.resize());
                     this.init(); this.animate();
                 }
                 resize() { this.c.width = window.innerWidth; this.c.height = window.innerHeight; }
                 init() {
+                    // 原有小光点
                     const n = Math.min(40, Math.floor((this.c.width * this.c.height) / 30000));
                     this.ps = [];
                     for (let i = 0; i < n; i++) {
@@ -708,19 +713,109 @@ orange</textarea>
                             r: Math.random() * 2 + 0.5, sx: (Math.random() - 0.5) * 0.3, sy: (Math.random() - 0.5) * 0.3,
                             o: Math.random() * 0.5 + 0.2, h: Math.random() * 80 + 200 });
                     }
+                    
+                    // v3-16：霓虹灯光点数量增加（/40 → /25，约50-80个）
+                    const neonCount = Math.floor(this.c.width / 25);
+                    this.neonPs = [];
+                    const neonColors = ['#ff0040', '#ff3366', '#ff6688', '#00aaff', '#0088ff', '#0066ff']; // 红蓝色系
+                    
+                    for (let i = 0; i < neonCount; i++) {
+                        const isRed = Math.random() > 0.5;
+                        const baseColor = isRed 
+                            ? ['#FF9E9E', '#FFB3B3', '#FFC8C8', '#FF8A8A'][Math.floor(Math.random() * 4)]
+                            : ['#66E5FF', '#99EEFF', '#B3F3FF', '#4DD9FF'][Math.floor(Math.random() * 4)];
+                        
+                        // 大小有大有小，大的是小的3-4倍
+                        const sizeType = Math.random();
+                        let r;
+                        if (sizeType < 0.3) {
+                            r = Math.random() * 1.5 + 1; // 小: 1~2.5
+                        } else if (sizeType < 0.7) {
+                            r = Math.random() * 2 + 2.5; // 中: 2.5~4.5
+                        } else {
+                            r = Math.random() * 3 + 4.5; // 大: 4.5~7.5
+                        }
+                        
+                        // v3-16：改为原地晃动效果，删除 sx/sy 直线移动，添加晃动参数
+                        this.neonPs.push({
+                            x: Math.random() * this.c.width,
+                            y: Math.random() * this.c.height,
+                            ox: 0, // v3-16：初始位置X（originX）
+                            oy: 0, // v3-16：初始位置Y（originY）
+                            r: r,
+                            baseR: r,
+                            // v3-16：晃动参数替代原来的直线移动
+                            // v3-17：晃动幅度5-15px，像星光微微摇曳
+                            wobbleRange: Math.random() * 10 + 5,
+                            wobbleSpeed: Math.random() * 0.015 + 0.005, // 晃动速度0.005-0.02
+                            wobblePhase: Math.random() * Math.PI * 2, // 随机初始相位
+                            color: baseColor,
+                            // 闪烁参数
+                            flickerSpeed: Math.random() * 0.03 + 0.01,
+                            flickerPhase: Math.random() * Math.PI * 2,
+                            flickerAmp: Math.random() * 0.4 + 0.3
+                        });
+                    }
+                    
+                    // v3-16：设置所有霓虹点的初始位置
+                    this.neonPs.forEach(p => {
+                        p.ox = p.x;
+                        p.oy = p.y;
+                    });
                 }
                 animate() {
                     this.fc++;
                     if (this.fc >= 3) {
                         this.fc = 0;
-                        this.ctx.fillStyle = 'rgba(15, 12, 41, 0.15)';
+                        // v3-17：改为clearRect + 填充背景，避免幽灵长尾
+                        this.ctx.clearRect(0, 0, this.c.width, this.c.height);
+                        // 填充背景渐变（与body背景一致）
+                        const bgGrad = this.ctx.createLinearGradient(0, 0, this.c.width, this.c.height);
+                        bgGrad.addColorStop(0, '#0f0c29');
+                        bgGrad.addColorStop(0.5, '#302b63');
+                        bgGrad.addColorStop(1, '#24243e');
+                        this.ctx.fillStyle = bgGrad;
                         this.ctx.fillRect(0, 0, this.c.width, this.c.height);
+                        
+                        // 绘制原有小光点
                         this.ps.forEach(p => {
                             p.x += p.sx; p.y += p.sy;
                             if (p.x < 0) p.x = this.c.width; if (p.x > this.c.width) p.x = 0;
                             if (p.y < 0) p.y = this.c.height; if (p.y > this.c.height) p.y = 0;
                             this.ctx.beginPath(); this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                             this.ctx.fillStyle = `hsla(${p.h},70%,60%,${p.o})`; this.ctx.fill();
+                        });
+                        
+                        // v3-17：绘制星光闪烁效果（替代霓虹灯大光晕效果）
+                        const time = Date.now() * 0.001;
+                        this.neonPs.forEach(p => {
+                            // v3-17：原地晃动效果（正弦波）
+                            p.x = p.ox + Math.sin(time * p.wobbleSpeed * 60 + p.wobblePhase) * p.wobbleRange;
+                            p.y = p.oy + Math.cos(time * p.wobbleSpeed * 60 + p.wobblePhase) * p.wobbleRange;
+                            
+                            // 计算闪烁亮度 - 更自然的星星闪烁
+                            const flicker = Math.sin(time * p.flickerSpeed * 60 + p.flickerPhase);
+                            const coreBrightness = 0.4 + flicker * 0.35; // 核心亮度0.05~0.75
+                            
+                            // v3-17：改为星光效果，glow缩小到r*1.5，亮度降低
+                            const glowSize = p.r * 1.5;
+                            // 微弱的短距离glow
+                            const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+                            gradient.addColorStop(0, p.color + Math.floor(coreBrightness * 40).toString(16).padStart(2, '0'));
+                            gradient.addColorStop(0.5, p.color + Math.floor(coreBrightness * 15).toString(16).padStart(2, '0'));
+                            gradient.addColorStop(1, p.color + '00');
+                            this.ctx.beginPath();
+                            this.ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
+                            this.ctx.fillStyle = gradient;
+                            this.ctx.fill();
+                            
+                            // v3-17：星光核心光点，适当降低整体亮度
+                            this.ctx.beginPath();
+                            this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                            this.ctx.fillStyle = p.color;
+                            this.ctx.globalAlpha = Math.min(coreBrightness, 0.7); // 最高不超过0.7
+                            this.ctx.fill();
+                            this.ctx.globalAlpha = 1;
                         });
                     }
                     requestAnimationFrame(() => this.animate());
