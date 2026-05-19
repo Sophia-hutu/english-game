@@ -905,6 +905,15 @@
             filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));
         }
 
+        /* 数字格子的金黄色粗体样式 */
+        .grid-cell .cell-number {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--glow-gold, #ffd740);
+            text-shadow: 0 0 10px rgba(255, 215, 64, 0.6), 0 0 20px rgba(255, 215, 64, 0.3);
+            font-family: 'Orbitron', sans-serif;
+        }
+
         /* 中文格子的中文文字样式 */
         .grid-cell .cell-cn-text {
             font-size: 0.75rem;
@@ -1237,6 +1246,15 @@
             font-size: 1.8rem;
             margin-right: 10px;
             filter: drop-shadow(0 0 5px rgba(255, 23, 68, 0.5));
+        }
+
+        .wrong-number {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--glow-gold, #ffd740);
+            text-shadow: 0 0 8px rgba(255, 215, 64, 0.5);
+            font-family: 'Orbitron', sans-serif;
+            margin-right: 10px;
         }
 
         .wrong-image {
@@ -1591,8 +1609,11 @@
 
         .game-end-icon {
             font-size: 3rem;
+            margin-top: 12px;
             margin-bottom: 8px;
-            filter: brightness(1.8) sepia(1) saturate(3) hue-rotate(10deg) drop-shadow(0 0 20px rgba(255, 215, 64, 0.8));
+        }
+        .game-end-icon.alarm-clock {
+            font-size: 2rem;
         }
 
         .game-end-title {
@@ -2117,12 +2138,14 @@
             <div class="custom-vocab-panel" id="customVocabPanel">
                 <h4>+ 输入自定义词汇</h4>
                 <p class="hint">
-                    每行一个词汇，支持：<br>
-                    - 空格：apple 苹果<br>
-                    - 逗号：banana,香蕉<br>
-                    - Tab：cherry    樱桃
+                    每行一个词汇，请用分隔符区分英文和中文：<br>
+                    - 逗号：piggy bank,猪形储钱罐<br>
+                    - Tab：cherry	樱桃<br>
+                    - 冒号：ice cream：冰淇淋<br>
+                    - 分号：ice cream；冰淇淋<br>
+                    <span style="font-size:0.85em;color:#aaa;">复合词请用逗号或Tab分隔，避免空格拆分<br>可选指定emoji（第三列）：pig,猪,🐷</span>
                 </p>
-                <textarea class="custom-vocab-textarea" id="customVocabInput" placeholder="例如：&#10;apple 苹果&#10;banana 香蕉&#10;orange 橙子"></textarea>
+                <textarea class="custom-vocab-textarea" id="customVocabInput" placeholder="例如：&#10;apple,苹果&#10;banana,香蕉&#10;ice cream,冰淇淋"></textarea>
                 <p class="custom-vocab-error" id="customVocabError"></p>
                 <div class="custom-vocab-buttons">
                     <button class="btn btn-confirm" id="confirmCustomVocab">保存</button>
@@ -2346,16 +2369,14 @@
             'tomato': '🍅', 'potato': '🥔', 'carrot': '🥕', 'corn': '🌽',
             'mushroom': '🍄', 'cabbage': '🥬', 'cucumber': '🥒', 'pepper': '🌶️',
             'onion': '🧅', 'garlic': '🧄', 'broccoli': '🥦', 'lettuce': '🥬',
-            'pumpkin': '🎃', 'bean': '🫘', 'pea': '🫛',
-            // ===== 主食 =====
+            'pumpkin': '🎃', 'bean': '🫘',            // ===== 主食 =====
             'rice': '🍚', 'bread': '🍞', 'noodle': '🍜', 'pizza': '🍕',
             'sandwich': '🥪', 'hamburger': '🍔', 'dumpling': '🥟', 'pancake': '🥞',
             'waffle': '🧇', 'pretzel': '🥨', 'cheese': '🧀', 'egg': '🥚',
             'meat': '🥩', 'fish': '🐟', 'chicken': '🍗', 'steak': '🥩',
             'sausage': '🌭', 'bacon': '🥓',
             // ===== 饮品 =====
-            'milk': '🥛', 'juice': '🧃', 'coffee': '☕', 'tea': '🍵', 'water': '💧',
-            'soda': '🥤', 'beer': '🍺', 'wine': '🍷', 'smoothie': '🥤',
+            'milk': '🥛', 'juice': '🧃', 'coffee': '☕', 'tea': '🍵',            'soda': '🥤', 'beer': '🍺', 'wine': '🍷', 'smoothie': '🥤',
             'cocoa': '🍫', 'soup': '🍲',
             // ===== 甜食零食 =====
             'cake': '🎂', 'candy': '🍬', 'ice cream': '🍦', 'icecream': '🍦',
@@ -2370,8 +2391,7 @@
             // ===== 动物-农场 =====
             'cat': '🐱', 'dog': '🐕', 'bird': '🐦', 'pig': '🐷', 'duck': '🦆',
             'rabbit': '🐰', 'horse': '🐴', 'cow': '🐄', 'sheep': '🐑', 'goat': '🐐',
-            'chicken': '🐔', 'rooster': '🐓', 'donkey': '🫏',
-            // ===== 动物-野生 =====
+            'chicken': '🐔', 'rooster': '🐓',            // ===== 动物-野生 =====
             'monkey': '🐵', 'tiger': '🐯', 'lion': '🦁', 'bear': '🐻',
             'elephant': '🐘', 'panda': '🐼', 'snake': '🐍', 'frog': '🐸',
             'zebra': '🦓', 'giraffe': '🦒', 'fox': '🦊', 'wolf': '🐺',
@@ -2379,40 +2399,49 @@
             'parrot': '🦜', 'penguin': '🐧', 'whale': '🐳', 'dolphin': '🐬',
             'shark': '🦈', 'octopus': '🐙', 'crab': '🦀', 'turtle': '🐢',
             'crocodile': '🐊', 'lizard': '🦎', 'gorilla': '🦍', 'hippo': '🦛',
-            'rhino': '🦏', 'camel': '🐫', 'squirrel': '🐿️', 'beaver': '🦫',
-            'butterfly': '🦋', 'bee': '🐝', 'ant': '🐜', 'ladybug': '🐞',
+            'rhino': '🦏', 'camel': '🐫', 'squirrel': '🐿️',            'butterfly': '🦋', 'bee': '🐝', 'ant': '🐜', 'ladybug': '🐞',
             'spider': '🕷️', 'snail': '🐌', 'worm': '🪱', 'mosquito': '🦟',
-            'fly': '🪰', 'beetle': '🪲', 'cockroach': '🪳',
-            // ===== 动物-宠物 =====
+            'fly': '🪰', 'beetle': '🪲',            // ===== 动物-宠物 =====
             'hamster': '🐹', 'mouse': '🐭', 'goldfish': '🐠', 'kitten': '🐱',
             'puppy': '🐶', 'bunny': '🐰', 'pet': '🐾',
             // ===== 颜色 =====
             'red': '🔴', 'blue': '🔵', 'green': '🟢', 'yellow': '🟡', 'white': '⚪',
             'black': '⚫', 'pink': '🩷', 'purple': '🟣', 'brown': '🟤', 'orange': '🟠',
             'grey': '🩶', 'gray': '🩶', 'gold': '🟡', 'silver': '🩶',
-            'colour': '🎨', 'color': '🎨',
-            // ===== 身体部位 =====
+            'colour': '🎨',            // ===== 身体部位 =====
             'eye': '👁', 'ear': '👂', 'nose': '👃', 'mouth': '👄', 'hand': '✋',
             'foot': '🦶', 'head': '🗣', 'arm': '💪', 'leg': '🦵', 'face': '😊',
             'hair': '💇', 'tooth': '🦷', 'teeth': '🦷', 'tongue': '👅',
-            'finger': '👆', 'thumb': '👍', 'neck': '🦒', 'shoulder': '🏋️',
-            'knee': '🦵', 'toe': '🦶', 'elbow': '💪', 'back': '🔙',
+            'finger': '👆', 'thumb': '👍', 'neck': '🦒',            'knee': '🦵', 'toe': '🦶', 'elbow': '💪', 'back': '🔙',
             'stomach': '🤢', 'heart': '❤️', 'brain': '🧠', 'bone': '🦴',
             'skin': '🤚', 'blood': '🩸', 'muscle': '💪',
-            // ===== 数字 =====
-            'one': '1️⃣', 'two': '2️⃣', 'three': '3️⃣', 'four': '4️⃣', 'five': '5️⃣',
-            'six': '6️⃣', 'seven': '7️⃣', 'eight': '8️⃣', 'nine': '9️⃣', 'ten': '🔟',
-            'zero': '0️⃣', 'eleven': '1️⃣1️⃣', 'twelve': '1️⃣2️⃣',
-            'hundred': '💯', 'thousand': '1️⃣',
+            // ===== 数字（纯阿拉伯数字，渲染时加金黄色粗体样式） =====
+            'one': '1', 'two': '2', 'three': '3', 'four': '4', 'five': '5',
+            'six': '6', 'seven': '7', 'eight': '8', 'nine': '9', 'ten': '10',
+            'zero': '0', 'eleven': '11', 'twelve': '12',
+            'thirteen': '13', 'fourteen': '14', 'fifteen': '15',
+            'sixteen': '16', 'seventeen': '17', 'eighteen': '18',
+            'nineteen': '19', 'twenty': '20',
+            'thirty': '30', 'forty': '40', 'fifty': '50',
+            'sixty': '60', 'seventy': '70', 'eighty': '80',
+            'ninety': '90',
+            'hundred': '100', 'thousand': '1000',
             'first': '🥇', 'second': '🥈', 'third': '🥉',
+            // ===== 中文数字（用户导入中文数字时匹配） =====
+            '一': '1', '二': '2', '三': '3', '四': '4', '五': '5',
+            '六': '6', '七': '7', '八': '8', '九': '9', '十': '10',
+            '零': '0', '十一': '11', '十二': '12', '十三': '13',
+            '十四': '14', '十五': '15', '十六': '16', '十七': '17',
+            '十八': '18', '十九': '19', '二十': '20',
+            '三十': '30', '四十': '40', '五十': '50',
+            '百': '100', '千': '1000',
             // ===== 自然天气 =====
             'sun': '☀️', 'moon': '🌙', 'star': '⭐', 'rain': '🌧', 'snow': '❄️',
             'tree': '🌳', 'flower': '🌸', 'mountain': '⛰', 'river': '🏞', 'sky': '🌤️',
             'cloud': '☁️', 'wind': '💨', 'storm': '⛈', 'rainbow': '🌈',
             'sea': '🌊', 'ocean': '🌊', 'lake': '🏞', 'island': '🏝',
             'beach': '🏖', 'desert': '🏜', 'forest': '🌲', 'jungle': '🌴',
-            'grass': '🌿', 'leaf': '🍃', 'rock': '🪨', 'stone': '🪨',
-            'sand': '🏖', 'ice': '🧊', 'fire': '🔥', 'earth': '🌍',
+            'grass': '🌿', 'leaf': '🍃', 'rock': '🪨',            'sand': '🏖', 'ice': '🧊', 'fire': '🔥', 'earth': '🌍',
             'world': '🌏', 'planet': '🪐', 'weather': '🌤️', 'season': '🍂',
             'spring': '🌸', 'summer': '☀️', 'autumn': '🍂', 'fall': '🍂', 'winter': '❄️',
             // ===== 学校用品 =====
@@ -2423,8 +2452,7 @@
             'backpack': '🎒', 'homework': '📝', 'exam': '📝', 'test': '📝',
             'dictionary': '📖', 'map': '🗺️', 'globe': '🌍', 'clock': '🕐',
             'bell': '🔔', 'library': '📚', 'classroom': '🏫', 'lesson': '📖',
-            'subject': '📚', 'math': '🧮', 'science': '🔬', 'english': '🇬🇧',
-            'chinese': '🇨🇳', 'music': '🎵', 'art': '🎨', 'sport': '⚽',
+            'subject': '📚', 'math': '🧮', 'science': '🔬', 'music': '🎵', 'art': '🎨', 'sport': '⚽',
             'computer': '💻', 'pencilcase': '✏️', 'pencil case': '✏️',
             'textbook': '📖', 'workbook': '📒',
             // ===== 教室其他 =====
@@ -2453,8 +2481,7 @@
             'hotel': '🏨', 'supermarket': '🛒', 'market': '🏪', 'garden': '🌻',
             'playground': '🎠', 'pool': '🏊', 'stadium': '🏟️', 'office': '🏢',
             'city': '🏙️', 'village': '🏘️', 'country': '🗺️', 'street': '🛣️',
-            'corner': '↗️', 'center': '🎯', 'corner': '↗️',
-            // ===== 人物 =====
+            'corner': '↗️', 'center': '🎯',            // ===== 人物 =====
             'mother': '👩', 'father': '👨', 'brother': '👦', 'sister': '👧', 'baby': '👶',
             'teacher': '👨‍🏫', 'student': '👨‍🎓', 'doctor': '👨‍⚕️', 'nurse': '👩‍⚕️',
             'farmer': '👨‍🌾', 'driver': '🚗', 'cook': '👨‍🍳', 'police': '👮',
@@ -2473,8 +2500,7 @@
             'sick': '🤒', 'nervous': '😰', 'confused': '😵', 'brave': '🦸',
             'sorry': '🙏', 'please': '🙏', 'thanks': '🙏', 'welcome': '🤗',
             'love': '❤️', 'hate': '😡', 'miss': '🥺', 'hope': '🤞',
-            'laugh': '😂', 'cry': '😭', 'smile': '😊', 'dream': '💭',
-            // ===== 形容词 =====
+            'laugh': '😂', 'cry': '😭', 'smile': '😊',            // ===== 形容词 =====
             'big': '🐘', 'small': '🐜', 'tall': '🧍', 'short': '🧍',
             'long': '📏', 'wide': '↔️', 'thin': '🍃', 'thick': '📖',
             'hot': '🔥', 'cold': '❄️', 'warm': '🌡️', 'cool': '😎',
@@ -2485,50 +2511,21 @@
             'loud': '📢', 'quiet': '🤫', 'soft': '🧸', 'rough': '🪨',
             'smooth': '🪞', 'rich': '💰', 'poor': '🏚', 'full': '🍽',
             'empty': '🫙', 'busy': '🏃', 'free': '🕊️', 'safe': '🔒',
-            'dangerous': '⚠️', 'funny': '😂', 'serious': '😐', 'important': '❗',
-            'different': '🔀', 'same': '🔄', 'right': '✅', 'wrong': '❌',
-            'yes': '✅', 'no': '❌', 'true': '✅', 'false': '❌',
-            'open': '📂', 'closed': '📁', 'high': '🏔', 'low': '🕳',
-            'deep': '🕳', 'shallow': '🫗', 'dark': '🌑', 'bright': '☀️',
-            'round': '🔵', 'flat': '📐', 'sweet': '🍬', 'bitter': '🫒',
-            'dry': '🏜', 'wet': '💧', 'ready': '✅', 'favorite': '⭐',
-            'cute': '🥰', 'smart': '🧠', 'lazy': '🦥', 'crazy': '🤪',
-            'lucky': '🍀', 'careful': '⚠️', 'wonderful': '✨', 'terrible': '😱',
-            'delicious': '😋', 'lovely': '🥰', 'interesting': '🤔', 'boring': '😒',
+            'dangerous': '⚠️', 'funny': '😂', 'serious': '😐',            'different': '🔀', 'same': '🔄', 'right': '✅',            'yes': '✅', 'no': '❌', 'true': '✅',            'open': '📂', 'closed': '📁', 'high': '🏔',            'deep': '🕳', 'shallow': '🫗', 'dark': '🌑', 'bright': '☀️',
+            'round': '🔵', 'flat': '📐', 'sweet': '🍬',            'dry': '🏜', 'wet': '💧', 'ready': '✅', 'favorite': '⭐',
+            'cute': '🥰', 'smart': '🧠', 'lazy': '🦥',            'lucky': '🍀', 'careful': '⚠️', 'wonderful': '✨',            'delicious': '😋', 'lovely': '🥰', 'interesting': '🤔', 'boring': '😒',
             // ===== 动词-运动 =====
             'run': '🏃', 'walk': '🚶', 'jump': '🦘', 'swim': '🏊',
             'climb': '🧗', 'dance': '💃', 'sing': '🎤', 'play': '🎮',
             'kick': '⚽', 'throw': '🤾', 'catch': '🤲', 'hit': '🏏',
             'pull': '🏋️', 'push': '🤼', 'carry': '📦', 'lift': '🏋️',
-            'stretch': '🧘', 'exercise': '🏋️', 'ride': '🏇', 'drive': '🚗',
-            'fly': '✈️', 'sail': '⛵', 'slide': '⛸', 'roll': '🌀',
-            'spin': '🔄', 'shake': '🤝', 'bounce': '🏀', 'fall': '🍂',
-            'stand': '🧍', 'sit': '🪑', 'lie': '🛌', 'kneel': '🧎',
-            // ===== 动词-日常 =====
+            'stretch': '🧘', 'exercise': '🏋️', 'ride': '🏇',            'fly': '✈️', 'sail': '⛵', 'slide': '⛸',            'spin': '🔄', 'shake': '🤝', 'bounce': '🏀',            'stand': '🧍', 'sit': '🪑', 'lie': '🛌',            // ===== 动词-日常 =====
             'eat': '🍽', 'drink': '🥤', 'cook': '👨‍🍳', 'sleep': '😴',
-            'wake': '⏰', 'wash': '🧼', 'brush': '🪥', 'shower': '🚿',
-            'dress': '👗', 'wear': '👕', 'buy': '🛒', 'sell': '💸',
-            'give': '🎁', 'take': '✊', 'send': '📨', 'receive': '📥',
-            'make': '🔨', 'build': '🏗️', 'break': '💔', 'fix': '🔧',
-            'open': '📂', 'close': '📁', 'turn': '🔄', 'move': '📦',
-            'stop': '✋', 'start': '▶️', 'finish': '🏁', 'begin': '▶️',
-            'try': '💪', 'help': '🤝', 'share': '🤝', 'wait': '⏳',
-            'look': '👀', 'see': '👁', 'watch': '👀', 'listen': '👂',
-            'hear': '👂', 'speak': '🗣', 'talk': '💬', 'say': '💬',
-            'tell': '🗣', 'ask': '❓', 'answer': '💬', 'read': '📖',
-            'write': '✍️', 'draw': '🎨', 'paint': '🎨', 'cut': '✂️',
-            'color': '🖍️', 'count': '🔢', 'spell': '🔤', 'think': '🤔',
-            'know': '🧠', 'learn': '📚', 'teach': '👨‍🏫', 'study': '📖',
-            'remember': '🧠', 'forget': '🤷', 'understand': '💡', 'guess': '🤔',
-            'show': '👁', 'find': '🔍', 'search': '🔍', 'lose': '😢',
-            'keep': '🔒', 'leave': '👋', 'arrive': '📍', 'return': '↩️',
-            'call': '📞', 'pick': '🤏', 'choose': '👆', 'change': '🔄',
-            'grow': '🌱', 'plant': '🌱', 'water': '💧', 'feed': '🥣',
-            'clean': '🧹', 'tidy': '🧹', 'organize': '📋', 'pack': '🎒',
+            'wake': '⏰', 'wash': '🧼', 'brush': '🪥',            'dress': '👗', 'wear': '👕', 'buy': '🛒',            'give': '🎁', 'take': '✊', 'send': '📨',            'make': '🔨', 'build': '🏗️', 'break': '💔',            'open': '📂', 'close': '📁', 'turn': '🔄',            'stop': '✋', 'start': '▶️', 'finish': '🏁',            'try': '💪', 'help': '🤝', 'share': '🤝',            'look': '👀', 'see': '👁', 'watch': '👀',            'hear': '👂', 'speak': '🗣', 'talk': '💬',            'tell': '🗣', 'ask': '❓', 'answer': '💬',            'write': '✍️', 'draw': '🎨', 'paint': '🎨',            'color': '🖍️', 'count': '🔢', 'spell': '🔤',            'know': '🧠', 'learn': '📚', 'teach': '👨‍🏫',            'remember': '🧠', 'forget': '🤷', 'understand': '💡',            'show': '👁', 'find': '🔍', 'search': '🔍',            'keep': '🔒', 'leave': '👋', 'arrive': '📍',            'call': '📞', 'pick': '🤏', 'choose': '👆',            'grow': '🌱', 'plant': '🌱', 'water': '💧',            'clean': '🧹', 'tidy': '🧹', 'organize': '📋', 'pack': '🎒',
             'work': '💼', 'rest': '😴', 'relax': '🛋', 'celebrate': '🎉',
             // ===== 家居 =====
             'table': '🪑', 'bed': '🛏', 'sofa': '🛋', 'couch': '🛋',
-            'cupboard': '🗄', 'shelf': '📚', 'mirror': '🪞', 'picture': '🖼️',
+            'cupboard': '🗄', 'shelf': '🗄', 'mirror': '🪞', 'picture': '🖼️',
             'tv': '📺', 'television': '📺', 'phone': '📞', 'telephone': '📞',
             'fridge': '🧊', 'refrigerator': '🧊', 'oven': '♨️', 'microwave': '📻',
             'stove': '♨️', 'sink': '🚰', 'bathtub': '🛁', 'toilet': '🚽',
@@ -2541,8 +2538,7 @@
             'bottle': '🍶', 'cup': '🥤', 'glass': '🥂', 'plate': '🍽',
             'bowl': '🥣', 'spoon': '🥄', 'fork': '🍴', 'knife': '🔪',
             'chopstick': '🥢', 'chopsticks': '🥢', 'tray': '📋',
-            'tissue': '🧻', 'napkin': '🧻', 'soap': '🧼', 'toothbrush': '🪥',
-            'toothpaste': '🪥', 'comb': '💇', 'brush': '🖌️', 'towel': '🧴',
+            'tissue': '🧻', 'napkin': '🧻', 'soap': '🧼',            'toothpaste': '🪥', 'comb': '💇', 'brush': '🖌️', 'towel': '🧴',
             'money': '💰', 'coin': '🪙', 'bill': '💵', 'wallet': '👛',
             'card': '🃏', 'letter': '✉️', 'stamp': '📬', 'gift': '🎁',
             'present': '🎁', 'toy': '🧸', 'doll': '🪆', 'ball': '⚽',
@@ -2556,8 +2552,7 @@
             'thermometer': '🌡️', 'bandage': '🩹', 'medicine': '💊',
             'pill': '💊', 'syringe': '💉', 'mask': '😷', 'glove': '🧤',
             'ladder': '🪜', 'rope': '🪢', 'chain': '⛓️', 'wire': '🔌',
-            'nail': '🔩', 'screw': '🔩', 'hammer': '🔨', 'saw': '🪚',
-            'wrench': '🔧', 'tool': '🧰', 'toolbox': '🧰', 'tape': '🩹',
+            'nail': '🔩', 'screw': '🔩', 'hammer': '🔨',            'wrench': '🔧', 'tool': '🧰', 'toolbox': '🧰', 'tape': '🩹',
             'glue': '🧴', 'paint': '🎨', 'bucket': '🪣', 'sponge': '🧽',
             // ===== 时间 =====
             'morning': '🌅', 'afternoon': '☀️', 'evening': '🌆', 'night': '🌙',
@@ -2575,11 +2570,9 @@
             // ===== 运动 =====
             'soccer': '⚽', 'football': '⚽', 'basketball': '🏀', 'baseball': '⚾',
             'tennis': '🎾', 'volleyball': '🏐', 'badminton': '🏸', 'golf': '⛳',
-            'bowling': '🎳', 'boxing': '🥊', 'wrestling': '🤼', 'fencing': '🤺',
-            'skiing': '⛷️', 'skating': '⛸️', 'surfing': '🏄', 'cycling': '🚴',
+            'bowling': '🎳', 'boxing': '🥊', 'wrestling': '🤼',            'skiing': '⛷️', 'skating': '⛸️', 'surfing': '🏄', 'cycling': '🚴',
             'gymnastics': '🤸', 'archery': '🏹', 'racing': '🏎️',
-            'team': '👥', 'game': '🎮', 'match': '🏆', 'race': '🏁',
-            'winner': '🏆', 'prize': '🏅', 'medal': '🏅', 'trophy': '🏆',
+            'team': '👥', 'game': '🎮', 'match': '🏆',            'winner': '🏆', 'prize': '🏅', 'medal': '🏅', 'trophy': '🏆',
             'score': '💯', 'goal': '⚽', 'pass': '⚽', 'shoot': '🎯',
             // ===== 音乐 =====
             'piano': '🎹', 'guitar': '🎸', 'drum': '🥁', 'violin': '🎻',
@@ -2590,55 +2583,26 @@
             'circle': '⭕', 'square': '🟥', 'triangle': '🔺', 'rectangle': '🟦',
             'diamond': '🔷', 'star': '⭐', 'heart': '❤️', 'oval': '🥚',
             'line': '➖', 'dot': '⚫', 'cross': '✖️', 'arrow': '➡️',
-            'shape': '🔷', 'pattern': '🔵🔴🟢', 'size': '📏',
-            // ===== 方位 =====
+            'shape': '🔷', 'pattern': '🔵🔴🟢',            // ===== 方位 =====
             'left': '⬅️', 'right': '➡️', 'up': '⬆️', 'down': '⬇️',
             'inside': '📦', 'outside': '🌍', 'between': '↔️', 'next': '👉',
             'behind': '🔙', 'front': '🔛', 'above': '⬆️', 'below': '⬇️',
             'near': '📍', 'far': '🔭', 'here': '📍', 'there': '👉',
             'north': '⬆️', 'south': '⬇️', 'east': '➡️', 'west': '⬅️',
             'top': '🔝', 'bottom': '🔚', 'middle': '🎯', 'side': '↔️',
-            'around': '🔄', 'through': '🕳️', 'across': '🌉', 'along': '➡️',
-            'direction': '🧭', 'position': '📍',
-            // ===== 其他常用词 =====
-            'name': '📛', 'age': '🎂', 'job': '💼', 'word': '🔤',
-            'sentence': '📝', 'letter': '✉️', 'number': '🔢', 'question': '❓',
-            'answer': '💬', 'problem': '❓', 'idea': '💡', 'plan': '📋',
-            'rule': '📜', 'story': '📖', 'poem': '📜', 'fairy tale': '🧚',
+            'around': '🔄', 'through': '🕳️', 'across': '🌉',            'direction': '🧭',            // ===== 其他常用词 =====
+            'name': '📛', 'age': '🎂', 'job': '💼',            'sentence': '📝', 'letter': '✉️', 'number': '🔢',            'answer': '💬', 'problem': '❓', 'idea': '💡',            'rule': '📜', 'story': '📖', 'poem': '📜', 'fairy tale': '🧚',
             'dream': '💭', 'wish': '🌟', 'magic': '✨', 'power': '⚡',
-            'energy': '⚡', 'secret': '🤫', 'surprise': '🎁', 'adventure': '🗺️',
-            'journey': '🧳', 'trip': '✈️', 'travel': '🧳', 'visit': '🏠',
-            'party': '🎉', 'picnic': '🧺', 'barbecue': '🍖', 'camp': '⛺',
-            'hobby': '🎯', 'collection': '🗃', 'project': '📋', 'report': '📊',
-            'example': '📋', 'mistake': '❌', 'practice': '🔄', 'example': '📋',
-            'reason': '🤔', 'result': '📊', 'difference': '🔀', 'change': '🔄',
-            'choice': '👆', 'chance': '🎲', 'luck': '🍀', 'hope': '🤞',
-            'peace': '🕊️', 'freedom': '🕊️', 'truth': '💯', 'courage': '🦁',
-            'kindness': '💝', 'respect': '🤝', 'honesty': '💯', 'patience': '⏳',
-            'animal': '🐾', 'plant': '🌱', 'person': '🧑', 'place': '📍',
-            'thing': '📦', 'part': '🧩', 'piece': '🧩', 'group': '👥',
-            'pair': '👫', 'set': '📦', 'type': '🏷️', 'kind': '🏷️',
-            'way': '🛤️', 'step': '👣', 'point': '👉', 'line': '➖',
-            'half': '➗', 'quarter': '¼', 'double': '✌️', 'pair': '👫',
-            'hello': '👋', 'hi': '👋', 'goodbye': '👋', 'bye': '👋',
+            'energy': '⚡', 'secret': '🤫', 'surprise': '🎁',            'journey': '🧳', 'trip': '✈️', 'travel': '🧳',            'party': '🎉', 'picnic': '🧺', 'barbecue': '🍖', 'camp': '⛺',
+            'hobby': '🎯', 'collection': '🗃', 'project': '📋',            'example': '📋', 'mistake': '❌', 'practice': '🔄',            'reason': '🤔', 'result': '📊', 'difference': '🔀',            'choice': '👆', 'chance': '🎲', 'luck': '🍀', 'hope': '🤞',
+            'peace': '🕊️', 'freedom': '🕊️', 'truth': '💯',            'kindness': '💝', 'respect': '🤝', 'honesty': '💯',            'animal': '🐾', 'plant': '🌱', 'person': '🧑', 'place': '📍',
+            'thing': '📦', 'part': '🧩', 'piece': '🧩',            'pair': '👫', 'set': '📦', 'type': '🏷️',            'way': '🛤️', 'step': '👣', 'point': '👉',            'half': '➗', 'quarter': '¼', 'double': '✌️',            'hello': '👋', 'hi': '👋', 'goodbye': '👋', 'bye': '👋',
             'sorry': '🙏', 'please': '🙏', 'thank': '🙏', 'welcome': '🤗',
-            'maybe': '🤷', 'sometimes': '🔄', 'always': '💯', 'never': '🚫',
-            'often': '🔄', 'usually': '🔄', 'already': '✅', 'still': '🔄',
-            'again': '🔄', 'together': '🤝', 'alone': '🧍', 'away': '👋',
+            'maybe': '🤷', 'sometimes': '🔄', 'always': '💯',            'often': '🔄', 'usually': '🔄', 'already': '✅',            'again': '🔄', 'together': '🤝', 'alone': '🧍', 'away': '👋',
             'here': '📍', 'there': '👉', 'everywhere': '🌍', 'nowhere': '🕳',
             'really': '❗', 'very': '💯', 'quite': '👌', 'almost': '🎯',
-            'enough': '✅', 'too': '➕', 'also': '➕', 'only': '1️⃣',
-            'just': '☝️', 'even': '⚖️', 'else': '🔀', 'instead': '🔄',
-            'because': '💭', 'but': '🔀', 'and': '➕', 'or': '🔀',
-            'so': '👉', 'then': '👉', 'if': '❓', 'when': '⏰',
-            'while': '⏳', 'after': '⏭️', 'before': '⏮️', 'since': '📅',
-            'until': '⏳', 'though': '🔀', 'although': '🔀', 'however': '🔀',
-            'suddenly': '⚡', 'finally': '🏁', 'actually': '💡', 'probably': '🤔',
-            'perhaps': '🤔', 'certainly': '💯', 'exactly': '🎯', 'especially': '⭐',
-            'quickly': '⚡', 'slowly': '🐌', 'carefully': '⚠️', 'quietly': '🤫',
-            'loudly': '📢', 'happily': '😊', 'sadly': '😢', 'easily': '😊',
-            'hardly': '💪', 'nearly': '🎯', 'really': '❗',
-            // ===== 小学常用补充（与上方不重复） =====
+            'enough': '✅', 'too': '➕', 'also': '➕',            'just': '☝️', 'even': '⚖️', 'else': '🔀',            'because': '💭', 'but': '🔀', 'and': '➕',            'so': '👉', 'then': '👉', 'if': '❓', 'when': '⏰',
+            'while': '⏳', 'after': '⏭️', 'before': '⏮️',            'until': '⏳', 'though': '🔀', 'although': '🔀',            'suddenly': '⚡', 'finally': '🏁', 'actually': '💡',            'perhaps': '🤔', 'certainly': '💯', 'exactly': '🎯',            'quickly': '⚡', 'slowly': '🐌', 'carefully': '⚠️',            'loudly': '📢', 'happily': '😊', 'sadly': '😢',            'hardly': '💪', 'nearly': '🎯',            // ===== 小学常用补充（与上方不重复） =====
             'rubber': '🧽', 'sharpener': '🔧', 'bin': '🗑️',
             'trash': '🗑️', 'rubbish': '🗑️', 'garbage': '🗑️',
             'rowboat': '🚣', 'sailboat': '⛵', 'raft': '🪵', 'ferry': '⛴️',
@@ -2666,17 +2630,13 @@
             'temperature': '🌡️', 'dew': '💧', 'breeze': '🍃',
             'kangaroo': '🦘', 'koala': '🐨', 'peacock': '🦚',
             'flamingo': '🦩', 'seagull': '🕊️', 'swallow': '🐦', 'woodpecker': '🐦',
-            'lobster': '🦞', 'shrimp': '🦐', 'squid': '🦑', 'jellyfish': '🪼',
-            'seahorse': '🐟', 'starfish': '⭐', 'coral': '🪸',
-            'caterpillar': '🐛', 'firefly': '💡', 'dragonfly': '🪰',
-            'ladybird': '🐞', 'grasshopper': '🦗', 'cricket': '🦗',
+            'lobster': '🦞', 'shrimp': '🦐', 'squid': '🦑',            'seahorse': '🐟', 'starfish': '⭐',            'caterpillar': '🐛', 'firefly': '💡',            'ladybird': '🐞', 'grasshopper': '🦗', 'cricket': '🦗',
             'hibiscus': '🌺', 'sunflower': '🌻', 'daisy': '🌼', 'tulip': '🌷',
             'rose': '🌹', 'lily': '🪷', 'dandelion': '🌼', 'orchid': '🌸',
             'bamboo': '🎋', 'cactus': '🌵', 'vine': '🌿', 'weed': '🌿',
             'acorn': '🌰', 'pinecone': '🌲', 'seed': '🌱', 'root': '🌱',
             'trunk': '🌳', 'branch': '🌿', 'petal': '🌸', 'bud': '🌱',
-            'apron': '👗', 'raincoat': '🧥', 'swimsuit': '👙', 'slipper': '🩴',
-            'sandal': '🩴', 'sneaker': '👟', 'helmet': '⛑️',
+            'apron': '👗', 'raincoat': '🧥', 'swimsuit': '👙',            'sandal': '🩴', 'sneaker': '👟', 'helmet': '⛑️',
             'tractor': '🚜', 'carriage': '🐎', 'wagon': '🛒', 'caravan': '🚐',
             'firetruck': '🚒',
             'cherry blossom': '🌸', 'daffodil': '🌼', 'lavender': '💜',
@@ -2798,11 +2758,14 @@
         // 加载词库时调用，将旧的✏占位符替换为DEFAULT_EMOJIS中新增的emoji
         function refreshVocabEmojis(vocabList) {
             if (!vocabList || !Array.isArray(vocabList)) return vocabList;
+            // 旧版数字emoji列表，需要刷新为纯数字
+            const oldNumberEmojis = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','①①','①②','①③','①④','①⑤','①⑥','①⑦','①⑧','①⑨','②〇','③〇','④〇','⑤〇'];
             vocabList.forEach(item => {
                 if (item.en) {
                     const newEmoji = getVocabEmoji(item.en);
-                    // 如果当前emoji是✏或空，且DEFAULT_EMOJIS有新映射，则更新
-                    if ((item.emoji === '✏' || !item.emoji) && newEmoji) {
+                    const isOldNumber = oldNumberEmojis.includes(item.emoji);
+                    // 如果当前emoji是✏、空、或旧版数字emoji，且DEFAULT_EMOJIS有新映射，则更新
+                    if ((item.emoji === '✏' || !item.emoji || isOldNumber) && newEmoji) {
                         item.emoji = newEmoji;
                     }
                 }
@@ -2814,13 +2777,16 @@
         function refreshAllCustomVocabEmojis() {
             try {
                 const saved = JSON.parse(localStorage.getItem('matchGame_customVocabs') || '[]');
+                // 旧版数字emoji列表，需要刷新为纯数字
+                const oldNumberEmojis = ['0️⃣','1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟','①①','①②','①③','①④','①⑤','①⑥','①⑦','①⑧','①⑨','②〇','③〇','④〇','⑤〇'];
                 let changed = false;
                 saved.forEach(item => {
                     if (item.vocabList && Array.isArray(item.vocabList)) {
                         item.vocabList.forEach(v => {
                             if (v.en) {
                                 const newEmoji = getVocabEmoji(v.en);
-                                if ((v.emoji === '✏' || !v.emoji) && newEmoji) {
+                                const isOldNumber = oldNumberEmojis.includes(v.emoji);
+                                if ((v.emoji === '✏' || !v.emoji || isOldNumber) && newEmoji) {
                                     v.emoji = newEmoji;
                                     changed = true;
                                 }
@@ -2848,29 +2814,36 @@
                 if (!line) return;
 
                 let parts = null;
-                // 尝试多种分隔符
+                // 尝试多种分隔符：Tab > 中文逗号 > 英文逗号 > 中文冒号
                 if (line.includes('\t')) {
                     parts = line.split('\t');
+                } else if (line.includes('，')) {
+                    parts = line.split('，');
                 } else if (line.includes(',')) {
                     parts = line.split(',');
-                } else if (line.includes(' ')) {
-                    const spaceParts = line.split(/\s+/);
-                    if (spaceParts.length >= 2) {
-                        parts = [spaceParts[0], spaceParts.slice(1).join(' ')];
-                    }
+                } else if (line.includes('：')) {
+                    parts = line.split('：');
+                } else if (line.includes(':')) {
+                    parts = line.split(':');
+                } else if (line.includes('；')) {
+                    parts = line.split('；');
+                } else if (line.includes(';')) {
+                    parts = line.split(';');
                 }
 
                 if (parts && parts.length >= 2) {
-                    const en = parts[0].trim().toLowerCase();
+                    const enRaw = parts[0].trim();
+                    const en = enRaw.toLowerCase(); // 用于emoji匹配
                     const cn = parts[1].trim();
-                    if (en && cn) {
-                        const emoji = getVocabEmoji(en);
-                        vocabList.push({ en: en, cn: cn, emoji: emoji });
+                    const customEmoji = parts[2] ? parts[2].trim() : '';
+                    if (enRaw && cn) {
+                        const emoji = customEmoji || getVocabEmoji(en);
+                        vocabList.push({ en: enRaw, cn: cn, emoji: emoji });
                     } else {
                         errors.push(`第${index + 1}行：格式错误`);
                     }
                 } else {
-                    errors.push(`第${index + 1}行：无法解析`);
+                    errors.push(`第${index + 1}行：无法解析，请用Tab/逗号/冒号/分号分隔英文和中文`);
                 }
             });
 
@@ -3555,10 +3528,17 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
                     const emoji = cell.vocab.emoji || getVocabEmoji(cell.vocab.en);
                     const hasImg = cell.vocab.imgPath;
                     const hasEmoji = emoji && emoji !== '✏'; // 有有效emoji（非空且非旧占位符）
+                    const isNumber = hasEmoji && /^\d+$/.test(emoji); // 纯数字文本
                     
-                    if (hasImg && hasEmoji) {
-                        // 有图片时用图片，fallback到emoji
-                        content = `<img class="cell-image" src="${cell.vocab.imgPath}" alt="${cell.text}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span class="cell-emoji" style="display:none;">${emoji}</span>`;
+                    if (hasImg && (hasEmoji || isNumber)) {
+                        // 有图片时用图片，fallback到emoji或数字
+                        const fallbackTag = isNumber 
+                            ? `<span class="cell-number" style="display:none;">${emoji}</span>`
+                            : `<span class="cell-emoji" style="display:none;">${emoji}</span>`;
+                        content = `<img class="cell-image" src="${cell.vocab.imgPath}" alt="${cell.text}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">${fallbackTag}`;
+                    } else if (isNumber) {
+                        // 纯数字显示金黄色粗体
+                        content = '<span class="cell-number">' + emoji + '</span>';
                     } else if (hasEmoji) {
                         // 有emoji则显示emoji
                         content = '<span class="cell-emoji">' + emoji + '</span>';
@@ -3614,7 +3594,7 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
             
             const isMatch = (
                 firstCell.type !== cell.type && 
-                firstCell.vocab.en === cell.vocab.en
+                firstCell.vocab.en.toLowerCase() === cell.vocab.en.toLowerCase()
             );
             
             if (isMatch) {
@@ -3676,7 +3656,7 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
                 emoji: cell1.vocab.emoji || getVocabEmoji(cell1.vocab.en),
                 imgPath: cell1.vocab.imgPath
             };
-            if (!gameState.wrongQuestions.some(w => w.en === wrongEntry.en)) {
+            if (!gameState.wrongQuestions.some(w => w.en.toLowerCase() === wrongEntry.en.toLowerCase())) {
                 gameState.wrongQuestions.push(wrongEntry);
             }
             
@@ -3845,9 +3825,10 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
                     });
                     const addedEn = new Set();
                     remainingCells.forEach(cell => {
-                        if (!addedEn.has(cell.vocab.en)) {
-                            addedEn.add(cell.vocab.en);
-                            if (!gameState.wrongQuestions.some(w => w.en === cell.vocab.en)) {
+                        const enLower = cell.vocab.en.toLowerCase();
+                        if (!addedEn.has(enLower)) {
+                            addedEn.add(enLower);
+                            if (!gameState.wrongQuestions.some(w => w.en.toLowerCase() === enLower)) {
                                 gameState.wrongQuestions.push({
                                     en: cell.vocab.en,
                                     cn: cell.vocab.cn,
@@ -3868,7 +3849,9 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
             const maxScore = config.pairs * 10;
             const starCount = getStarRating(gameState.score, maxScore);
             document.getElementById('gameEndStar').textContent = getStarDisplay(starCount);
-            document.getElementById('gameEndIcon').textContent = success ? '🎯' : '⏱';
+            const iconEl = document.getElementById('gameEndIcon');
+            iconEl.textContent = success ? '🎯' : '⏰';
+            iconEl.classList.toggle('alarm-clock', !success);
             document.getElementById('gameEndTitle').textContent = success ? '本轮结束！' : '时间到！';
             document.getElementById('gameEndScore').innerHTML = gameState.score + '/<span id="gameEndMaxScore">' + maxScore + '</span>';
             document.getElementById('gameEndCorrect').textContent = gameState.matchCount;
@@ -4227,10 +4210,12 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
             
             list.innerHTML = gameState.wrongQuestions.map(w => {
                 const emoji = w.emoji || getVocabEmoji(w.en);
+                const isNumber = emoji && /^\d+$/.test(emoji);
                 const emojiDisplay = emoji && emoji !== '✏' ? emoji : w.cn; // 无emoji时显示中文
+                const displayClass = isNumber ? 'wrong-number' : 'wrong-icon';
                 const imgHtml = w.imgPath ? 
-                    `<img class="wrong-image" src="${w.imgPath}" alt="${w.en}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"><span class="wrong-icon" style="display:none;">${emojiDisplay}</span>` :
-                    `<span class="wrong-icon">${emojiDisplay}</span>`;
+                    `<img class="wrong-image" src="${w.imgPath}" alt="${w.en}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';"><span class="${displayClass}" style="display:none;">${emojiDisplay}</span>` :
+                    `<span class="${displayClass}">${emojiDisplay}</span>`;
                 return `
                     <div class="wrong-item">
                         ${imgHtml}
