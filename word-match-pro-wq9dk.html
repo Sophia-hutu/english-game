@@ -16,8 +16,8 @@
         /* ==================== 全局变量 ==================== */
         :root {
             /* 深色科技配色 */
-            --bg-primary: #0a0e27;
-            --bg-secondary: #0d1b2a;
+            --bg-primary: #060820;
+            --bg-secondary: #0e1240;
             --bg-card: #1a237e;
             --bg-card-cn: #004d40;
             --glow-primary: #00e5ff;
@@ -183,29 +183,43 @@
 
         .particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--glow-primary);
             border-radius: 50%;
             opacity: 0.3;
             animation: particleFloat 15s ease-in-out infinite;
-            will-change: transform, opacity;
+            will-change: transform;
         }
-
-        .particle:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
-        .particle:nth-child(2) { top: 20%; right: 15%; animation-delay: -2s; animation-duration: 18s; }
-        .particle:nth-child(3) { top: 40%; left: 5%; animation-delay: -4s; animation-duration: 12s; }
-        .particle:nth-child(4) { top: 60%; right: 20%; animation-delay: -6s; animation-duration: 20s; }
-        .particle:nth-child(5) { top: 80%; left: 15%; animation-delay: -8s; animation-duration: 16s; }
-        .particle:nth-child(6) { top: 30%; right: 8%; animation-delay: -10s; animation-duration: 14s; }
-        .particle:nth-child(7) { top: 70%; left: 80%; animation-delay: -12s; animation-duration: 17s; }
-        .particle:nth-child(8) { top: 50%; left: 90%; animation-delay: -3s; animation-duration: 19s; }
+        /* 星空粒子：大小不一(3-14px)、白黄红浅青四色、缓缓晃动、不夺眼球 */
+        .particle:nth-child(1) { top: 4%; left: 6%; width: 6px; height: 6px; background: #ffffff; opacity: 0.45; animation-delay: 0s; animation-duration: 18s; }
+        .particle:nth-child(2) { top: 10%; left: 42%; width: 10px; height: 10px; background: #ffd740; opacity: 0.4; animation-delay: -3s; animation-duration: 20s; }
+        .particle:nth-child(3) { top: 6%; right: 10%; width: 4px; height: 4px; background: #ff6b6b; opacity: 0.45; animation-delay: -7s; animation-duration: 16s; }
+        .particle:nth-child(4) { top: 20%; left: 22%; width: 8px; height: 8px; background: #ffffff; opacity: 0.35; animation-delay: -1s; animation-duration: 22s; }
+        .particle:nth-child(5) { top: 15%; right: 28%; width: 12px; height: 12px; background: #ffe082; opacity: 0.33; animation-delay: -5s; animation-duration: 19s; }
+        .particle:nth-child(6) { top: 28%; left: 3%; width: 5px; height: 5px; background: #ffd740; opacity: 0.5; animation-delay: -9s; animation-duration: 14s; }
+        .particle:nth-child(7) { top: 32%; left: 52%; width: 7px; height: 7px; background: #ff6b6b; opacity: 0.4; animation-delay: -2s; animation-duration: 17s; }
+        .particle:nth-child(8) { top: 25%; right: 6%; width: 14px; height: 14px; background: #ffffff; opacity: 0.27; animation-delay: -11s; animation-duration: 21s; }
+        .particle:nth-child(9) { top: 40%; left: 12%; width: 9px; height: 9px; background: #ffe082; opacity: 0.33; animation-delay: -4s; animation-duration: 15s; }
+        .particle:nth-child(10) { top: 46%; left: 68%; width: 4px; height: 4px; background: #ffd740; opacity: 0.5; animation-delay: -8s; animation-duration: 18s; }
+        .particle:nth-child(11) { top: 43%; right: 3%; width: 11px; height: 11px; background: #ff6b6b; opacity: 0.3; animation-delay: -6s; animation-duration: 20s; }
+        .particle:nth-child(12) { top: 53%; left: 32%; width: 6px; height: 6px; background: #b2ebf2; opacity: 0.55; animation-delay: -10s; animation-duration: 16s; }
+        .particle:nth-child(13) { top: 58%; left: 80%; width: 13px; height: 13px; background: #ffffff; opacity: 0.25; animation-delay: -1s; animation-duration: 23s; }
+        .particle:nth-child(14) { top: 55%; right: 18%; width: 5px; height: 5px; background: #ffe082; opacity: 0.45; animation-delay: -7s; animation-duration: 14s; }
+        .particle:nth-child(15) { top: 66%; left: 8%; width: 8px; height: 8px; background: #ff6b6b; opacity: 0.4; animation-delay: -3s; animation-duration: 19s; }
+        .particle:nth-child(16) { top: 70%; left: 48%; width: 5px; height: 5px; background: #ffffff; opacity: 0.45; animation-delay: -12s; animation-duration: 17s; }
+        .particle:nth-child(17) { top: 63%; right: 32%; width: 10px; height: 10px; background: #ffd740; opacity: 0.33; animation-delay: -5s; animation-duration: 21s; }
+        .particle:nth-child(18) { top: 76%; left: 18%; width: 4px; height: 4px; background: #ffe082; opacity: 0.4; animation-delay: -9s; animation-duration: 15s; }
+        .particle:nth-child(19) { top: 80%; left: 62%; width: 14px; height: 14px; background: #ffffff; opacity: 0.25; animation-delay: -2s; animation-duration: 22s; }
+        .particle:nth-child(20) { top: 73%; right: 8%; width: 6px; height: 6px; background: #ff6b6b; opacity: 0.45; animation-delay: -6s; animation-duration: 18s; }
+        .particle:nth-child(21) { top: 86%; left: 38%; width: 7px; height: 7px; background: #ffd740; opacity: 0.35; animation-delay: -11s; animation-duration: 16s; }
+        .particle:nth-child(22) { top: 90%; left: 12%; width: 4px; height: 4px; background: #b2ebf2; opacity: 0.5; animation-delay: -4s; animation-duration: 20s; }
+        .particle:nth-child(23) { top: 88%; right: 22%; width: 11px; height: 11px; background: #ffffff; opacity: 0.23; animation-delay: -8s; animation-duration: 19s; }
+        .particle:nth-child(24) { top: 13%; left: 68%; width: 3px; height: 3px; background: #ff6b6b; opacity: 0.55; animation-delay: -13s; animation-duration: 13s; }
+        .particle:nth-child(25) { top: 48%; left: 28%; width: 3px; height: 3px; background: #ffe082; opacity: 0.6; animation-delay: -14s; animation-duration: 12s; }
 
         @keyframes particleFloat {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
-            25% { transform: translateY(-30px) translateX(10px); opacity: 0.6; }
-            50% { transform: translateY(-15px) translateX(-10px); opacity: 0.4; }
-            75% { transform: translateY(-40px) translateX(5px); opacity: 0.5; }
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-18px) translateX(8px); }
+            50% { transform: translateY(-8px) translateX(-6px); }
+            75% { transform: translateY(-22px) translateX(4px); }
         }
 
         /* ==================== 容器 ==================== */
@@ -751,8 +765,6 @@
         }
 
         .level-2 .game-header {
-            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 200, 83, 0.1) 100%);
-            border-bottom-color: var(--success-border);
         }
 
         .level-2 .level-badge {
@@ -768,13 +780,10 @@
         }
 
         .level-2 .brand-watermark {
-            color: var(--glow-success);
             text-shadow: none;
         }
 
         .level-3 .game-header {
-            background: linear-gradient(135deg, rgba(255, 215, 64, 0.15) 0%, rgba(255, 179, 0, 0.1) 100%);
-            border-bottom-color: var(--gold-border);
         }
 
         .level-3 .level-badge {
@@ -790,7 +799,6 @@
         }
 
         .level-3 .brand-watermark {
-            color: var(--glow-gold);
             text-shadow: none;
         }
 
@@ -1476,15 +1484,10 @@
 
         .eye-protection-control.disabled {
             opacity: 0.4;
-            background: var(--accent-bg-light);
-            border-color: var(--accent-border);
             color: var(--glow-primary);
-            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
         }
 
         .eye-protection-control.disabled:hover {
-            box-shadow: 0 4px 20px rgba(0, 229, 255, 0.4);
-            background: var(--accent-bg);
         }
 
         /* ==================== 过渡动画 ==================== */
@@ -2066,8 +2069,6 @@
         }
 
         .fullscreen-control.active {
-            background: rgba(0, 230, 118, 0.2);
-            border-color: rgba(0, 230, 118, 0.4);
             color: var(--glow-success);
         }
 
@@ -2222,13 +2223,10 @@
 }
 /* 难度配色覆盖（参考单人版level-2/level-3） */
 .battle-challenge .battle-game-header {
-    background: linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 200, 83, 0.1) 100%);
-    border-bottom-color: var(--success-border);
 }
-/* 挑战赛大背景：绿色系 */
+/* 挑战赛大背景：统一蓝色 */
 .battle-challenge.battle-game-screen,
 .battle-challenge .battle-game-screen {
-    background: linear-gradient(135deg, rgba(0, 230, 118, 0.08) 0%, rgba(0, 200, 83, 0.04) 100%);
 }
 .battle-challenge .battle-game-header .level-badge {
     color: var(--glow-success);
@@ -2241,22 +2239,17 @@
     background: rgba(0, 230, 118, 0.1);
 }
 .battle-challenge .battle-game-header .brand-watermark {
-    color: var(--glow-success);
     text-shadow: none;
 }
 .battle-champion .battle-game-header {
-    background: linear-gradient(135deg, rgba(255, 215, 64, 0.15) 0%, rgba(255, 179, 0, 0.1) 100%);
-    border-bottom-color: var(--gold-border);
 }
-/* 冠军赛大背景：金色系 */
+/* 冠军赛大背景：统一蓝色 */
 .battle-champion.battle-game-screen,
 .battle-champion .battle-game-screen {
-    background: linear-gradient(135deg, rgba(255, 215, 64, 0.08) 0%, rgba(255, 179, 0, 0.04) 100%);
 }
-/* 热身赛大背景：蓝色系 */
+/* 热身赛大背景：统一蓝色 */
 .battle-warmup.battle-game-screen,
 .battle-warmup .battle-game-screen {
-    background: linear-gradient(135deg, rgba(0, 229, 255, 0.08) 0%, rgba(79, 195, 247, 0.04) 100%);
 }
 .battle-champion .battle-game-header .level-badge {
     color: var(--glow-gold);
@@ -2269,7 +2262,6 @@
     background: rgba(255, 215, 64, 0.1);
 }
 .battle-champion .battle-game-header .brand-watermark {
-    color: var(--glow-gold);
     text-shadow: none;
 }
 
@@ -2392,7 +2384,7 @@ body.battle-active .fullscreen-control {
     border-radius: 12px;
     max-width: 100%;
     width: 100%;
-    
+    position: relative;
 }
 /* 棋盘宽度：对战版每侧半屏，限制max-width防止大屏格子过大 */
 @media (min-width: 400px) {
@@ -2582,7 +2574,7 @@ body.battle-active .fullscreen-control {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: transparent;
     border-radius: 12px;
     z-index: 10;
     flex-direction: column;
@@ -2627,6 +2619,32 @@ body.battle-active .fullscreen-control {
     color: var(--battle-blue);
     background: var(--battle-blue-bg-medium);
     border: 1px solid var(--battle-blue-border);
+}
+/* ==================== 对战版连击弹跳（棋盘内居中大字） ==================== */
+.battle-combo-pop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 10;
+    animation: battleComboPop 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    text-shadow: 0 0 12px currentColor;
+}
+.battle-side.red .battle-combo-pop {
+    color: #ff6b6b;
+}
+.battle-side.blue .battle-combo-pop {
+    color: var(--battle-blue);
+}
+@keyframes battleComboPop {
+    0% { transform: translate(-50%, -50%) scale(0.3) rotate(-15deg); opacity: 0; }
+    25% { transform: translate(-50%, -50%) scale(1.3) rotate(8deg); opacity: 1; }
+    50% { transform: translate(-50%, -60%) scale(1.1) rotate(-3deg); opacity: 1; }
+    100% { transform: translate(-50%, -80%) scale(1) rotate(0deg); opacity: 0; }
 }
 /* ==================== 倒计时动画 ==================== */
 .battle-countdown-overlay {
@@ -3616,22 +3634,22 @@ body.battle-active .fullscreen-control {
 
     /* ---------- G6. 全局：全屏/BGM浮动按钮 ---------- */
     .cute-theme .fullscreen-control {
-        background: rgba(240, 230, 225, 0.8);
+        background: transparent;
         color: #5a8a8a;
-        border-color: rgba(94, 196, 196, 0.2);
+        border-color: transparent;
         box-shadow: none;
     }
     .cute-theme .fullscreen-control:hover {
-        box-shadow: 0 2px 8px rgba(94, 196, 196, 0.15);
+        box-shadow: none;
     }
     .cute-theme .bgm-control {
-        background: rgba(240, 230, 225, 0.8);
+        background: transparent;
         color: #5a8a8a;
-        border-color: rgba(94, 196, 196, 0.2);
+        border-color: transparent;
         box-shadow: none;
     }
     .cute-theme .bgm-control:hover {
-        box-shadow: 0 2px 8px rgba(94, 196, 196, 0.15);
+        box-shadow: none;
     }
 
     /* ---------- F1. 对战准备页 ---------- */
@@ -3726,12 +3744,16 @@ body.battle-active .fullscreen-control {
 
     /* 对战等待遮罩 */
     .cute-theme .battle-waiting-overlay {
-        background: rgba(250, 240, 235, 0.85);
+        background: transparent;
     }
 
     /* 对战连击toast */
     .cute-theme .battle-combo-toast {
         border-radius: 50px;
+        text-shadow: none;
+    }
+    .cute-theme .battle-combo-pop {
+        font-family: '站酷快乐体', 'ZCOOL KuaiLe', cursive;
         text-shadow: none;
     }
 
@@ -3878,6 +3900,10 @@ body.battle-active .fullscreen-control {
     }
     .cute-theme .battle-combo-toast {
         font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+    .cute-theme .battle-combo-pop {
+        font-family: '站酷快乐体', 'ZCOOL KuaiLe', cursive;
+        text-shadow: none;
     }
     .cute-theme .battle-wrong-title {
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -4199,6 +4225,23 @@ body.battle-active .fullscreen-control {
         <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
     </div>
 
     <!-- 护眼模式控制 -->
@@ -4208,7 +4251,7 @@ body.battle-active .fullscreen-control {
     <button class="fullscreen-control" id="fullscreenToggle" title="全屏">⛶</button>
 
     <!-- 背景音乐控制 -->
-    <button class="bgm-control muted" id="bgmToggle" title="背景音乐">♪</button>
+    <button class="bgm-control" id="bgmToggle" title="背景音乐">♪</button>
 
     <div class="container">
         <!-- 开始界面 -->
@@ -5256,7 +5299,7 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
             bgmPlaying: false,
             bgmAudio: null,  // HTML5 Audio元素
             levelUnlocked: { 1: true, 2: true, 3: true },  // 三关全开放
-            eyeProtectionEnabled: true, // 护眼模式默认开启
+            eyeProtectionEnabled: false, // 护眼模式默认关闭
             levelScores: {},  // 每关得分记录 {1: 60, 2: 80, 3: 100}
             totalScore: 0     // 累计总分
         };
@@ -6303,27 +6346,19 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
                 resultWatermark.style.color = '';
                 resultWatermark.style.textShadow = '';
                 if (gameState.currentLevel === 2) {
-                    resultHeader.style.background = 'linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 200, 83, 0.1) 100%)';
-                    resultHeader.style.borderBottom = '1px solid rgba(0, 230, 118, 0.3)';
                     resultBackBtn.style.color = 'var(--glow-success)';
                     resultBackBtn.style.borderColor = 'rgba(0, 230, 118, 0.3)';
                     resultBackBtn.style.background = 'rgba(0, 230, 118, 0.1)';
                     resultLevelBadge.style.color = 'var(--glow-success)';
                     resultLevelBadge.style.borderColor = 'rgba(0, 230, 118, 0.3)';
                     resultLevelBadge.style.background = 'rgba(0, 230, 118, 0.1)';
-                    resultWatermark.style.color = 'var(--glow-success)';
-                    resultWatermark.style.textShadow = '0 0 8px rgba(0, 230, 118, 0.2)';
                 } else if (gameState.currentLevel === 3) {
-                    resultHeader.style.background = 'linear-gradient(135deg, rgba(255, 215, 64, 0.15) 0%, rgba(255, 179, 0, 0.1) 100%)';
-                    resultHeader.style.borderBottom = '1px solid rgba(255, 215, 64, 0.3)';
                     resultBackBtn.style.color = 'var(--glow-gold)';
                     resultBackBtn.style.borderColor = 'rgba(255, 215, 64, 0.3)';
                     resultBackBtn.style.background = 'rgba(255, 215, 64, 0.1)';
                     resultLevelBadge.style.color = 'var(--glow-gold)';
                     resultLevelBadge.style.borderColor = 'rgba(255, 215, 64, 0.3)';
                     resultLevelBadge.style.background = 'rgba(255, 215, 64, 0.1)';
-                    resultWatermark.style.color = 'var(--glow-gold)';
-                    resultWatermark.style.textShadow = '0 0 8px rgba(255, 215, 64, 0.2)';
                 }
                 // 星级评价
                 const resultStarCount = getStarRating(gameState.score, resultMaxScore);
@@ -8104,11 +8139,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 显示连击提示
         showComboToast(side, combo) {
-            // 与单人版一致：使用combo-display样式，居中大字弹跳动画
+            // 对战版专用：在红/蓝方棋盘中央弹出大字连击动画
             const comboEl = document.createElement('div');
-            comboEl.className = 'combo-display';
+            comboEl.className = 'battle-combo-pop';
             comboEl.textContent = combo + 'x 连击';
-            document.body.appendChild(comboEl);
+            const gridId = side === 'red' ? 'battleRedGrid' : 'battleBlueGrid';
+            document.getElementById(gridId).appendChild(comboEl);
             setTimeout(() => comboEl.remove(), 1000);
         },
 
@@ -8136,7 +8172,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.state.totalTime === 0) {
                 circle.style.strokeDasharray = circumference;
                 circle.style.strokeDashoffset = 0;
+                circle.style.stroke = '#00e676';
+                circle.style.transition = 'none';
                 text.textContent = '∞';
+                text.style.color = '#00e676';
                 // 无限模式只计时，不倒计时
                 this.state.timeUsed = 0;
                 this.timerInterval = setInterval(() => {
@@ -8148,6 +8187,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             circle.style.strokeDasharray = circumference;
             circle.style.strokeDashoffset = 0;
+            circle.style.stroke = '';
+            circle.style.transition = '';
+            text.style.color = '';
 
             this.timerInterval = setInterval(() => {
                 // 先判断是否即将到0，避免显示负数
@@ -8265,24 +8307,16 @@ document.addEventListener('DOMContentLoaded', () => {
             resultBackBtn.style.borderColor = '';
             resultBackBtn.style.background = '';
             if (this.state.diff === 'challenge') {
-                resultHeader.style.background = 'linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 200, 83, 0.1) 100%)';
-                resultHeader.style.borderBottom = '1px solid rgba(0, 230, 118, 0.3)';
                 resultDiffBadge.style.color = 'var(--glow-success)';
                 resultDiffBadge.style.borderColor = 'rgba(0, 230, 118, 0.3)';
                 resultDiffBadge.style.background = 'rgba(0, 230, 118, 0.1)';
-                resultWatermark.style.color = 'var(--glow-success)';
-                resultWatermark.style.textShadow = '0 0 8px rgba(0, 230, 118, 0.2)';
                 resultBackBtn.style.color = 'var(--glow-success)';
                 resultBackBtn.style.borderColor = 'rgba(0, 230, 118, 0.3)';
                 resultBackBtn.style.background = 'rgba(0, 230, 118, 0.1)';
             } else if (this.state.diff === 'champion') {
-                resultHeader.style.background = 'linear-gradient(135deg, rgba(255, 215, 64, 0.15) 0%, rgba(255, 179, 0, 0.1) 100%)';
-                resultHeader.style.borderBottom = '1px solid rgba(255, 215, 64, 0.3)';
                 resultDiffBadge.style.color = 'var(--glow-gold)';
                 resultDiffBadge.style.borderColor = 'rgba(255, 215, 64, 0.3)';
                 resultDiffBadge.style.background = 'rgba(255, 215, 64, 0.1)';
-                resultWatermark.style.color = 'var(--glow-gold)';
-                resultWatermark.style.textShadow = '0 0 8px rgba(255, 215, 64, 0.2)';
                 resultBackBtn.style.color = 'var(--glow-gold)';
                 resultBackBtn.style.borderColor = 'rgba(255, 215, 64, 0.3)';
                 resultBackBtn.style.background = 'rgba(255, 215, 64, 0.1)';
