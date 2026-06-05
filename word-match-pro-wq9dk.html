@@ -77,20 +77,20 @@
 
             /* === 对战红蓝色 === */
             --battle-red: #ff4444;
-            --battle-red-border: rgba(255, 68, 68, 0.5);
+            --battle-red-border: rgba(255, 68, 68, 0.6);
             --battle-red-border-light: rgba(255, 68, 68, 0.2);
             --battle-red-border-medium: rgba(255, 68, 68, 0.35);
             --battle-red-border-strong: rgba(255, 68, 68, 0.6);
             --battle-red-border-faint: rgba(255, 68, 68, 0.15);
-            --battle-red-bg: rgba(255, 68, 68, 0.08);
+            --battle-red-bg: rgba(255, 68, 68, 0.12);
             --battle-red-bg-medium: rgba(255, 68, 68, 0.15);
             --battle-blue: #4488ff;
-            --battle-blue-border: rgba(68, 136, 255, 0.5);
+            --battle-blue-border: rgba(68, 136, 255, 0.6);
             --battle-blue-border-light: rgba(68, 136, 255, 0.2);
             --battle-blue-border-medium: rgba(68, 136, 255, 0.35);
             --battle-blue-border-strong: rgba(68, 136, 255, 0.6);
             --battle-blue-border-faint: rgba(68, 136, 255, 0.15);
-            --battle-blue-bg: rgba(68, 136, 255, 0.08);
+            --battle-blue-bg: rgba(68, 136, 255, 0.12);
             --battle-blue-bg-medium: rgba(68, 136, 255, 0.15);
             --battle-grid-bg: #1e3058;
 
@@ -821,8 +821,8 @@
 
         /* ==================== 计时器 ==================== */
         .timer-container {
-            padding: 8px 0;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 0;
+            background: rgba(0, 0, 0, 0.15);
             width: 100%;
             max-width: 420px;
         }
@@ -860,13 +860,12 @@
 
         .timer-fill.danger {
             background: linear-gradient(90deg, var(--glow-error) 0%, #d32f2f 100%);
-            box-shadow: 0 0 15px rgba(255, 23, 68, 0.5);
-            animation: pulseDanger 0.5s ease infinite;
+            box-shadow: none;
         }
 
         @keyframes pulseDanger {
-            0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 23, 68, 0.5); }
-            50% { opacity: 0.7; box-shadow: 0 0 25px rgba(255, 23, 68, 0.8); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .timer-text {
@@ -882,7 +881,6 @@
         .timer-text.danger {
             color: var(--glow-error);
             text-shadow: none;
-            animation: pulseDanger 0.5s ease infinite;
         }
 
         /* ==================== 游戏网格 ==================== */
@@ -1392,7 +1390,7 @@
         .wrong-en {
             font-weight: bold;
             color: var(--glow-error);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Orbitron', sans-serif;
         }
 
@@ -1545,7 +1543,6 @@
             pointer-events: none;
             animation: confettiFall 3s ease-out forwards;
             z-index: 200;
-            box-shadow: 0 0 10px currentColor;
         }
 
         @keyframes confettiFall {
@@ -1822,8 +1819,11 @@
         .game-end-buttons {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
+            width: 100%;
+        }
+
+        .game-end-buttons .game-end-btn {
+            flex: 1;
         }
 
         .game-end-btn {
@@ -1854,8 +1854,8 @@
             color: var(--glow-primary);
             border: 1px solid var(--modal-border);
             box-shadow: 0 4px 12px rgba(0, 229, 255, 0.15);
-            font-size: 1.05rem;
-            padding: 14px 32px;
+            font-size: 0.85rem;
+            padding: 10px 16px;
             width: 100%;
             margin-top: 10px;
             font-family: 'Orbitron', sans-serif;
@@ -2689,6 +2689,10 @@ body.battle-active .fullscreen-control {
     0%, 100% { transform: scale(1); filter: drop-shadow(-8px 0 15px rgba(255, 68, 68, 0.6)) drop-shadow(8px 0 15px rgba(68, 136, 255, 0.6)); }
     50% { transform: scale(1.1); filter: drop-shadow(-12px 0 25px rgba(255, 68, 68, 0.8)) drop-shadow(12px 0 25px rgba(68, 136, 255, 0.8)); }
 }
+@keyframes cuteVsPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
 @keyframes battleWaitingDot {
     0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
@@ -3063,14 +3067,7 @@ body.battle-active .fullscreen-control {
     .theme-btn:active {
         transform: translateY(1px);
     }
-    .theme-btn.disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-        text-decoration: none;
-    }
-    .theme-btn.disabled:hover {
-        transform: none;
-    }
+
 
     /* ===== 温馨可爱风变量重定义（三层架构第1层） ===== */
     body.cute-theme {
@@ -3136,28 +3133,28 @@ body.battle-active .fullscreen-control {
 
         /* === 对战珊瑚/薄荷色（替代红蓝） === */
         --battle-red: #E8885A;
-        --battle-red-border: rgba(232, 136, 90, 0.5);
+        --battle-red-border: rgba(232, 136, 90, 0.6);
         --battle-red-border-light: rgba(232, 136, 90, 0.2);
         --battle-red-border-medium: rgba(232, 136, 90, 0.35);
         --battle-red-border-strong: rgba(232, 136, 90, 0.6);
         --battle-red-border-faint: rgba(232, 136, 90, 0.15);
-        --battle-red-bg: rgba(232, 136, 90, 0.08);
+        --battle-red-bg: rgba(232, 136, 90, 0.12);
         --battle-red-bg-medium: rgba(232, 136, 90, 0.15);
         --battle-blue: #5EC4C4;
-        --battle-blue-border: rgba(94, 196, 196, 0.5);
+        --battle-blue-border: rgba(94, 196, 196, 0.6);
         --battle-blue-border-light: rgba(94, 196, 196, 0.2);
         --battle-blue-border-medium: rgba(94, 196, 196, 0.35);
         --battle-blue-border-strong: rgba(94, 196, 196, 0.6);
         --battle-blue-border-faint: rgba(94, 196, 196, 0.15);
-        --battle-blue-bg: rgba(94, 196, 196, 0.08);
+        --battle-blue-bg: rgba(94, 196, 196, 0.12);
         --battle-blue-bg-medium: rgba(94, 196, 196, 0.15);
         --battle-grid-bg: #9ac6c6;
 
         /* === 单人版格子覆膜（粉色） === */
         --cell-en-bg: radial-gradient(ellipse at 50% 45%, #f0ddd5 0%, #f5e6e0 50%, #f8ede8 100%);
         --cell-cn-bg: radial-gradient(ellipse at 50% 45%, #f0ddd5 0%, #f5e6e0 50%, #f8ede8 100%);
-        --cell-en-border: rgba(232, 136, 90, 0.25);
-        --cell-cn-border: rgba(232, 136, 90, 0.25);
+        --cell-en-border: rgba(232, 136, 90, 0.3);
+        --cell-cn-border: rgba(232, 136, 90, 0.3);
 
         /* === 对战红蓝格子覆膜 === */
         --battle-red-cell-bg: radial-gradient(ellipse at 50% 45%, #f0ddd5 0%, #f5e6e0 50%, #f8ede8 100%);
@@ -3268,62 +3265,68 @@ body.battle-active .fullscreen-control {
 
     /* ---------- B1. 游戏页：header ---------- */
     .cute-theme .game-header {
-        background: #dceef0;
-        border-bottom-color: #b5d8d8;
+        background: #a0c4d0;
+        border-bottom-color: #8aaab8;
     }
     .cute-theme .level-badge {
         font-family: 'ZCOOL KuaiLe', sans-serif;
-        color: #7aabba;
-        background: rgba(255,255,255,0.5);
-        border-color: rgba(122,171,186,0.2);
+        color: #7aabba !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(122,171,186,0.2) !important;
     }
     .cute-theme .back-btn {
-        color: #7aabba;
-        border-color: rgba(122,171,186,0.2);
-        background: rgba(255,255,255,0.4);
+        color: #7aabba !important;
+        border-color: rgba(122,171,186,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
     }
     .cute-theme .back-btn:hover {
         box-shadow: 0 2px 8px rgba(122,171,186,0.12);
     }
     .cute-theme .brand-watermark {
-        color: rgba(122,171,186,0.5);
+        color: rgba(50,80,100,0.45) !important;
         font-family: 'ZCOOL KuaiLe', sans-serif;
     }
     /* 第2关：绿色系 */
     .cute-theme .level-2 .game-header {
-        background: #d4e8d4;
-        border-bottom-color: #b0d4b0;
+        background: #a0c4d0;
+        border-bottom-color: #8aaab8;
     }
     .cute-theme .level-2 .level-badge {
-        color: #7aaa7a;
-        background: rgba(255,255,255,0.5);
-        border-color: rgba(122,170,122,0.2);
+        color: #7aaa7a !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(122,170,122,0.2) !important;
     }
     .cute-theme .level-2 .back-btn {
-        color: #7aaa7a;
-        border-color: rgba(122,170,122,0.2);
-        background: rgba(255,255,255,0.4);
+        color: #7aaa7a !important;
+        border-color: rgba(122,170,122,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
     }
     .cute-theme .level-2 .brand-watermark {
-        color: rgba(122,170,122,0.5);
+        color: rgba(50,80,100,0.45) !important;
     }
     /* 第3关：暗黄色系（干净黄底） */
     .cute-theme .level-3 .game-header {
-        background: #f3ead8;
-        border-bottom-color: #e0d4b8;
+        background: #a0c4d0;
+        border-bottom-color: #8aaab8;
     }
     .cute-theme .level-3 .level-badge {
-        color: #b0a060;
-        background: rgba(255,255,255,0.5);
-        border-color: rgba(176,160,96,0.2);
+        color: #b0a060 !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(176,160,96,0.2) !important;
     }
     .cute-theme .level-3 .back-btn {
-        color: #b0a060;
-        border-color: rgba(176,160,96,0.2);
-        background: rgba(255,255,255,0.4);
+        color: #b0a060 !important;
+        border-color: rgba(176,160,96,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
     }
     .cute-theme .level-3 .brand-watermark {
-        color: rgba(176,160,96,0.5);
+        color: rgba(50,80,100,0.45) !important;
+    }
+
+    /* ---------- B1b. 结算页：header（统一深蓝） ---------- */
+    .cute-theme .result-header {
+        background: #a0c4d0;
+        border-bottom-color: #8aaab8;
     }
 
     /* ---------- B2. 游戏页：得分栏 ---------- */
@@ -3336,6 +3339,14 @@ body.battle-active .fullscreen-control {
     }
 
     /* ---------- B3. 游戏页：计时器 ---------- */
+    .cute-theme .timer-container {
+        background: rgba(180, 210, 210, 0.3);
+        padding: 4px 0;
+    }
+    .cute-theme .timer-bar {
+        background: rgba(180, 210, 210, 0.3);
+        box-shadow: none;
+    }
     .cute-theme .timer-text {
         color: #5a3a3a;
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -3343,8 +3354,10 @@ body.battle-active .fullscreen-control {
 
     /* ---------- B4. 游戏页：格子区域 ---------- */
     .cute-theme .grid-cell {
+        background: radial-gradient(ellipse at 50% 45%, #eddad2 0%, #f5e8e2 50%, #fdf5f2 100%);
         box-shadow: inset 0 1px 3px rgba(200, 140, 110, 0.25),
-                    inset 0 0 6px rgba(210, 155, 130, 0.1);
+                    inset 0 0 6px rgba(210, 155, 130, 0.1),
+                    0 1px 2px rgba(180, 140, 120, 0.08);
         border: 1.5px solid rgba(232, 136, 90, 0.25);
     }
     .cute-theme .grid-cell:hover {
@@ -3353,6 +3366,7 @@ body.battle-active .fullscreen-control {
         border-color: rgba(232, 136, 90, 0.4);
     }
     .cute-theme .grid-cell.selected {
+        background: radial-gradient(ellipse at 50% 45%, #e8cdc3 0%, #f0dbd3 50%, #f8efe9 100%);
         box-shadow: 0 2px 12px rgba(232, 136, 90, 0.2);
         border-color: #E8885A;
     }
@@ -3368,6 +3382,7 @@ body.battle-active .fullscreen-control {
     .cute-theme .grid-cell .cell-text {
         color: #4a8a5a;
         font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        font-size: 0.9rem;
     }
     .cute-theme .grid-cell .cell-cn-text {
         color: #5a3a3a;
@@ -3379,7 +3394,7 @@ body.battle-active .fullscreen-control {
     /* 格子匹配成功动画 */
     @keyframes cuteMatchExplode {
         0% { transform: scale(1); opacity: 1; }
-        30% { transform: scale(1.2); box-shadow: 0 0 15px rgba(123, 198, 126, 0.4); border-color: #7BC67E; }
+        30% { transform: scale(1.2); box-shadow: 0 0 15px rgba(123, 198, 126, 0.4); border-color: #7aaa7a; }
         60% { transform: scale(1.1); opacity: 1; }
         100% { transform: scale(0) rotate(90deg); opacity: 0; }
     }
@@ -3404,7 +3419,7 @@ body.battle-active .fullscreen-control {
 
     /* ---------- B5. 游戏页：品牌水印 ---------- */
     .cute-theme .brand-watermark {
-        color: rgba(122,171,186,0.5);
+        color: rgba(50,80,100,0.45) !important;
         font-family: 'ZCOOL KuaiLe', sans-serif;
     }
 
@@ -3415,7 +3430,7 @@ body.battle-active .fullscreen-control {
         letter-spacing: 1px;
     }
     .cute-theme .result-star {
-        color: #FFD166;
+        color: #b0a060;
         text-shadow: none; /* 已在补6中覆盖为更亮金色 */
     }
     .cute-theme .result-score {
@@ -3517,12 +3532,13 @@ body.battle-active .fullscreen-control {
         color: #b09a9a;
     }
     .cute-theme .game-end-wrong-list {
-        color: #a09090;
+        color: #7a6a6a;
+        font-size: 0.9rem !important;
     }
     .cute-theme .game-end-warning {
-        color: #c09a9a;
-        background: rgba(255, 209, 102, 0.08);
-        border-color: rgba(255, 209, 102, 0.3);
+        color: #b09a9a;
+        background: rgba(232, 139, 139, 0.12);
+        border-color: rgba(232, 139, 139, 0.25);
     }
 
     /* 弹窗内按钮已在补6中重新定义（轮廓风），此处由后面覆盖 */
@@ -3617,7 +3633,7 @@ body.battle-active .fullscreen-control {
 
     /* ---------- G4. 全局：胜利庆祝柔和化 ---------- */
     .cute-theme .victory-burst::before {
-        border-color: #7BC67E;
+        border-color: #7aaa7a;
         box-shadow: none;
     }
 
@@ -3653,9 +3669,32 @@ body.battle-active .fullscreen-control {
     }
 
     /* ---------- F1. 对战准备页 ---------- */
+    .cute-theme .battle-nickname-box.red {
+        border: 2.5px solid rgba(232, 136, 90, 0.7);
+        background: #f5e6dc;
+    }
+    .cute-theme .battle-nickname-box.blue {
+        border: 2.5px solid rgba(94, 196, 196, 0.7);
+        background: #daf0f4;
+    }
+    .cute-theme .battle-nickname-box .side-label {
+        font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+    .cute-theme .battle-nickname-box.red .side-label {
+        color: #E8885A;
+    }
+    .cute-theme .battle-nickname-box.blue .side-label {
+        color: #5EC4C4;
+    }
     .cute-theme .battle-nickname-box input {
         background: #f5f8fa;
         color: #5a3a3a;
+    }
+    .cute-theme .battle-nickname-box.red input {
+        border-color: rgba(232, 136, 90, 0.6);
+    }
+    .cute-theme .battle-nickname-box.blue input {
+        border-color: rgba(94, 196, 196, 0.6);
     }
     .cute-theme .battle-nickname-vs {
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -3664,23 +3703,73 @@ body.battle-active .fullscreen-control {
 
     /* ---------- F2. 对战游戏页 ---------- */
     .cute-theme .battle-game-header {
-        background: linear-gradient(135deg, rgba(94, 196, 196, 0.15), rgba(126, 200, 227, 0.1));
+        background: #a0c4d0;
+        border-bottom: 1px solid #8aaab8;
     }
     .cute-theme .battle-challenge .battle-game-header {
-        background: linear-gradient(135deg, rgba(123, 198, 126, 0.15), rgba(100, 180, 103, 0.1));
+        background: #a0c4d0;
     }
     .cute-theme .battle-champion .battle-game-header {
-        background: linear-gradient(135deg, rgba(255, 209, 102, 0.15), rgba(255, 179, 0, 0.1));
+        background: #a0c4d0;
     }
 
-    /* 对战格子：浅底 inset 阴影替代深色 inset */
+    /* 对战关卡标签 + 返回按钮（同步单人三关配色） */
+    .cute-theme .battle-game-header .level-badge {
+        color: #7aabba !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(122,171,186,0.2) !important;
+    }
+    .cute-theme .battle-game-header .back-btn {
+        color: #7aabba !important;
+        border-color: rgba(122,171,186,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
+    }
+    .cute-theme .battle-challenge .level-badge {
+        color: #7aaa7a !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(122,170,122,0.2) !important;
+    }
+    .cute-theme .battle-challenge .back-btn {
+        color: #7aaa7a !important;
+        border-color: rgba(122,170,122,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
+    }
+    .cute-theme .battle-champion .level-badge {
+        color: #b0a060 !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(176,160,96,0.2) !important;
+    }
+    .cute-theme .battle-champion .back-btn {
+        color: #b0a060 !important;
+        border-color: rgba(176,160,96,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
+    }
+
+    /* 对战品牌水印（统一深蓝绿） */
+    .cute-theme .battle-game-header .brand-watermark {
+        color: rgba(50,80,100,0.45) !important;
+    }
+    .cute-theme .battle-challenge .brand-watermark {
+        color: rgba(50,80,100,0.45) !important;
+    }
+    .cute-theme .battle-champion .brand-watermark {
+        color: rgba(50,80,100,0.45) !important;
+    }
+
+    /* 对战格子：浅底 inset 阴影替代深色 inset + 1.5px border对齐实验定稿 */
     .cute-theme .battle-side.red .battle-cell {
-        box-shadow: inset 0 1px 3px rgba(200, 160, 140, 0.2),
-                    inset 0 0 6px rgba(220, 180, 160, 0.1);
+        background: radial-gradient(ellipse at 50% 45%, #eed8d0 0%, #f5e3dc 50%, #fcf0ec 100%) !important;
+        border: 1.5px solid rgba(232, 136, 90, 0.3);
+        box-shadow: inset 0 1px 3px rgba(200, 140, 110, 0.25),
+                    inset 0 0 6px rgba(210, 155, 130, 0.1),
+                    0 1px 2px rgba(180, 130, 110, 0.08);
     }
     .cute-theme .battle-side.blue .battle-cell {
-        box-shadow: inset 0 1px 3px rgba(120, 170, 170, 0.2),
-                    inset 0 0 6px rgba(140, 180, 180, 0.1);
+        background: radial-gradient(ellipse at 50% 45%, #ccdfe2 0%, #d8e9ec 50%, #e4f1f3 100%) !important;
+        border: 1.5px solid rgba(94, 196, 196, 0.3);
+        box-shadow: inset 0 1px 3px rgba(120, 170, 170, 0.25),
+                    inset 0 0 6px rgba(140, 180, 180, 0.1),
+                    0 1px 2px rgba(70, 150, 150, 0.08);
     }
     .cute-theme .battle-side.red .battle-cell:hover {
         box-shadow: inset 0 1px 2px rgba(200, 160, 140, 0.15),
@@ -3691,10 +3780,12 @@ body.battle-active .fullscreen-control {
                     0 2px 6px rgba(94, 196, 196, 0.1);
     }
     .cute-theme .battle-side.red .battle-cell.selected {
+        background: radial-gradient(ellipse at 50% 45%, #e5cdc5 0%, #efd8d1 50%, #f6e8e3 100%) !important;
         box-shadow: inset 0 1px 2px rgba(232, 136, 90, 0.15),
                     0 2px 8px rgba(232, 136, 90, 0.15);
     }
     .cute-theme .battle-side.blue .battle-cell.selected {
+        background: radial-gradient(ellipse at 50% 45%, #b8d5d9 0%, #cce3e7 50%, #dceaed 100%) !important;
         box-shadow: inset 0 1px 2px rgba(94, 196, 196, 0.15),
                     0 2px 8px rgba(94, 196, 196, 0.15);
     }
@@ -3712,8 +3803,9 @@ body.battle-active .fullscreen-control {
 
     /* 对战格子内文字 */
     .cute-theme .battle-cell .cell-text {
-        color: #4a8a5a;
+        color: #5a8a8a;
         font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        font-size: 0.9rem;
     }
     .cute-theme .battle-cell .cell-cn-text {
         color: #5a3a3a;
@@ -3727,20 +3819,19 @@ body.battle-active .fullscreen-control {
         -webkit-text-fill-color: transparent;
         background-clip: text;
         filter: none;
-        animation: none;
+        animation: cuteVsPulse 2s ease-in-out infinite;
     }
 
     /* 对战倒计时 */
     .cute-theme .battle-countdown-num {
         font-family: 'ZCOOL KuaiLe', sans-serif;
+        color: #7aabba;
         text-shadow: none;
     }
-    .cute-theme .battle-challenge .battle-countdown-num {
-        color: #7BC67E;
+    .cute-theme .battle-countdown-num.go {
+        color: #E8885A;
     }
-    .cute-theme .battle-champion .battle-countdown-num {
-        color: #FFD166;
-    }
+    /* 对战321分色已改用JS设inline style（CSS选择器因overlay不在gameScreen内不生效） */
 
     /* 对战等待遮罩 */
     .cute-theme .battle-waiting-overlay {
@@ -3757,31 +3848,96 @@ body.battle-active .fullscreen-control {
         text-shadow: none;
     }
 
-    /* 对战计时环 warning/danger */
+    /* 对战计时环：去发光+可爱风配色（参考进度条色系） */
+    .cute-theme .battle-timer-ring {
+        filter: none;
+    }
+    .cute-theme .battle-timer-ring .ring-bg {
+        stroke: rgba(180, 210, 210, 0.3);
+    }
+    .cute-theme .battle-timer-ring .ring-progress {
+        stroke: #5EC4C4;
+    }
+    .cute-theme .battle-timer-ring .timer-text {
+        font-family: 'ZCOOL KuaiLe', sans-serif;
+        color: #5EC4C4;
+    }
     .cute-theme .battle-timer-ring .ring-progress.warning {
-        stroke: #FFD166;
+        stroke: #b0a060;
     }
     .cute-theme .battle-timer-ring .timer-text.warning {
-        color: #FFD166;
+        color: #b0a060;
+    }
+    .cute-theme .battle-timer-ring .ring-progress.danger {
+        stroke: #E8885A;
+    }
+    .cute-theme .battle-timer-ring .timer-text.danger {
+        color: #E8885A;
+        animation: none;
+    }
+    .cute-theme .battle-timer-ring.danger-pulse {
+        animation: none;
     }
 
     /* ---------- F3. 对战结算页 ---------- */
     .cute-theme .battle-result-header {
-        background: linear-gradient(135deg, rgba(94, 196, 196, 0.15), rgba(126, 200, 227, 0.1));
+        background: #a0c4d0;
+        border-bottom: 1px solid #8aaab8;
+    }
+    /* 对战结算页：关卡标签 + 返回按钮 + 品牌水印（同步游戏页） */
+    .cute-theme .battle-result-header .level-badge,
+    .cute-theme .battle-result-header .diff-badge {
+        color: #7aabba !important;
+        background: rgba(255,255,255,0.5) !important;
+        border-color: rgba(122,171,186,0.2) !important;
+    }
+    .cute-theme .battle-result-header .back-btn {
+        color: #7aabba !important;
+        border-color: rgba(122,171,186,0.2) !important;
+        background: rgba(255,255,255,0.4) !important;
+    }
+    .cute-theme .battle-result-header .brand-watermark {
+        color: rgba(50,80,100,0.45) !important;
     }
     .cute-theme .battle-result-title {
         font-family: 'ZCOOL KuaiLe', sans-serif;
     }
     .cute-theme .battle-result-title.draw {
-        color: #FFD166;
+        color: #5a3a3a;
+    }
+    .cute-theme .battle-end-warning {
+        color: #b09a9a;
+        background: rgba(232, 139, 139, 0.12);
+        border-color: rgba(232, 139, 139, 0.25);
+    }
+    /* 对战结算按钮高度统一 */
+    .cute-theme .battle-result-screen .game-end-btn-export {
+        font-size: 0.9rem !important;
+        padding: 12px 20px !important;
+        border-radius: 50px !important;
+        font-family: 'ZCOOL KuaiLe', sans-serif !important;
+    }
+    .cute-theme .battle-result-screen .btn-primary,
+    .cute-theme .battle-result-screen .btn-secondary {
+        font-size: 0.9rem !important;
+        padding: 12px 20px !important;
+        font-family: 'ZCOOL KuaiLe', sans-serif !important;
+    }
+    .battle-result-actions .btn {
+        margin-bottom: 0;
+    }
+    /* 单人结束页按钮统一高度（可爱风：btn-secondary与主按钮等高） */
+    .cute-theme .result-screen .btn-secondary {
+        font-size: 1rem !important;
+        padding: 14px 25px !important;
     }
     .cute-theme .battle-result-side.red {
-        border-color: rgba(232, 136, 90, 0.4);
-        background: rgba(232, 136, 90, 0.08);
+        border: 2.5px solid rgba(232, 136, 90, 0.7);
+        background: #f5e6dc;
     }
     .cute-theme .battle-result-side.blue {
-        border-color: rgba(94, 196, 196, 0.4);
-        background: rgba(94, 196, 196, 0.08);
+        border: 2.5px solid rgba(94, 196, 196, 0.7);
+        background: #daf0f4;
     }
     .cute-theme .battle-result-side.winner {
         box-shadow: 0 0 12px rgba(255, 209, 102, 0.25);
@@ -3794,7 +3950,8 @@ body.battle-active .fullscreen-control {
         color: #5a3a3a;
     }
     .cute-theme .battle-result-star {
-        color: #FFD166;
+        color: #FFE44D;
+        text-shadow: 0 0 12px rgba(255,228,77,0.7), 0 0 4px rgba(255,255,255,0.9);
     }
 
     /* ---------- F4. 对战记录页 ---------- */
@@ -3864,7 +4021,8 @@ body.battle-active .fullscreen-control {
     }
     .cute-theme .game-end-wrong-title {
         font-family: 'ZCOOL KuaiLe', sans-serif;
-        color: #c09090;
+        color: #8a6a6a;
+        font-weight: 700;
     }
     .cute-theme .game-end-btn-exit {
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -3881,9 +4039,21 @@ body.battle-active .fullscreen-control {
     }
     .cute-theme .countdown {
         font-family: 'ZCOOL KuaiLe', sans-serif;
+        color: var(--cute-num-color, #7aabba);
+        text-shadow: none;
+        animation: cuteCountBounce 1s ease infinite;
     }
     .cute-theme .level-intro h2 {
         font-family: 'ZCOOL KuaiLe', sans-serif;
+    }
+    .cute-theme .level-intro p {
+        font-family: 'ZCOOL KuaiLe', sans-serif;
+        color: #5a6a6a;
+    }
+    @keyframes cuteCountBounce {
+        0% { transform: scale(1); opacity: 1; }
+        40% { transform: scale(1.15); opacity: 0.9; }
+        100% { transform: scale(1); opacity: 1; }
     }
     .cute-theme .result-score {
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -3907,6 +4077,12 @@ body.battle-active .fullscreen-control {
     }
     .cute-theme .battle-wrong-title {
         font-family: 'ZCOOL KuaiLe', sans-serif;
+        color: #8a6a6a;
+        font-weight: 700;
+    }
+    .cute-theme .battle-wrong-list {
+        color: #7a6a6a;
+        font-size: 0.9rem !important;
     }
     .cute-theme .waiting-text {
         font-family: 'ZCOOL KuaiLe', sans-serif;
@@ -3934,7 +4110,7 @@ body.battle-active .fullscreen-control {
     }
     /* 金色数字修正：保留奶油金 */
     .cute-theme .grid-cell .cell-number {
-        color: #FFD166;
+        color: #b0a060;
     }
 
     /* ===== 补3：得分栏 + 计时器条 ===== */
@@ -3950,10 +4126,21 @@ body.battle-active .fullscreen-control {
     .cute-theme .motivation-stats .score-label {
         color: #8aa0a0;
     }
-    /* 计时器条填充 */
-    .cute-theme .timer-bar-fill {
+    /* 计时器条填充（修正类名：实际是timer-fill不是timer-bar-fill） */
+    .cute-theme .timer-fill {
         background: linear-gradient(90deg, #5EC4C4, #7EC8E3);
         box-shadow: none;
+    }
+    .cute-theme .timer-fill.warning {
+        background: linear-gradient(90deg, #FFD166, #FFB347);
+        box-shadow: none;
+    }
+    .cute-theme .timer-fill.danger {
+        background: linear-gradient(90deg, #E8885A, #E89898);
+        box-shadow: none;
+    }
+    .cute-theme .timer-text.danger {
+        color: #E8885A;
     }
 
     /* ===== 补4：词库标签按类型分色 + 3D质感 ===== */
@@ -4131,7 +4318,7 @@ body.battle-active .fullscreen-control {
         box-shadow: none !important;
         font-size: 0.85rem !important;
         padding: 8px 20px !important;
-        width: auto !important;
+        width: 100% !important;
     }
     .cute-theme .game-end-btn-exit:hover {
         color: #7a6a6a !important;
@@ -4182,6 +4369,13 @@ body.battle-active .fullscreen-control {
     .cute-theme .battle-grid-container {
         background: #9ac6c6;
         border-color: #7eb8b8;
+    }
+    /* 对战棋盘方框：红蓝分色border加宽对齐实验定稿 */
+    .cute-theme .battle-side.red .battle-grid {
+        border: 1.5px solid rgba(232, 136, 90, 0.3);
+    }
+    .cute-theme .battle-side.blue .battle-grid {
+        border: 1.5px solid rgba(94, 196, 196, 0.3);
     }
 
     /* 对战版按钮也统一轮廓风 */
@@ -4267,7 +4461,7 @@ body.battle-active .fullscreen-control {
                 <div class="theme-select-label">游戏风格：</div>
                 <div class="theme-buttons">
                     <button class="theme-btn active" data-theme="cool">科技炫酷风</button>
-                    <button class="theme-btn disabled" data-theme="cute" disabled title="即将推出">温馨可爱风 🎨即将推出</button>
+                    <button class="theme-btn" data-theme="cute">温馨可爱风</button>
                 </div>
             </div>
             
@@ -4326,15 +4520,15 @@ body.battle-active .fullscreen-control {
             <div class="level-select">
                 <button class="level-btn level-1-btn current" id="level1Btn" onclick="startGame(1)">
                     <span class="level-name">第1关</span>
-                    <span class="level-desc">4x3网格<br/>60秒</span>
+                    <span class="level-desc">4x3网格</span>
                 </button>
                 <button class="level-btn level-2-btn" id="level2Btn" onclick="startGame(2)">
                     <span class="level-name">第2关</span>
-                    <span class="level-desc">4x4网格<br/>75秒</span>
+                    <span class="level-desc">4x4网格</span>
                 </button>
                 <button class="level-btn level-3-btn" id="level3Btn" onclick="startGame(3)">
                     <span class="level-name">第3关</span>
-                    <span class="level-desc">4x5网格<br/>90秒</span>
+                    <span class="level-desc">4x5网格</span>
                 </button>
             </div>
             
@@ -4626,7 +4820,7 @@ body.battle-active .fullscreen-control {
             ⚠️ 关闭页面后成绩和错题将不再保留，建议导出保存。
         </div>
         
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;max-width:600px;width:100%;">
+        <div class="battle-result-actions" style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:8px;max-width:600px;width:100%;">
             <button class="game-end-btn game-end-btn-export" onclick="BattleGame.exportWrongWords()" style="width:100%;padding:14px 25px;border:none;border-radius:50px;font-size:1rem;font-weight:bold;cursor:pointer;transition:all 0.3s;touch-action:manipulation;font-family:'Orbitron',sans-serif;letter-spacing:1px;">+ 导出错题</button>
             <button class="btn btn-primary" onclick="BattleGame.replayBattle()" style="width:100%;">再来一局</button>
             <button class="btn btn-secondary" onclick="BattleGame.backToPrep()" style="width:100%;">返回首页</button>
@@ -6168,15 +6362,28 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
             const overlay = document.getElementById('transitionOverlay');
             const countdown = document.getElementById('countdownNum');
             const config = getLevelConfig(level);
+            const isCute = document.body.classList.contains('cute-theme');
             
-            // 根据关卡设置不同的过渡背景
-            const bgColors = {
+            // 根据关卡+主题设置不同的过渡背景
+            const bgColors = isCute ? {
+                1: 'rgba(240, 230, 220, 0.9)',
+                2: 'rgba(240, 230, 220, 0.9)',
+                3: 'rgba(240, 230, 220, 0.9)'
+            } : {
                 1: 'linear-gradient(135deg, rgba(0, 229, 255, 0.95) 0%, rgba(0, 77, 64, 0.95) 100%)',
                 2: 'linear-gradient(135deg, rgba(0, 230, 118, 0.95) 0%, rgba(0, 77, 64, 0.95) 100%)',
                 3: 'linear-gradient(135deg, rgba(255, 215, 64, 0.95) 0%, rgba(0, 77, 64, 0.95) 100%)'
             };
             
             overlay.style.background = bgColors[level] || bgColors[1];
+            
+            // 可爱风倒计时数字按关卡分色
+            const cuteNumColors = { 1: '#7aabba', 2: '#7aaa7a', 3: '#b0a060' };
+            if (isCute) {
+                countdown.style.setProperty('--cute-num-color', cuteNumColors[level] || cuteNumColors[1]);
+            } else {
+                countdown.style.removeProperty('--cute-num-color');
+            }
             
             overlay.style.display = 'flex';
             countdown.innerHTML = `
@@ -7919,14 +8126,28 @@ document.addEventListener('DOMContentLoaded', () => {
             overlay.appendChild(numEl);
             document.body.appendChild(overlay);
 
-            // 难度配色
+            // 难度配色（cute-theme不设inline text-shadow，由CSS控制）
+            const isCute = document.body.classList.contains('cute-theme');
             const gameScreen = document.getElementById('battleGameScreen');
-            if (gameScreen.classList.contains('battle-challenge')) {
-                numEl.style.color = '#00e676';
-                numEl.style.textShadow = '0 0 40px rgba(0,230,118,0.8), 0 0 80px rgba(0,230,118,0.4)';
-            } else if (gameScreen.classList.contains('battle-champion')) {
-                numEl.style.color = '#ffd740';
-                numEl.style.textShadow = '0 0 40px rgba(255,215,64,0.8), 0 0 80px rgba(255,215,64,0.4)';
+            if (!isCute) {
+                if (gameScreen.classList.contains('battle-challenge')) {
+                    numEl.style.color = '#00e676';
+                    numEl.style.textShadow = '0 0 40px rgba(0,230,118,0.8), 0 0 80px rgba(0,230,118,0.4)';
+                } else if (gameScreen.classList.contains('battle-champion')) {
+                    numEl.style.color = '#ffd740';
+                    numEl.style.textShadow = '0 0 40px rgba(255,215,64,0.8), 0 0 80px rgba(255,215,64,0.4)';
+                }
+            } else {
+                // cute-theme: 浅色overlay背景 + 难度分色
+                overlay.style.background = 'rgba(240, 230, 220, 0.9)';
+                overlay.style.backdropFilter = 'none';
+                if (gameScreen.classList.contains('battle-challenge')) {
+                    numEl.style.color = '#7aaa7a';
+                } else if (gameScreen.classList.contains('battle-champion')) {
+                    numEl.style.color = '#b0a060';
+                } else {
+                    numEl.style.color = '#7aabba';
+                }
             }
 
             const steps = ['3', '2', '1', 'ACTION'];
@@ -7935,12 +8156,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (i >= steps.length) {
                     overlay.remove();
                     cells.forEach(c => c.style.pointerEvents = 'auto');
-                    // 重新触发VS电流闪烁动画（倒计时overlay期间看不到）
+                    // 重新触发VS动画（cute-theme不重启科技风电流闪烁）
                     const vsText = document.querySelector('.battle-vs-text');
                     if (vsText) {
                         vsText.style.animation = 'none';
                         vsText.offsetHeight;
-                        vsText.style.animation = 'battleVsFlicker 1.5s ease-out, battleVsPulse 2s ease-in-out 1.5s infinite';
+                        vsText.style.animation = isCute ? 'cuteVsPulse 2s ease-in-out infinite' : 'battleVsFlicker 1.5s ease-out, battleVsPulse 2s ease-in-out 1.5s infinite';
                     }
                     this.startBattleTimer();
                     // 记录实际游戏开始时间（不含321倒计时）
@@ -7949,6 +8170,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 numEl.textContent = steps[i];
                 numEl.className = 'battle-countdown-num' + (i === steps.length - 1 ? ' go' : '');
+                // cute-theme: ACTION字色统一珊瑚色
+                if (isCute && i === steps.length - 1) { numEl.style.color = '#E8885A'; }
                 numEl.style.animation = 'none';
                 numEl.offsetHeight;
                 numEl.style.animation = '';
@@ -8456,11 +8679,14 @@ document.addEventListener('DOMContentLoaded', () => {
             warningEl.style.display = 'block';
 
             let html = '';
+            const isCute = document.body.classList.contains('cute-theme');
+            const redColor = isCute ? '#E8885A' : '#ff4444';
+            const blueColor = isCute ? '#5EC4C4' : '#4488ff';
             if (redWrong.length > 0) {
-                html += '<div><span style="color:#ff4444;font-weight:600;font-size:0.85rem;">红方：</span><span style="font-size:0.85rem;">' + redWrong.join('、') + '</span></div>';
+                html += '<div><span style="color:' + redColor + ';font-weight:600;font-size:0.9rem;">红方：</span><span style="font-size:0.9rem;">' + redWrong.join('、') + '</span></div>';
             }
             if (blueWrong.length > 0) {
-                html += '<div style="margin-top:6px;"><span style="color:#4488ff;font-weight:600;font-size:0.85rem;">蓝方：</span><span style="font-size:0.85rem;">' + blueWrong.join('、') + '</span></div>';
+                html += '<div style="margin-top:6px;"><span style="color:' + blueColor + ';font-weight:600;font-size:0.9rem;">蓝方：</span><span style="font-size:0.9rem;">' + blueWrong.join('、') + '</span></div>';
             }
             wrongList.innerHTML = html;
         },
