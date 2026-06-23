@@ -10,8 +10,8 @@
     <!-- 引入Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <style>
         /* ==================== 全局变量 ==================== */
         :root {
@@ -252,6 +252,7 @@
             
             .grid-cell .cell-emoji {
                 font-size: 2.2rem;
+                text-align: center;
             }
         }
 
@@ -274,6 +275,7 @@
             
             .grid-cell .cell-emoji {
                 font-size: 2.5rem;
+                text-align: center;
             }
         }
 
@@ -1007,6 +1009,19 @@
         .grid-cell .cell-emoji {
             font-size: 1.8rem;
             line-height: 1;
+            text-align: center;
+        }
+
+        /* 一词多义emoji手机端适配：稍小字号+加行距，避免两行挤在一起 */
+        @media (max-width: 767px) {
+            .cell-emoji.multi-meaning {
+                font-size: 1.4rem;
+                line-height: 1.4;
+            }
+            .battle-cell .cell-emoji.multi-meaning {
+                font-size: 1.4rem;
+                line-height: 1.4;
+            }
         }
 
         /* 数字格子的金黄色粗体样式 */
@@ -1890,15 +1905,14 @@
         }
 
         .vocab-save-modal {
-            background: linear-gradient(135deg, rgba(10, 14, 39, 0.98) 0%, rgba(26, 35, 126, 0.95) 100%);
-            border: 2px solid rgba(0, 230, 118, 0.4);
+            background: var(--modal-bg);
+            border: 2px solid var(--modal-border);
             border-radius: 20px;
             padding: 22px 18px;
             max-width: 320px;
             width: 90%;
             text-align: left;
-            box-shadow: 0 0 30px rgba(0, 230, 118, 0.2),
-                        0 15px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--card-shadow);
         }
 
         .vocab-save-title {
@@ -1918,17 +1932,17 @@
         .vocab-save-warning {
             font-size: 0.8rem;
             color: var(--glow-gold);
-            background: rgba(255, 215, 64, 0.08);
+            background: var(--gold-bg-light);
             padding: 10px;
             border-radius: 10px;
-            border: 1px dashed rgba(255, 215, 64, 0.3);
+            border: 1px dashed var(--gold-border);
             margin-bottom: 16px;
         }
 
         .vocab-save-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, var(--glow-success) 0%, #00c853 100%);
+            background: linear-gradient(135deg, var(--glow-success) 0%, var(--glow-primary) 100%);
             color: var(--bg-primary);
             border: none;
             border-radius: 50px;
@@ -1936,13 +1950,13 @@
             font-weight: bold;
             cursor: pointer;
             font-family: 'Orbitron', 'Courier New', 'Consolas', monospace, sans-serif;
-            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+            box-shadow: 0 4px 15px var(--success-bg-strong);
             transition: all 0.3s;
         }
 
         .vocab-save-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.5);
+            box-shadow: 0 6px 20px var(--success-bg-strong);
         }
 
         /* ==================== 模式选择区域 ==================== */
@@ -2441,7 +2455,7 @@ body.battle-active .fullscreen-control {
 }
 .battle-cell.matched { animation: matchExplode 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 .battle-cell.wrong { animation: techShake 0.6s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(135deg, rgba(255, 23, 68, 0.3) 0%, rgba(211, 47, 47, 0.2) 100%) !important; border-color: var(--glow-error) !important; box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3) !important; }
-.battle-cell .cell-emoji { font-size: 2.2rem; line-height: 1; }
+.battle-cell .cell-emoji { font-size: 2.2rem; line-height: 1; text-align: center; }
 .battle-cell .cell-text {
     font-size: 0.9rem;
     text-align: center;
@@ -3382,11 +3396,23 @@ body.battle-active .fullscreen-control {
     .cute-theme .grid-cell .cell-text {
         color: #4a8a5a;
         font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        font-size: 0.9rem;
     }
     .cute-theme .grid-cell .cell-cn-text {
         color: #5a3a3a;
     }
+    /* 温馨可爱风：一词多义圆点用暖灰棕，不突兀 */
+    .cute-theme .cell-emoji.multi-meaning { color: #9a7a6a; }
+
+    /* === 隐私模式弹窗：科技风默认 === */
+    .privacy-alert-overlay { background: rgba(0,0,0,0.6) !important; }
+    .privacy-alert-box { background: #fff !important; box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
+    .privacy-alert-box div { color: #333 !important; }
+    .privacy-alert-btn { background: linear-gradient(135deg,#667eea,#764ba2) !important; color: #fff !important; }
+    /* === 隐私模式弹窗：可爱风覆盖 === */
+    .cute-theme .privacy-alert-overlay { background: var(--overlay-bg) !important; }
+    .cute-theme .privacy-alert-box { background: var(--modal-bg) !important; border: 2px solid var(--modal-border) !important; box-shadow: var(--card-shadow) !important; }
+    .cute-theme .privacy-alert-box div { color: var(--text-primary) !important; }
+    .cute-theme .privacy-alert-btn { background: linear-gradient(135deg, var(--glow-success), var(--glow-primary)) !important; color: var(--bg-primary) !important; }
     .cute-theme .grid-cell .cell-image {
         background: rgba(255, 255, 255, 0.3);
     }
@@ -3805,7 +3831,6 @@ body.battle-active .fullscreen-control {
     .cute-theme .battle-cell .cell-text {
         color: #5a8a8a;
         font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        font-size: 0.9rem;
     }
     .cute-theme .battle-cell .cell-cn-text {
         color: #5a3a3a;
@@ -3991,6 +4016,11 @@ body.battle-active .fullscreen-control {
         border-color: rgba(94, 196, 196, 0.2);
     }
 
+    /* ---------- F7. 对战版：可爱风背景渐变（左蓝→右粉，交叉突显双方格子） ---------- */
+    body.cute-theme.battle-active {
+        background: linear-gradient(to right, #d4e8ee, #fce4dd) !important;
+    }
+
     /* ===== 补1：字体全覆盖 ===== */
     /* 所有含 Orbitron/Rajdhani 的选择器，可爱风下覆盖 */
     .cute-theme .nickname-input {
@@ -4032,6 +4062,11 @@ body.battle-active .fullscreen-control {
     }
     .cute-theme .vocab-save-btn {
         font-family: 'ZCOOL KuaiLe', 'KaiTi', 'STKaiti', 'Microsoft YaHei', sans-serif;
+    }
+    .cute-theme .vocab-save-warning {
+        color: #5a3a3a !important;
+        background: rgba(90, 58, 58, 0.08) !important;
+        border-color: rgba(90, 58, 58, 0.25) !important;
     }
     .cute-theme .export-btn {
         font-family: 'ZCOOL KuaiLe', 'KaiTi', 'STKaiti', 'Microsoft YaHei', sans-serif;
@@ -4404,18 +4439,7 @@ body.battle-active .fullscreen-control {
     }
 
     </style>
-    <!-- 希沃兼容：Google字体3秒超时保护 -->
-    <script>
-    (function(){
-        var timeout = setTimeout(function(){
-            var links = document.querySelectorAll("link[href*=fonts.googleapis]");
-            for(var i=0;i<links.length;i++){links[i].parentNode.removeChild(links[i]);}
-        }, 6000);
-        if(document.fonts && document.fonts.ready){
-            document.fonts.ready.then(function(){clearTimeout(timeout);});
-        }
-    })();
-    </script>
+
 </head>
 <body>
     <!-- 护眼滤镜层 -->
@@ -4957,11 +4981,47 @@ body.battle-active .fullscreen-control {
     <!-- 分享成就（隐藏canvas，用于生成下载图片） -->
     <canvas id="shareCardCanvas" style="display:none;"></canvas>
 
-    <script>
+        <script>
+        // ==================== 隐私浏览模式检测 ====================
+        function showPrivacyAlert() {
+            const overlay = document.createElement('div');
+            overlay.className = 'privacy-alert-overlay';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:99999;';
+            const box = document.createElement('div');
+            box.className = 'privacy-alert-box';
+            box.style.cssText = 'border-radius:16px;padding:28px 24px;max-width:340px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;';
+            const icon = document.createElement('div');
+            icon.style.cssText = 'font-size:2.4rem;margin-bottom:12px;';
+            icon.textContent = '⚠️';
+            const msg = document.createElement('div');
+            msg.style.cssText = 'font-size:0.95rem;line-height:1.6;margin-bottom:20px;';
+            msg.textContent = '当前浏览器为隐私浏览模式，词库和图片无法保存。请切换到正常浏览模式。';
+            const btn = document.createElement('button');
+            btn.className = 'privacy-alert-btn';
+            btn.style.cssText = 'border:none;border-radius:8px;padding:10px 32px;font-size:0.95rem;cursor:pointer;';
+            btn.textContent = '我知道了';
+            btn.onclick = () => overlay.remove();
+            box.appendChild(icon);
+            box.appendChild(msg);
+            box.appendChild(btn);
+            overlay.appendChild(box);
+            document.body.appendChild(overlay);
+        }
+        // 隐私模式检测（不区分浏览器，直接尝试写入）
+        try {
+            localStorage.setItem('__storage_test__', '1');
+            localStorage.removeItem('__storage_test__');
+        } catch(e) {
+            // 页面加载后再弹窗（确保document.body存在）
+            document.addEventListener('DOMContentLoaded', function() {
+                showPrivacyAlert();
+            });
+        }
+
         // ==================== 默认Emoji映射表 ====================
         const DEFAULT_EMOJIS = {
             // ===== 水果 =====
-            'apple': '🍎', 'banana': '🍌', 'orange': '🍊/🟠', 'grape': '🍇',
+            'apple': '🍎', 'banana': '🍌', 'orange': '🍊·🟠', 'grape': '🍇',
             'strawberry': '🍓', 'watermelon': '🍉', 'peach': '🍑', 'pear': '🍐',
             'cherry': '🍒', 'mango': '🥭', 'lemon': '🍋', 'pineapple': '🍍',
             'coconut': '🥥', 'blueberry': '🫐', 'melon': '🍈', 'kiwi': '🥝',
@@ -4974,7 +5034,7 @@ body.battle-active .fullscreen-control {
             'rice': '🍚', 'bread': '🍞', 'noodle': '🍜', 'pizza': '🍕',
             'sandwich': '🥪', 'hamburger': '🍔', 'dumpling': '🥟', 'pancake': '🥞',
             'waffle': '🧇', 'pretzel': '🥨', 'cheese': '🧀', 'egg': '🥚',
-            'meat': '🥩🍖', 'fish': '🐟', 'chicken': '🐔/🍗', 'steak': '🥩',
+            'meat': '🥩🍖', 'fish': '🐟', 'chicken': '🐔·🍗', 'steak': '🥩',
             'sausage': '🌭', 'bacon': '🥓',
             // ===== 饮品 =====
             'milk': '🥛', 'juice': '🧃', 'coffee': '☕', 'tea': '🍵',            'soda': '🥤', 'beer': '🍺', 'wine': '🍷', 'smoothie': '',
@@ -4992,7 +5052,7 @@ body.battle-active .fullscreen-control {
             // ===== 动物-农场 =====
             'cat': '🐱', 'dog': '🐕', 'bird': '🐦', 'pig': '🐷', 'duck': '🦆',
             'rabbit': '🐰', 'horse': '🐴', 'cow': '🐄', 'sheep': '🐑', 'goat': '🐐',
-            'chicken': '🐔/🍗', 'rooster': '🐓',            // ===== 动物-野生 =====
+            'chicken': '🐔·🍗', 'rooster': '🐓',            // ===== 动物-野生 =====
             'monkey': '🐵', 'tiger': '🐯', 'lion': '🦁', 'bear': '🐻',
             'elephant': '🐘', 'panda': '🐼', 'snake': '🐍', 'frog': '🐸',
             'zebra': '🦓', 'giraffe': '🦒', 'fox': '🦊', 'wolf': '🐺',
@@ -5002,12 +5062,12 @@ body.battle-active .fullscreen-control {
             'crocodile': '🐊', 'lizard': '🦎', 'gorilla': '🦍', 'hippo': '🦛',
             'rhino': '🦏', 'camel': '🐫', 'squirrel': '🐿️',            'butterfly': '🦋', 'bee': '🐝', 'ant': '🐜', 'ladybug': '🐞',
             'spider': '🕷️', 'snail': '🐌', 'worm': '🪱', 'mosquito': '🦟',
-            'fly': '🪰/✈️', 'beetle': '🪲',            // ===== 动物-宠物 =====
-            'hamster': '🐹', 'mouse': '🐭/🖱️', 'goldfish': '🐠', 'kitten': '🐱',
+            'fly': '🪰·✈️', 'beetle': '🪲',            // ===== 动物-宠物 =====
+            'hamster': '🐹', 'mouse': '🐭·🖱️', 'goldfish': '🐠', 'kitten': '🐱',
             'puppy': '🐶', 'bunny': '🐰', 'pet': '🐾',
             // ===== 颜色 =====
             'red': '🔴', 'blue': '🔵', 'green': '🟢', 'yellow': '🟡', 'white': '⚪',
-            'black': '⚫', 'pink': '🩷', 'purple': '🟣', 'brown': '🟤', 'orange': '🍊/🟠',
+            'black': '⚫', 'pink': '🩷', 'purple': '🟣', 'brown': '🟤', 'orange': '🍊·🟠',
             'grey': '🩶', 'gray': '🩶', 'gold': '🪙', 'silver': '',
             'colour': '🎨',            // ===== 身体部位 =====
             'eye': '👁', 'ear': '👂', 'nose': '👃', 'mouth': '👄', 'hand': '✋',
@@ -5027,7 +5087,7 @@ body.battle-active .fullscreen-control {
             'sixty': '60', 'seventy': '70', 'eighty': '80',
             'ninety': '90',
             'hundred': '100', 'thousand': '1000',
-            'first': '🥇', 'second': '🥈/⏱️', 'third': '🥉',
+            'first': '🥇', 'second': '🥈·⏱️', 'third': '🥉',
             // ===== 中文数字（用户导入中文数字时匹配） =====
             '一': '1', '二': '2', '三': '3', '四': '4', '五': '5',
             '六': '6', '七': '7', '八': '8', '九': '9', '十': '10',
@@ -5058,13 +5118,13 @@ body.battle-active .fullscreen-control {
             'textbook': '📖', 'workbook': '📒',
             // ===== 教室其他 =====
             'window': '🪟', 'door': '🚪', 'floor': '🧹', 'wall': '🧱',
-            'light': '💡/🪶', 'lamp': '💡', 'fan': '🪭', 'board': '📋',
+            'light': '💡·🪶', 'lamp': '💡', 'fan': '🪭', 'board': '📋',
             // ===== 衣服 =====
             'shirt': '👕', 'dress': '👗', 'skirt': '👘', 'coat': '🧥', 'hat': '🎩',
             'cap': '🧢', 'shoe': '👟', 'boot': '🥾', 'sock': '🧦', 'tie': '',
             'belt': '', 'scarf': '🧣', 'glove': '🧤', 'jacket': '',
             'sweater': '🧶', 'uniform': '👔', 'pajamas': '', 'glasses': '👓',
-            'sunglasses': '🕶️', 'watch': '⌚/👀', 'ring': '💍', 'necklace': '📿',
+            'sunglasses': '🕶️', 'watch': '⌚·👀', 'ring': '💍', 'necklace': '📿',
             'pants': '👖', 'jeans': '👖', 'shorts': '🩳', 'tshirt': '👕',
             // ===== 交通 =====
             'car': '🚗', 'bus': '🚌', 'train': '🚂', 'plane': '✈️', 'bike': '🚲',
@@ -5108,11 +5168,11 @@ body.battle-active .fullscreen-control {
             'fast': '⚡', 'slow': '🐌', 'new': '✨', 'old': '',
             'good': '👍', 'bad': '👎', 'beautiful': '', 'ugly': '',
             'clean': '', 'dirty': '', 'easy': '😊', 'hard': '',
-            'heavy': '🏋️', 'light': '💡/🪶', 'strong': '💪', 'weak': '🥀',
+            'heavy': '🏋️', 'light': '💡·🪶', 'strong': '💪', 'weak': '🥀',
             'loud': '📢', 'quiet': '🤫', 'soft': '🧸', 'rough': '🪨',
             'smooth': '🪞', 'rich': '💰', 'poor': '', 'full': '',
             'empty': '', 'busy': '', 'free': '', 'safe': '',
-            'dangerous': '⚠️', 'funny': '😂', 'serious': '😐',            'different': '🔀', 'same': '🔄', 'right': '✅/➡️',            'yes': '✅', 'no': '❌', 'true': '✅',            'open': '📂', 'closed': '📁', 'high': '🏔',            'deep': '🕳', 'shallow': '🫗', 'dark': '🌑', 'bright': '☀️',
+            'dangerous': '⚠️', 'funny': '😂', 'serious': '😐',            'different': '🔀', 'same': '🔄', 'right': '✅·➡️',            'yes': '✅', 'no': '❌', 'true': '✅',            'open': '📂', 'closed': '📁', 'high': '🏔',            'deep': '🕳', 'shallow': '🫗', 'dark': '🌑', 'bright': '☀️',
             'round': '🔵', 'flat': '📐', 'sweet': '🍬',            'dry': '🏜', 'wet': '💧', 'ready': '✅', 'favorite': '⭐',
             'cute': '🥰', 'smart': '', 'lazy': '🦥',            'lucky': '🍀', 'careful': '⚠️', 'wonderful': '👍',            'delicious': '😋', 'lovely': '🥰', 'interesting': '', 'boring': '😒',
             // ===== 动词-运动 =====
@@ -5120,9 +5180,9 @@ body.battle-active .fullscreen-control {
             'climb': '🧗', 'dance': '💃', 'sing': '🎤', 'play': '🎮',
             'kick': '', 'throw': '🤾', 'catch': '🤲', 'hit': '🏏',
             'pull': '🏋️', 'push': '🤼', 'carry': '📦', 'lift': '🏋️',
-            'stretch': '🧘', 'exercise': '', 'ride': '🏇',            'fly': '🪰/✈️', 'sail': '⛵', 'slide': '⛸',            'spin': '🔄', 'shake': '🤝', 'bounce': '🏀',            'stand': '🧍', 'sit': '', 'lie': '🛌',            // ===== 动词-日常 =====
+            'stretch': '🧘', 'exercise': '', 'ride': '🏇',            'fly': '🪰·✈️', 'sail': '⛵', 'slide': '⛸',            'spin': '🔄', 'shake': '🤝', 'bounce': '🏀',            'stand': '🧍', 'sit': '', 'lie': '🛌',            // ===== 动词-日常 =====
             'eat': '', 'drink': '🥤🧃', 'cook': '👨‍🍳', 'sleep': '😴',
-            'wake': '', 'wash': '🧼', 'brush': '🪥/🖌️',            'dress': '👗', 'wear': '👕', 'buy': '🛒',            'give': '', 'take': '✊', 'send': '📨',            'make': '🔨', 'build': '🏗️', 'break': '💔',            'open': '📂', 'close': '📁', 'turn': '🔄',            'stop': '✋', 'start': '▶️', 'finish': '🏁',            'try': '💪', 'help': '🆘', 'share': '',            'look': '👀', 'see': '👁', 'watch': '⌚/👀',            'hear': '👂', 'speak': '🗣', 'talk': '💬',            'tell': '', 'ask': '❓', 'answer': '',            'write': '✍️', 'draw': '🖍️', 'paint': '🎨🖌️',            'color': '🎨/🖍️', 'count': '🔢', 'spell': '🔤',            'know': '💡', 'learn': '', 'teach': '👨‍🏫',            'remember': '', 'forget': '🤷', 'understand': '💡',            'show': '👁', 'find': '🔍', 'search': '🔍',            'keep': '', 'leave': '👋', 'arrive': '📍',            'call': '', 'pick': '🤏', 'choose': '👆',            'grow': '🌱', 'plant': '', 'water': '💧',            'clean': '', 'tidy': '', 'organize': '📋', 'pack': '🎒',
+            'wake': '', 'wash': '🧼', 'brush': '🪥·🖌️',            'dress': '👗', 'wear': '👕', 'buy': '🛒',            'give': '', 'take': '✊', 'send': '📨',            'make': '🔨', 'build': '🏗️', 'break': '💔',            'open': '📂', 'close': '📁', 'turn': '🔄',            'stop': '✋', 'start': '▶️', 'finish': '🏁',            'try': '💪', 'help': '🆘', 'share': '',            'look': '👀', 'see': '👁', 'watch': '⌚·👀',            'hear': '👂', 'speak': '🗣', 'talk': '💬',            'tell': '', 'ask': '❓', 'answer': '',            'write': '✍️', 'draw': '🖍️', 'paint': '🎨🖌️',            'color': '🎨·🖍️', 'count': '🔢', 'spell': '🔤',            'know': '💡', 'learn': '', 'teach': '👨‍🏫',            'remember': '', 'forget': '🤷', 'understand': '💡',            'show': '👁', 'find': '🔍', 'search': '🔍',            'keep': '', 'leave': '👋', 'arrive': '📍',            'call': '', 'pick': '🤏', 'choose': '👆',            'grow': '🌱', 'plant': '', 'water': '💧',            'clean': '', 'tidy': '', 'organize': '📋', 'pack': '🎒',
             'work': '', 'rest': '', 'relax': '', 'celebrate': '',
             // ===== 家居 =====
             'table': '', 'bed': '🛏', 'sofa': '', 'couch': '',
@@ -5139,7 +5199,7 @@ body.battle-active .fullscreen-control {
             'bottle': '🍶', 'cup': '🥤', 'glass': '🥂', 'plate': '',
             'bowl': '🥣', 'spoon': '🥄', 'fork': '🍴', 'knife': '🔪',
             'chopstick': '🥢', 'chopsticks': '🥢', 'tray': '📋',
-            'tissue': '🧻', 'napkin': '🧻', 'soap': '🧼',            'toothpaste': '🪥', 'comb': '💇', 'brush': '🪥/🖌️', 'towel': '',
+            'tissue': '🧻', 'napkin': '🧻', 'soap': '🧼',            'toothpaste': '🪥', 'comb': '💇', 'brush': '🪥·🖌️', 'towel': '',
             'money': '💰', 'coin': '🪙', 'bill': '💵', 'wallet': '👛',
             'card': '🃏', 'letter': '✉️', 'stamp': '📬', 'gift': '🎁',
             'present': '🎁', 'toy': '🧸', 'doll': '🪆', 'ball': '🏀⚽',
@@ -5147,7 +5207,7 @@ body.battle-active .fullscreen-control {
             'match': '', 'battery': '🔋', 'plug': '🔌', 'camera': '📷',
             'photo': '📸', 'picture': '🖼️', 'radio': '📻', 'headphone': '🎧',
             'headphones': '🎧', 'speaker': '🔊', 'mic': '', 'microphone': '',
-            'remote': '📱', 'screen': '📺', 'mouse': '🐭/🖱️', 'keyboard': '⌨️',
+            'remote': '📱', 'screen': '📺', 'mouse': '🐭·🖱️', 'keyboard': '⌨️',
             'printer': '🖨️', 'flashlight': '🔦', 'binoculars': '🔭',
             'magnifier': '🔍', 'compass': '🧭', 'scale': '⚖️',
             'thermometer': '🌡️', 'bandage': '🩹', 'medicine': '💊',
@@ -5164,8 +5224,8 @@ body.battle-active .fullscreen-control {
             'may': '🗓️', 'june': '🗓️', 'july': '🗓️', 'august': '🗓️',
             'september': '🗓️', 'october': '🗓️', 'november': '🗓️', 'december': '🗓️',
             'week': '', 'month': '📅', 'year': '📅', 'hour': '🕐',
-            'minute': '⏱️', 'second': '🥈/⏱️', 'time': '⏰', 'clock': '🕐',
-            'watch': '⌚/👀', 'alarm': '⏰', 'calendar': '📅', 'birthday': '🎂',
+            'minute': '⏱️', 'second': '🥈·⏱️', 'time': '⏰', 'clock': '🕐',
+            'watch': '⌚·👀', 'alarm': '⏰', 'calendar': '📅', 'birthday': '🎂',
             'holiday': '🎄', 'vacation': '🏖', 'festival': '', 'christmas': '🎄🎅',
             'halloween': '🎃👻', 'new year': '🎆', 'valentine': '💝',
             // ===== 运动 =====
@@ -5185,7 +5245,7 @@ body.battle-active .fullscreen-control {
             'diamond': '🔷', 'star': '⭐', 'heart': '❤️', 'oval': '🥚',
             'line': '➖', 'dot': '⚫', 'cross': '✖️', 'arrow': '➡️',
             'shape': '🔷', 'pattern': '🔵🔴🟢',            // ===== 方位 =====
-            'left': '⬅️', 'right': '✅/➡️', 'up': '⬆️', 'down': '⬇️',
+            'left': '⬅️', 'right': '✅·➡️', 'up': '⬆️', 'down': '⬇️',
             'inside': '📦', 'outside': '🌍', 'between': '↔️', 'next': '👉',
             'behind': '🔙', 'front': '🔛', 'above': '⬆️', 'below': '⬇️',
             'near': '📍', 'far': '🔭', 'here': '📍', 'there': '👉',
@@ -5296,7 +5356,7 @@ body.battle-active .fullscreen-control {
                 { en: 'horse', cn: '马', emoji: '🐴' },
                 { en: 'cow', cn: '牛', emoji: '🐄' },
                 { en: 'sheep', cn: '羊', emoji: '🐑' },
-                { en: 'chicken', cn: '鸡', emoji: '🐔/🍗' },
+                { en: 'chicken', cn: '鸡', emoji: '🐔·🍗' },
                 { en: 'monkey', cn: '猴子', emoji: '🐵' },
                 { en: 'tiger', cn: '老虎', emoji: '🐯' },
                 { en: 'lion', cn: '狮子', emoji: '🦁' },
@@ -5317,7 +5377,7 @@ body.battle-active .fullscreen-control {
                 { en: 'black', cn: '黑色', emoji: '⚫' },
                 { en: 'pink', cn: '粉色', emoji: '🩷' },
                 { en: 'purple', cn: '紫色', emoji: '🟣' },
-                { en: 'orange', cn: '橙色', emoji: '🍊/🟠' },
+                { en: 'orange', cn: '橙色', emoji: '🍊·🟠' },
                 { en: 'brown', cn: '棕色', emoji: '🟤' },
                 { en: 'grey', cn: '灰色', emoji: '🩶' }
             ]
@@ -6154,14 +6214,14 @@ const BGM_BASE64 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjEyLjEwMAAAAAAAAAAAAAAA
                         // 有图片时用图片，fallback到emoji或数字
                         const fallbackTag = isNumber 
                             ? `<span class="cell-number" style="display:none;">${emoji}</span>`
-                            : `<span class="cell-emoji" style="display:none;">${emoji}</span>`;
+                            : `<span class="cell-emoji${emoji.includes('·') ? ' multi-meaning' : ''}" style="display:none;">${emoji}</span>`;
                         content = `<img class="cell-image" src="${cell.vocab.imgPath}" alt="${cell.text}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">${fallbackTag}`;
                     } else if (isNumber) {
                         // 纯数字显示金黄色粗体
                         content = '<span class="cell-number">' + emoji + '</span>';
                     } else if (hasEmoji) {
-                        // 有emoji则显示emoji
-                        content = '<span class="cell-emoji">' + emoji + '</span>';
+                        // 有emoji则显示emoji（一词多义含·加专属class）
+                        content = '<span class="cell-emoji' + (emoji.includes('·') ? ' multi-meaning' : '') + '">' + emoji + '</span>';
                     } else {
                         // 没有emoji则只显示中文文字，不显示占位符
                         content = '<span class="cell-cn-text">' + cell.text + '</span>';
@@ -8260,7 +8320,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.dataset.index = index;
 
                 if (cell.displayType === 'emoji') {
-                    div.innerHTML = '<span class="cell-emoji">' + cell.display + '</span>';
+                    div.innerHTML = '<span class="cell-emoji' + (cell.display.includes('·') ? ' multi-meaning' : '') + '">' + cell.display + '</span>';
                 } else if (cell.displayType === 'number') {
                     div.innerHTML = '<span class="cell-number">' + cell.display + '</span>';
                 } else if (cell.displayType === 'cn') {
