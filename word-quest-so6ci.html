@@ -127,7 +127,7 @@ setTimeout(function() {
   --syl-color-6: var(--color-pink-500);
   
   /* 背景语义 */
-  --bg-body: radial-gradient(circle, var(--color-white) 30%, var(--color-dark-950) 100%);
+  --bg-body: #ffffff;
   --bg-surface: var(--color-white);
   --bg-surface-muted: var(--color-gray-100);
   --bg-control-bar: var(--color-dark-900);
@@ -5298,7 +5298,6 @@ async function handleL2StartRecording() {
   if (result && result.score > 0) {
     const coinCount = Math.round(result.score / 10);
     if (coinCount > 0) {
-      AudioManager.playSFX('coin');
       showCoinAnimation(coinCount);
     }
   }
@@ -6279,8 +6278,8 @@ setTimeout(function() { hideLoadingOverlay(); }, 500);
         if (currentDevice === 'phone') {
             // 默认状态：检测真实浏览器尺寸
             if (window.innerWidth <= 430) {
-                // 真实手机：不缩放，1:1 显示
-                scaleRatio = 1.0;
+                // 真实手机：按宽度铺满缩放
+                scaleRatio = window.innerWidth / BASE_W;
             } else {
                 // 非手机浏览器（笔记本/平板/大屏）：按可用高度占满缩放
                 // 可用高度 = 视口高度 - 控制栏高度（flex 布局自动留出控制栏空间）
@@ -6407,24 +6406,5 @@ setTimeout(function() { hideLoadingOverlay(); }, 500);
 
 </body>
 <script>
-// 下载按钮
-(function(){
-  var btn = document.createElement('button');
-  btn.textContent = '📥 下载线框图';
-  btn.style.cssText = 'position:fixed;bottom:16px;right:16px;z-index:9999;padding:10px 16px;background:#4caf50;color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.15);';
-  btn.onclick = function(){
-    var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-    var blob = new Blob([html], {type: 'text/html;charset=utf-8'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = '三关背单词-线框图.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-  document.body.appendChild(btn);
-})();
 </script>
 </html>
