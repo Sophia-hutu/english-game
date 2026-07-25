@@ -2296,8 +2296,8 @@ const GameController = {
         console.log('[GameController] 结束关卡:', currentLevel);
         finalizeLevel(currentLevel);
         
-        const score = currentLevel === 1 ? l1Score : currentLevel === 2 ? l2Score : l3Score;
-        const stars = currentLevel === 1 ? l1Stars : currentLevel === 2 ? l2Stars : l3Stars;
+        const score = currentLevel === 1 ? levelScores.l1 : currentLevel === 2 ? levelScores.l2 : levelScores.l3;
+        const stars = currentLevel === 1 ? levelStars.l1 : currentLevel === 2 ? levelStars.l2 : levelStars.l3;
         const correctCount = questionResults.filter(r => r.level === currentLevel && r.score > 0).length;
         const totalCount = questionOrder.length;
         
@@ -2316,9 +2316,9 @@ const GameController = {
             EventBus.emit('game:complete', {
                 totalScore, totalStars,
                 breakdown: {
-                    l1: { score: l1Score, stars: l1Stars, weight: 0.3 },
-                    l2: { score: l2Score, stars: l2Stars, weight: 0.3 },
-                    l3: { score: l3Score, stars: l3Stars, weight: 0.4 }
+                    l1: { score: levelScores.l1, stars: levelStars.l1, weight: 0.3 },
+                    l2: { score: levelScores.l2, stars: levelStars.l2, weight: 0.3 },
+                    l3: { score: levelScores.l3, stars: levelStars.l3, weight: 0.4 }
                 }
             });
         }
@@ -2437,8 +2437,8 @@ const LevelFlowManager = {
     },
     
     calculateLevelResult(level) {
-        const score = level === 1 ? l1Score : level === 2 ? l2Score : l3Score;
-        const stars = level === 1 ? l1Stars : level === 2 ? l2Stars : l3Stars;
+        const score = level === 1 ? levelScores.l1 : level === 2 ? levelScores.l2 : levelScores.l3;
+        const stars = level === 1 ? levelStars.l1 : level === 2 ? levelStars.l2 : levelStars.l3;
         const levelResults = questionResults.filter(r => r.level === level);
         const correctCount = levelResults.filter(r => r.score > 0).length;
         const totalCount = questionOrder.length;
@@ -2463,7 +2463,7 @@ const ScoreSystem = {
         recordQuestionScore(questionIndex, score);
         EventBus.emit('score:update', {
             questionIndex, score,
-            levelScore: currentLevel === 1 ? l1Score : currentLevel === 2 ? l2Score : l3Score
+            levelScore: currentLevel === 1 ? levelScores.l1 : currentLevel === 2 ? levelScores.l2 : levelScores.l3
         });
     },
     
@@ -2479,9 +2479,9 @@ const ScoreSystem = {
             totalScore,
             totalStars,
             breakdown: {
-                l1: { score: l1Score, stars: l1Stars, weight: 0.3 },
-                l2: { score: l2Score, stars: l2Stars, weight: 0.3 },
-                l3: { score: l3Score, stars: l3Stars, weight: 0.4 }
+                l1: { score: levelScores.l1, stars: levelStars.l1, weight: 0.3 },
+                l2: { score: levelScores.l2, stars: levelStars.l2, weight: 0.3 },
+                l3: { score: levelScores.l3, stars: levelStars.l3, weight: 0.4 }
             }
         };
     },
@@ -2553,7 +2553,7 @@ const L1Engine = {
             score = isFirstAttempt ? 100 : 50;
             this._questionAnswered = true;
             ScoreSystem.recordScore(currentQuestionIndex, score);
-            EventBus.emit('question:correct', { score, isFirstAttempt, totalScore: l1Score });
+            EventBus.emit('question:correct', { score, isFirstAttempt, totalScore: levelScores.l1 });
         } else {
             this._excludedOptions.push(optionIndex);
             this._attemptCount++;
@@ -2702,7 +2702,7 @@ const L2Engine = {
             score = isFirstAttempt ? 100 : 50;
             this._questionAnswered = true;
             ScoreSystem.recordScore(currentQuestionIndex, score);
-            EventBus.emit('question:correct', { score, isFirstAttempt, totalScore: l2Score });
+            EventBus.emit('question:correct', { score, isFirstAttempt, totalScore: levelScores.l2 });
         } else {
             this._attemptCount++;
             EventBus.emit('question:wrong', {
@@ -2986,9 +2986,15 @@ const ASRManager = {
     },
     
     async start(targetWord) {
-        if (!this._available || !this._recognition) {
+        if (!this._available || !this._SpeechRecognition) {
             return { recognized: '', similarity: 0, tier: 'retry', score: 0, feedback: '语音识别不可用' };
         }
+        
+        // 每次创建新 recognition 实例，避免 "recognition has already started" 错误
+        this._recognition = new this._SpeechRecognition();
+        this._recognition.lang = 'en-US';
+        this._recognition.continuous = false;
+        this._recognition.interimResults = false;
         
         // 重置识别实例（1b增强：onend后重置）
         this._isStopping = false;
