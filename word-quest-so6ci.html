@@ -217,7 +217,6 @@ setTimeout(function() {
   --big-img-bg: var(--bg-surface-muted);
   --big-img-radius: var(--radius-card);
   --big-emoji-size: 120px;
-  --hint-emoji-size: 120px;
   
   /* 选词格子 */
   --word-choice-border: var(--color-orange-300);
@@ -312,7 +311,7 @@ setTimeout(function() {
 }
 
 /* Noto Emoji 样式 */
-.emoji, .img-emoji, .big-emoji, .hint-emoji, .mic-btn, .mode-btn, .play-btn, .tip-bar {
+.emoji, .img-emoji, .big-emoji, .mic-btn, .mode-btn, .play-btn, .tip-bar {
   font-family: "Nunito", 'Noto Color Emoji', -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   display: inline-block;
   vertical-align: middle;
@@ -578,28 +577,6 @@ body {
 }
 .big-img-box .label { font-size: 12px; color: var(--text-tertiary); margin-top: var(--space-lg); }
 
-/* L3底部提示图 - 比L2小一点 */
-.l3-hint-img {
-  position: relative;
-  overflow: hidden;
-  border: 2px dashed var(--big-img-border);
-  border-radius: var(--radius-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--big-img-bg);
-  margin: 0 auto;
-  width: 78%;
-  max-width: 260px;
-  aspect-ratio: 1 / 1;
-}
-.l3-hint-img .hint-emoji {
-  position: absolute;
-  top: 46%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: var(--hint-emoji-size);
-}
 
 /* L2选词模式：小图+2x2单词选项 */
 .word-choice-grid {
@@ -634,7 +611,6 @@ body {
   text-align: center;
 }
 .big-img-box .chinese-overlay { bottom: 22px; }
-.l3-hint-img .chinese-overlay { bottom: 16px; }
 .chinese-overlay span {
   display: inline-block;
   padding: var(--space-xxs) var(--space-xl);
@@ -752,15 +728,19 @@ body {
 }
 .spelling-slots {
   display: flex;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 6px;
+  gap: 0px;
   margin-bottom: 12px;
 }
 .spelling-slot {
   width: var(--spelling-slot-width);
   height: var(--spelling-slot-height);
-  border: 1.5px dashed var(--spelling-slot-border);
-  border-radius: var(--spelling-slot-radius);
+  border: none;
+  border-top: 1.5px dashed var(--spelling-slot-border);
+  border-bottom: 1.5px dashed var(--spelling-slot-border);
+  border-right: 1.5px dashed var(--spelling-slot-border);
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -768,6 +748,15 @@ body {
   font-weight: 700;
   color: var(--spelling-slot-text);
   background: var(--spelling-slot-bg);
+}
+.spelling-slot:first-child {
+  border-left: 1.5px dashed var(--spelling-slot-border);
+  border-top-left-radius: var(--spelling-slot-radius);
+  border-bottom-left-radius: var(--spelling-slot-radius);
+}
+.spelling-slot:last-child {
+  border-top-right-radius: var(--spelling-slot-radius);
+  border-bottom-right-radius: var(--spelling-slot-radius);
 }
 .letter-pool {
   display: flex;
@@ -1209,6 +1198,18 @@ body {
   border-color: #4caf50 !important;
   color: #2E7D32 !important;
   font-weight: 700;
+}
+
+@keyframes toastShow {
+  0% { opacity: 0; transform: translateY(-8px); }
+  15% { opacity: 1; transform: translateY(0); }
+  75% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
+/* ===== 全屏模式样式（仅隐藏标签，缩放由 updateScale() 处理） ===== */
+html:fullscreen .device-label, html:-webkit-full-screen .device-label {
+  display: none !important;
 }
 
 </style>
@@ -3178,43 +3179,49 @@ function playCorrectSound() {
 }
 
 function playFailSound() {
-    AudioManager.ensureContext();
-    const ctx = AudioManager.audioContext, now = ctx.currentTime;
-    // 主错误音 - 低频嗡鸣（消消乐风格）
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(150, now);
-    osc.frequency.linearRampToValueAtTime(80, now + 0.3);
-    filter.type = 'lowpass';
-    filter.frequency.value = 500;
-    filter.Q.value = 10;
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
-    osc.start(now); osc.stop(now + 0.4);
-    // 失真噪音
-    const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.15, ctx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < noiseData.length; i++) {
-        noiseData[i] = (Math.random() * 2 - 1) * 0.5;
+    try {
+        AudioManager.ensureContext();
+        const ctx = AudioManager.audioContext;
+        if (!ctx) { console.error('[playFailSound] AudioContext 不存在'); return; }
+        const now = ctx.currentTime;
+        // 主错误音 - 低频嗡鸣（消消乐风格）
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.3);
+        filter.type = 'lowpass';
+        filter.frequency.value = 500;
+        filter.Q.value = 10;
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now); osc.stop(now + 0.4);
+        // 失真噪音
+        const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.15, ctx.sampleRate);
+        const noiseData = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < noiseData.length; i++) {
+            noiseData[i] = (Math.random() * 2 - 1) * 0.5;
+        }
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = noiseBuffer;
+        const noiseGain = ctx.createGain();
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.value = 300;
+        noiseSource.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        noiseGain.gain.setValueAtTime(0.1, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        noiseSource.start(now);
+        noiseSource.stop(now + 0.15);
+    } catch(e) {
+        console.error('[playFailSound] ❌ 播放失败:', e);
     }
-    const noiseSource = ctx.createBufferSource();
-    noiseSource.buffer = noiseBuffer;
-    const noiseGain = ctx.createGain();
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'bandpass';
-    noiseFilter.frequency.value = 300;
-    noiseSource.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
-    noiseGain.gain.setValueAtTime(0.1, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-    noiseSource.start(now);
-    noiseSource.stop(now + 0.15);
 }
 
 function playStarSound(starIndex) {
@@ -3983,13 +3990,27 @@ function toggleEyeProtect() {
 
 function toggleFullscreen() {
   if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().then(function() {
-      isFullscreen = true;
-    }).catch(function() {});
+    var reqFn = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+    if (reqFn) {
+      reqFn.call(document.documentElement).then(function() {
+        isFullscreen = true;
+        // 全屏后重新计算缩放，让画面撑满屏幕
+        setTimeout(function() { if (typeof updateScale === 'function') updateScale(); }, 300);
+      }).catch(function(err) {
+        console.error('[全屏] 进入失败:', err);
+        showToast('全屏失败，请检查浏览器设置');
+      });
+    } else {
+      showToast('此浏览器不支持全屏');
+    }
   } else {
-    document.exitFullscreen().then(function() {
-      isFullscreen = false;
-    }).catch(function() {});
+    var exitFn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (exitFn) {
+      exitFn.call(document).then(function() {
+        isFullscreen = false;
+        setTimeout(function() { if (typeof updateScale === 'function') updateScale(); }, 300);
+      }).catch(function() {});
+    }
   }
 }
 
@@ -4590,6 +4611,43 @@ function goHome() {
 
 
 // 生成L1内容
+// 辅助函数：生成单个格子的emoji HTML（全局，L1/L3共用）
+function buildEmojiHTML(word, isBig) {
+  const emoji = word.emoji || word.cn;
+  const isChineseFallback = !word.emoji || /[\u4e00-\u9fff]/.test(word.emoji);
+  if (isBig) {
+    let cls, content;
+    if (isChineseFallback) {
+      if (word.cn.includes('\uff1b')) {
+        cls = 'class="big-emoji chinese-fallback emoji-multi"';
+        const parts = word.cn.split('\uff1b');
+        content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '\uff1b' : '') + '</span>').join('');
+      } else {
+        cls = 'class="big-emoji chinese-fallback"';
+        content = word.cn;
+      }
+    } else {
+      const chars = Array.from(emoji);
+      cls = chars.length > 1 ? 'class="big-emoji emoji-multi"' : 'class="big-emoji"';
+      content = emoji;
+    }
+    return { cls, content, isChineseFallback };
+  } else {
+    let cls, content;
+    if (isChineseFallback) {
+      if (word.cn.includes('\uff1b')) {
+        cls = 'class="img-emoji chinese-fallback emoji-multi" style="font-size:28px;"';
+      } else {
+        cls = 'class="img-emoji chinese-fallback" style="font-size:38px;"';
+      }
+    } else {
+      const chars = Array.from(emoji);
+      cls = chars.length > 1 ? 'class="img-emoji emoji-multi" style="font-size:28px;"' : 'class="img-emoji" style="font-size:38px;"';
+    }
+    return { cls, content: emoji, isChineseFallback };
+  }
+}
+
 function renderL1(deviceType) {
   // 确保L1已初始化
   if (!L1.currentOptions || L1.currentOptions.length === 0) {
@@ -4614,43 +4672,6 @@ function renderL1(deviceType) {
   // 答案反馈区（答对/2次错后显示单个居中大格子）
   let feedbackHTML = '';
   
-  // 辅助函数：生成单个格子的emoji HTML
-  function buildEmojiHTML(word, isBig) {
-    const emoji = word.emoji || word.cn;
-    const isChineseFallback = !word.emoji || /[\u4e00-\u9fff]/.test(word.emoji);
-    if (isBig) {
-      let cls, content;
-      if (isChineseFallback) {
-        if (word.cn.includes('；')) {
-          cls = 'class="big-emoji chinese-fallback emoji-multi"';
-          const parts = word.cn.split('；');
-          content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
-        } else {
-          cls = 'class="big-emoji chinese-fallback"';
-          content = word.cn;
-        }
-      } else {
-        const chars = Array.from(emoji);
-        cls = chars.length > 1 ? 'class="big-emoji emoji-multi"' : 'class="big-emoji"';
-        content = emoji;
-      }
-      return { cls, content, isChineseFallback };
-    } else {
-      let cls, content;
-      if (isChineseFallback) {
-        if (word.cn.includes('；')) {
-          cls = 'class="img-emoji chinese-fallback emoji-multi" style="font-size:28px;"';
-        } else {
-          cls = 'class="img-emoji chinese-fallback" style="font-size:38px;"';
-        }
-      } else {
-        const chars = Array.from(emoji);
-        cls = chars.length > 1 ? 'class="img-emoji emoji-multi" style="font-size:28px;"' : 'class="img-emoji" style="font-size:38px;"';
-      }
-      return { cls, content: emoji, isChineseFallback };
-    }
-  }
-
   if (answered) {
     // 答对/2次错后：新页面效果，只显示正确答案大格子
     const big = buildEmojiHTML(correct, true);
@@ -4886,7 +4907,7 @@ function showCoinAnimation(coinCount) {
   popup.innerHTML = '<span class="popup-emoji">\uD83E\uDE99</span><span class="popup-score">+' + score + '</span>';
   
   const frame = document.getElementById('deviceFrame');
-  const target = frame.querySelector('.big-img-box.correct-highlight') || frame.querySelector('.big-img-box');
+  const target = frame.querySelector('.spelling-slots') || frame.querySelector('.big-img-box.correct-highlight') || frame.querySelector('.big-img-box');
   
   if (target) {
     const fRect = frame.getBoundingClientRect();
@@ -5514,6 +5535,7 @@ const L3Engine = {
         if (!question) return;
         
         this._questionAnswered = true;
+        this._showFeedback = true;
         
         // 计算得分
         const correctLetters = question.letters;
@@ -5551,12 +5573,18 @@ const L3Engine = {
             addWrongWord(question.targetWord, chinese);
         }
         
-        // 播放音效
-        if (score >= 80) {
-            AudioManager.playSFX('correct');
-        } else {
-            AudioManager.playSFX('wrong');
+        // 播放音效（try-catch 防止音效报错阻断页面渲染）
+        try {
+            if (score >= 80) {
+                AudioManager.playSFX('correct');
+            } else {
+                AudioManager.playSFX('fail');
+            }
+        } catch(e) {
+            console.error('[L3._autoJudge] 音效播放失败:', e);
         }
+        // 不管得分，都自动播放正确发音
+        setTimeout(() => speakWord(question.targetWord), 300);
         
         EventBus.emit('question:correct', { score, isFirstAttempt: true });
     },
@@ -5654,13 +5682,6 @@ function handleL3LetterSelect(poolIndex) {
         if (coins > 0) {
             showCoinAnimation(coins);
         }
-        if (cc === q.letters.length) {
-            showToast('\u2705 \u5b8c\u7f8e\uff01', 'success', 1500);
-        } else if (cc >= q.letters.length * 0.7) {
-            showToast('\u2705 \u5f88\u68d2\uff01', 'success', 1500);
-        } else {
-            showToast('\u2705 \u7ee7\u7eed\u52a0\u6cb9\uff01', 'info', 1500);
-        }
     }}
 
 // L3删除最后一个字母
@@ -5696,16 +5717,25 @@ function handleL3PlaySound() {
 // L3下一题
 function nextL3Question() {
     AudioManager.playSFX('click');
-    const result = L3Engine.nextQuestion();
-    if (result.completed) {
-        // 关卡完成
-        AudioManager.playSFX('levelComplete');
-        finalizeLevel('l3');
-        currentLevel = 'level-result';
-        gameState.currentLevel = 'level-result';
-        gameState.lastLevel = 'l3';
-        render();
-    } else {
+    try {
+        const result = L3Engine.nextQuestion();
+        if (result.completed) {
+            // 关卡完成：先保存状态，再播放音效
+            // 防止音效报错阻断页面跳转
+            try { finalizeLevel('l3'); } catch(e) { console.error('[nextL3Question] finalizeLevel出错:', e); }
+            currentLevel = 'level-result';
+            gameState.currentLevel = 'level-result';
+            gameState.lastLevel = 'l3';
+            try { AudioManager.playSFX('levelComplete'); } catch(e) { console.error('[nextL3Question] 通关音效播放失败:', e); }
+        } else {
+            // 非最后一题：重置状态进入下一题
+            L3Engine._questionAnswered = false;
+            L3Engine._showFeedback = false;
+        }
+    } catch(e) {
+        console.error('[nextL3Question] 出错:', e);
+    } finally {
+        // 无论如何都确保页面刷新
         render();
     }
 }
@@ -5757,30 +5787,45 @@ function renderL3(deviceType) {
             if (i < filledLetters.length) {
                 slotsHTML += '<div class="spelling-slot filled" onclick="handleL3SlotClick()" style="background:#F3E5F5;border-color:#AB47BC;color:#6A1B9A;font-weight:700;cursor:pointer;">' + filledLetters[i].letter + '</div>';
             } else {
-                slotsHTML += '<div class="spelling-slot empty" style="background:#fafafa;border:2px dashed #ced4da;color:#adb5bd;"></div>';
+                slotsHTML += '<div class="spelling-slot empty" style="background:#fafafa;border-color:#ced4da;color:#adb5bd;"></div>';
             }
         }
     }
     
-    // 首字母提示按钮
-    let hintBtnHTML = '';
-    if (filledLetters.length === 0 && !showFeedback) {
-        hintBtnHTML = '<div class="hint-btn" onclick="handleL3Hint()" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;margin-top:-2px;margin-left:4px;">\ud83d\udca1</div>';
-    } else if (L3Engine._hintUsedThisQuestion) {
-        hintBtnHTML = '<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#FFB300;">\ud83d\udca1\u2713</div>';
-    }
-    
-    // 字母键盘
+    // 字母键盘（含💡提示按钮在最后一个位置，固定两行）
     let keyboardHTML = '';
     if (!showFeedback) {
         const pool = L3Engine.getAvailablePool();
-        keyboardHTML = '<div class="letter-pool" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:12px;">';
+        // 构建所有视觉项（字母 + 💡）
+        const allItems = [];
         pool.forEach(function(item) {
-            if (item.used) {
-                keyboardHTML += '<div class="letter-tile" style="visibility:hidden;width:36px;height:40px;"></div>';
-            } else {
-                keyboardHTML += '<div class="letter-tile" onclick="handleL3LetterSelect(' + item.index + ')" style="width:36px;height:40px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#ffffff,#f0f0f0);border:2px solid #dee2e6;border-radius:10px;font-size:20px;font-weight:700;color:#343a40;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);user-select:none;transition:all 0.15s;">' + item.letter + '</div>';
-            }
+            allItems.push({ type: 'letter', data: item });
+        });
+        // 💡按钮：空格时可见可点，填了字母后隐藏
+        const hintVisible = (filledLetters.length === 0);
+        allItems.push({ type: 'hint', visible: hintVisible });
+        // 拆成两行：第一行 ceil(n/2)
+        const firstRowCount = Math.ceil(allItems.length / 2);
+        const rows = [allItems.slice(0, firstRowCount), allItems.slice(firstRowCount)];
+        keyboardHTML = '<div class="letter-pool" style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:12px;min-height:88px;">';
+        rows.forEach(function(row) {
+            keyboardHTML += '<div style="display:flex;justify-content:center;gap:8px;">';
+            row.forEach(function(item) {
+                if (item.type === 'letter') {
+                    if (item.data.used) {
+                        keyboardHTML += '<div class="letter-tile" style="visibility:hidden;width:36px;height:40px;"></div>';
+                    } else {
+                        keyboardHTML += '<div class="letter-tile" onclick="handleL3LetterSelect(' + item.data.index + ')" style="width:36px;height:40px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#ffffff,#f0f0f0);border:2px solid #dee2e6;border-radius:10px;font-size:20px;font-weight:700;color:#343a40;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);user-select:none;transition:all 0.15s;">' + item.data.letter + '</div>';
+                    }
+                } else if (item.type === 'hint') {
+                    if (item.visible) {
+                        keyboardHTML += '<div class="letter-tile" onclick="handleL3Hint()" style="width:36px;height:40px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#ffffff,#f0f0f0);border:2px solid #dee2e6;border-radius:10px;font-size:20px;font-weight:700;color:#343a40;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,0.1);user-select:none;transition:all 0.15s;">\ud83d\udca1</div>';
+                    } else {
+                        keyboardHTML += '<div class="letter-tile" style="visibility:hidden;width:36px;height:40px;"></div>';
+                    }
+                }
+            });
+            keyboardHTML += '</div>';
         });
         keyboardHTML += '</div>';
     }
@@ -5789,11 +5834,11 @@ function renderL3(deviceType) {
     // 答案展示（仅反馈态：音节分色 + 音标，匹配线框图）
     let answerDisplayHTML = '';
     if (showFeedback) {
-        answerDisplayHTML = '<div style="flex:0 0 auto;text-align:center;margin-top:16px;">';
+        answerDisplayHTML = '<div style="flex:0 0 auto;text-align:center;margin-top:8px;">';
         answerDisplayHTML += '<div class="word-display" style="padding:0;">';
         if (question.syllables && question.syllables.length > 0) {
             var colors = ['#1E88E5','#E53935','#43A047','#FB8C00','#8E24AA','#E91E63'];
-            answerDisplayHTML += '<div class="word" style="font-size:26px;font-weight:700;">';
+            answerDisplayHTML += '<div class="word" style="font-size:26px;font-weight:700;margin-top:8px;">';
             question.syllables.forEach(function(s, idx) {
                 answerDisplayHTML += '<span style="color:' + colors[idx % colors.length] + ';">' + s + '</span>';
             });
@@ -5808,8 +5853,22 @@ function renderL3(deviceType) {
     
     // 跟读提示
     let readAlongHTML = '';
-    if (showFeedback && L3Engine._scoreThisQuestion > 0) {
+    if (showFeedback) {
         readAlongHTML = '<div style="text-align:center; margin:6px 0; font-size:13px; color:#666; animation: readAlongFade 5s ease forwards; cursor:pointer;" onclick="handleL3PlaySound()">\ud83c\udfa4 跟读一下吧～</div>';
+    }
+    
+    // 得分反馈
+    let scoreFeedbackHTML = '';
+    if (showFeedback) {
+        let tierText, tierColor;
+        if (L3Engine._scoreThisQuestion >= 80) {
+            tierText = '🌟 完美！'; tierColor = '#FFB300';
+        } else if (L3Engine._scoreThisQuestion >= 60) {
+            tierText = '👏 很棒！'; tierColor = '#4caf50';
+        } else {
+            tierText = '💪 继续加油！'; tierColor = '#EF5350';
+        }
+        scoreFeedbackHTML = '<div style="height:0;overflow:visible;margin-top:5px;text-align:center;font-size:14px;font-weight:600;color:' + tierColor + ';animation:toastShow 3s ease forwards;z-index:10;">' + tierText + '</div>';
     }
     
     // 底部栏
@@ -5840,13 +5899,8 @@ function renderL3(deviceType) {
         guideHTML += '</div>';
     }
     
-    // 图片显示
-    let imgDisplayHTML;
-    if (isChineseFallback) {
-        imgDisplayHTML = '<div class="big-emoji chinese-fallback" style="position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);">' + chinese + '</div>';
-    } else {
-        imgDisplayHTML = emoji;
-    }
+    // 图片显示（复用全局 buildEmojiHTML，与 L1/L2 一致）
+    const emojiResult = buildEmojiHTML({ emoji, cn: chinese }, true);
     
     // 用模板字符串返回HTML（避免单引号转义问题）
     return `
@@ -5865,26 +5919,23 @@ function renderL3(deviceType) {
         <div class="progress-bar"><div class="progress-fill" style="width:${progress}%; background:#AB47BC"></div></div>
       </div>
     </div>
-    <div class="content-area" style="padding:8px 12px;position:absolute;top:90px;bottom:70px;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-start;overflow:visible;">
+    <div class="content-area" style="padding:20px 12px;position:absolute;top:90px;bottom:70px;left:0;right:0;display:flex;flex-direction:column;justify-content:flex-start;overflow:visible;">
       ${guideHTML}
       <div style="text-align:center;flex:0 0 auto;margin-bottom:4px;">
         <div class="play-btn" onclick="handleL3PlaySound()" style="margin:0 auto;cursor:pointer;">\ud83d\udd0a 点我听发音</div>
       </div>
-      <div class="spelling-area" style="margin:12px 0 0;flex:0 0 auto;">
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
-          <div class="spelling-slots" style="display:flex;gap:6px;margin-bottom:0;">
+      <div class="spelling-area" style="margin:16px 0 0;flex:0 0 auto;">
+        <div class="spelling-slots" style="display:flex;gap:0;margin-bottom:0;">
             ${slotsHTML}
           </div>
-          ${hintBtnHTML}
-        </div>
         ${keyboardHTML}
       </div>
       ${scoreFeedbackHTML}
       ${answerDisplayHTML}
       ${readAlongHTML}
-      <div class="l3-hint-img" style="position:relative;overflow:hidden;border:2px dashed #ced4da;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#f8f9fa;margin-top:24px;margin-bottom:12px;width:78%;max-width:260px;aspect-ratio:1/1;">
-        <div style="position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);font-size:${isChineseFallback ? '58px' : '120px'};">${imgDisplayHTML}</div>
-        ${!isChineseFallback ? `<div style="position:absolute;bottom:12px;left:0;right:0;text-align:center;"><span style="background:rgba(255,255,255,0.92);padding:2px 14px;border-radius:8px;font-size:14px;font-weight:600;color:#343a40;">${chinese}</span></div>` : ''}
+      <div class="big-img-box" style="flex:0 0 auto;margin-top:${showFeedback ? '0px' : '24px'};">
+        <div ${emojiResult.cls}>${emojiResult.content}</div>
+        ${!emojiResult.isChineseFallback ? `<div class="chinese-overlay"><span>${chinese}</span></div>` : ''}
       </div>
       </div>
     ${bottomBarHTML}
@@ -6280,6 +6331,9 @@ setTimeout(function() { hideLoadingOverlay(); }, 500);
             if (window.innerWidth <= 430) {
                 // 真实手机：按宽度铺满缩放
                 scaleRatio = window.innerWidth / BASE_W;
+                // 真实手机隐藏设备标签，让画面贴边
+                var _label = document.getElementById('deviceLabel');
+                if (_label) _label.style.display = 'none';
             } else {
                 // 非手机浏览器（笔记本/平板/大屏）：按可用高度占满缩放
                 // 可用高度 = 视口高度 - 控制栏高度（flex 布局自动留出控制栏空间）
@@ -6367,6 +6421,8 @@ setTimeout(function() { hideLoadingOverlay(); }, 500);
 
     // --- 页面加载后立即执行 ---
     updateScale();
+    // 暴露到全局，供 toggleFullscreen() 等外部函数调用
+    window.updateScale = updateScale;
 })();
 // ========== 设备适配结束 ==========
 
