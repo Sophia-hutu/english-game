@@ -702,6 +702,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: var(--space-lg);
+  min-height: 62px;
 }
 .primary-btn {
   padding: 10px 24px;
@@ -6201,6 +6202,18 @@ function render() {
         if (guide) guide.style.display = 'none';
       }, 3000);
     }, 500);
+  }
+
+  // L3 进入后自动播放发音（仅首字母未填时播放一次，填字母后不再触发）
+  if (currentLevel === 'l3' && typeof L3Engine !== 'undefined' && !L3Engine._showFeedback && L3Engine._filledLetters.length === 0) {
+    const q = L3Engine.getCurrentQuestion();
+    if (q && q.targetWord) {
+      setTimeout(() => {
+        if (typeof speakWord === 'function') {
+          speakWord(q.targetWord);
+        }
+      }, 500);
+    }
   }
   
   // L2 进入后自动初始化（仅首次）
