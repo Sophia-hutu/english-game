@@ -333,6 +333,7 @@
             font-size: 0.85rem;
             margin-bottom: 12px;
             font-weight: 500;
+            opacity: 0.4;
         }
 
         .icon-float {
@@ -759,7 +760,7 @@
             font-size: 0.9rem;
             font-weight: 700;
             color: var(--glow-primary);
-            opacity: 0.4;
+            opacity: 0.2;
             text-shadow: none;
             letter-spacing: 1px;
             margin-left: 8px;
@@ -4675,7 +4676,7 @@ body.battle-active .fullscreen-control {
     <div class="card battle-prep-screen fade-in" id="battlePrepScreen" style="display:none;">
             <div class="icon-float">◆◇◇</div>
             <h1 class="game-title neon-text">单词消消乐</h1>
-            <p class="game-subtitle">韵哥英语工坊 · 双人对战模式</p>
+            <p class="game-subtitle">韵哥英语工坊</p>
             
             <!-- 红蓝昵称输入 -->
             <div class="battle-nicknames">
@@ -7715,7 +7716,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.shadowBlur = 0;
 
             // 底部品牌
-            ctx.fillStyle = '#7eb8c9';
+            ctx.fillStyle = 'rgba(126, 184, 201, 0.4)';
             ctx.font = '24px Arial';
             ctx.fillText('韵哥英语工坊 | 单词消消乐', canvas.width / 2, 1270);
 
