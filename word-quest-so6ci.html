@@ -6344,6 +6344,9 @@ setTimeout(function() { hideLoadingOverlay(); }, 500);
             if (window.innerWidth <= 430) {
                 // 真实手机：按宽度铺满缩放
                 scaleRatio = window.innerWidth / BASE_W;
+                // 同步真实视口尺寸，防止安全阀误判
+                viewportW = window.innerWidth;
+                viewportH = window.innerHeight;
                 // 真实手机隐藏设备标签，让画面贴边
                 var _label = document.getElementById('deviceLabel');
                 if (_label) _label.style.display = 'none';
