@@ -609,6 +609,8 @@ body {
   left: 0;
   right: 0;
   text-align: center;
+  white-space: pre-line;
+  line-height: 1.2;
 }
 .big-img-box .chinese-overlay { bottom: 22px; }
 .chinese-overlay span {
@@ -1008,6 +1010,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 /* 大格子双 emoji/中文分号 横排布局 */
@@ -1569,6 +1572,33 @@ const WORD_BANK_GRADE3_START = {
                 { word: 'say',    enRaw: 'say',    emoji: '',      imgPath: '', chinese: '说；讲',           phonemes: [], sounds: [], syllables: ['say'],   phonetic: 'seɪ',     category: '', difficulty: 1 },
                 { word: 'friend', enRaw: 'friend', emoji: '👯',    imgPath: '', chinese: '朋友',             phonemes: [], sounds: [], syllables: ['friend'], phonetic: 'frend',   category: '', difficulty: 1 },
                 { word: 'good',   enRaw: 'good',   emoji: '👍',    imgPath: '', chinese: '好的',             phonemes: [], sounds: [], syllables: ['good'],  phonetic: 'ɡʊd',    category: '', difficulty: 1 }
+            ]
+        }
+        ,
+        {
+            id: 'pep-grade3-u2',
+            name: 'Unit 2',
+            displayName: 'My Family',
+            words: [
+                { word: 'mum',         enRaw: 'mum',         emoji: '👩',    imgPath: '', chinese: '（口语）妈妈',                     phonemes: [], sounds: [], syllables: ['mum'],         phonetic: 'mʌm',             category: 'family', difficulty: 1 },
+                { word: 'dad',         enRaw: 'dad',         emoji: '👨',    imgPath: '', chinese: '（口语）爸爸；爹爹',                 phonemes: [], sounds: [], syllables: ['dad'],         phonetic: 'dæd',             category: 'family', difficulty: 1 },
+                { word: 'grandma',     enRaw: 'grandma',     emoji: '👵',    imgPath: '', chinese: '奶奶；姥姥',                         phonemes: [], sounds: [], syllables: ['grand','ma'],  phonetic: 'ˈɡrænmɑː',       category: 'family', difficulty: 1 },
+                { word: 'grandpa',     enRaw: 'grandpa',     emoji: '👴',    imgPath: '', chinese: '爷爷；姥爷',                         phonemes: [], sounds: [], syllables: ['grand','pa'],  phonetic: 'ˈɡrænpɑː',       category: 'family', difficulty: 1 },
+                { word: 'grandfather', enRaw: 'grandfather', emoji: '👴',    imgPath: '', chinese: '祖父/外公',         phonemes: [], sounds: [], syllables: ['grand','fa','ther'], phonetic: 'ˈɡrænfɑːðə', category: 'family', difficulty: 2 },
+                { word: 'grandmother', enRaw: 'grandmother', emoji: '👵',    imgPath: '', chinese: '祖母/外婆',         phonemes: [], sounds: [], syllables: ['grand','mo','ther'], phonetic: 'ˈɡrænmʌðə', category: 'family', difficulty: 2 },
+                { word: 'mother',      enRaw: 'mother',      emoji: '👩',    imgPath: '', chinese: '母亲；妈妈',                         phonemes: [], sounds: [], syllables: ['mo','ther'],   phonetic: 'ˈmʌðə',           category: 'family', difficulty: 1 },
+                { word: 'father',      enRaw: 'father',      emoji: '👨',    imgPath: '', chinese: '父亲；爸爸',                         phonemes: [], sounds: [], syllables: ['fa','ther'],   phonetic: 'ˈfɑːðə',          category: 'family', difficulty: 1 },
+                { word: 'me',          enRaw: 'me',          emoji: '',      imgPath: '', chinese: '我',                                 phonemes: [], sounds: [], syllables: ['me'],          phonetic: 'miː',             category: '',         difficulty: 1 },
+                { word: 'sister',      enRaw: 'sister',      emoji: '👧',    imgPath: '', chinese: '姐；妹',                             phonemes: [], sounds: [], syllables: ['sis','ter'],  phonetic: 'ˈsɪstə',          category: 'family', difficulty: 1 },
+                { word: 'family',      enRaw: 'family',      emoji: '👪', imgPath: '', chinese: '家；家庭',   phonemes: [], sounds: [], syllables: ['fa','mi','ly'], phonetic: 'ˈfæmɪli',         category: 'family', difficulty: 1 },
+                { word: 'have',        enRaw: 'have',        emoji: '',      imgPath: '', chinese: '有',                                 phonemes: [], sounds: [], syllables: ['have'],        phonetic: 'hæv',              category: '',         difficulty: 1 },
+                { word: 'big',         enRaw: 'big',         emoji: '🐘',    imgPath: '', chinese: '大的',                               phonemes: [], sounds: [], syllables: ['big'],         phonetic: 'bɪɡ',              category: '',         difficulty: 1 },
+                { word: 'cousin',      enRaw: 'cousin',      emoji: '',      imgPath: '', chinese: '堂兄；堂弟',           phonemes: [], sounds: [], syllables: ['cou','sin'],   phonetic: 'ˈkʌzən',           category: 'family', difficulty: 2 },
+                { word: 'brother',     enRaw: 'brother',     emoji: '👦',    imgPath: '', chinese: '哥；弟',                             phonemes: [], sounds: [], syllables: ['bro','ther'],  phonetic: 'ˈbrʌðə',           category: 'family', difficulty: 1 },
+                { word: 'baby',        enRaw: 'baby',        emoji: '👶',    imgPath: '', chinese: '婴儿',                               phonemes: [], sounds: [], syllables: ['ba','by'],     phonetic: 'ˈbeɪbi',           category: 'family', difficulty: 1 },
+                { word: 'uncle',       enRaw: 'uncle',       emoji: '',      imgPath: '', chinese: '伯父；叔父',         phonemes: [], sounds: [], syllables: ['un','cle'],    phonetic: 'ˈʌŋkl',            category: 'family', difficulty: 1 },
+                { word: 'aunt',        enRaw: 'aunt',        emoji: '',      imgPath: '', chinese: '伯母；婶母',         phonemes: [], sounds: [], syllables: ['aunt'],        phonetic: 'ɑːnt',             category: 'family', difficulty: 1 },
+                { word: 'small',       enRaw: 'small',       emoji: '🐭',    imgPath: '', chinese: '小的',                               phonemes: [], sounds: [], syllables: ['small'],       phonetic: 'smɔːl',            category: '',         difficulty: 1 }
             ]
         }
         // Unit 2~6 待后续逐单元添加
@@ -4620,9 +4650,9 @@ function buildEmojiHTML(word, isBig) {
     let cls, content;
     if (isChineseFallback) {
       if (word.cn.includes('\uff1b')) {
-        cls = 'class="big-emoji chinese-fallback emoji-multi"';
-        const parts = word.cn.split('\uff1b');
-        content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '\uff1b' : '') + '</span>').join('');
+          cls = 'class="big-emoji chinese-fallback emoji-multi"';
+          const parts = word.cn.split('\uff1b');
+          content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '\uff1b' : '') + '</span>').join('');
       } else {
         cls = 'class="big-emoji chinese-fallback"';
         content = word.cn;
@@ -4637,15 +4667,15 @@ function buildEmojiHTML(word, isBig) {
     let cls, content;
     if (isChineseFallback) {
       if (word.cn.includes('\uff1b')) {
-        cls = 'class="img-emoji chinese-fallback emoji-multi" style="font-size:28px;"';
+          cls = 'class="img-emoji chinese-fallback emoji-multi" style="font-size:24px;"';
       } else {
         cls = 'class="img-emoji chinese-fallback" style="font-size:38px;"';
       }
     } else {
       const chars = Array.from(emoji);
-      cls = chars.length > 1 ? 'class="img-emoji emoji-multi" style="font-size:28px;"' : 'class="img-emoji" style="font-size:38px;"';
+      cls = chars.length > 1 ? 'class="img-emoji emoji-multi" style="font-size:26px;"' : 'class="img-emoji" style="font-size:38px;"';
     }
-    return { cls, content: emoji, isChineseFallback };
+    return { cls, content: content || emoji, isChineseFallback };
   }
 }
 
@@ -4997,9 +5027,9 @@ function renderL2(deviceType) {
   let emojiHTML = '';
   if (isChineseFallback) {
     if (question.displayChinese.includes('；')) {
-      const parts = question.displayChinese.split('；');
-      const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
-      emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
+        const parts = question.displayChinese.split('；');
+        const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
+        emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
     } else {
       emojiHTML = `<div class="big-emoji chinese-fallback">${question.displayChinese}</div>`;
     }
@@ -5083,9 +5113,9 @@ function renderL2WordMode(deviceType) {
   let emojiHTML = '';
   if (isChineseFallback) {
     if (question.displayChinese.includes('；')) {
-      const parts = question.displayChinese.split('；');
-      const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
-      emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
+        const parts = question.displayChinese.split('；');
+        const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
+        emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
     } else {
       emojiHTML = `<div class="big-emoji chinese-fallback">${question.displayChinese}</div>`;
     }
@@ -5182,9 +5212,9 @@ function renderL2Feedback(deviceType) {
   let emojiHTML = '';
   if (isChineseFallback) {
     if (question.displayChinese.includes('；')) {
-      const parts = question.displayChinese.split('；');
-      const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
-      emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
+        const parts = question.displayChinese.split('；');
+        const content = parts.map((p, i) => '<span>' + p + (i < parts.length - 1 ? '；' : '') + '</span>').join('');
+        emojiHTML = `<div class="big-emoji chinese-fallback emoji-multi">${content}</div>`;
     } else {
       emojiHTML = `<div class="big-emoji chinese-fallback">${question.displayChinese}</div>`;
     }
@@ -5415,7 +5445,7 @@ const L3Engine = {
             currentUnitWords = words;
         }
 
-        generateQuestionOrder(10);
+        generateQuestionOrder();
         currentQuestionIndex = 0;
         this._prepareQuestion();
         EventBus.emit('question:start', { questionIndex: 0, totalQuestions: questionOrder.length });
@@ -5655,8 +5685,6 @@ function initL3() {
             }
         }, 100);
     }
-    
-    render();
 }
 
 // L3点击字母
