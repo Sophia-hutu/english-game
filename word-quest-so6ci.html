@@ -2194,6 +2194,10 @@ function initGameState(unitId) {
     // 重置当前关卡状态
     resetLevelState();
 
+    // 重置L1/L2引擎状态（确保重新闯关时使用新词库）
+    L1.currentOptions = [];
+    L2Engine._initialized = false;
+
     console.log('[状态] 游戏状态已初始化, 单元:', unitId, '词数:', currentUnitWords.length);
 }
 
@@ -5445,7 +5449,7 @@ const L3Engine = {
             currentUnitWords = words;
         }
 
-        generateQuestionOrder();
+        generateQuestionOrder(words.length);
         currentQuestionIndex = 0;
         this._prepareQuestion();
         EventBus.emit('question:start', { questionIndex: 0, totalQuestions: questionOrder.length });
