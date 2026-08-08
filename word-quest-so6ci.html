@@ -2430,7 +2430,11 @@ const WordBankLoader = {
     getWordInfo(word) {
         const w = word.toLowerCase();
         const bank = currentLevelVocab || UNIT1_VOCAB;
-        const found = bank.find(item => item.en.toLowerCase() === w);
+        // 修复：兼容 item 没有 .en 字段的情况（如 UNIT1_VOCAB 使用 word/enRaw 字段）
+        const found = bank.find(item => {
+            const en = item.en || item.word || item.enRaw || '';
+            return en.toLowerCase() === w;
+        });
         return found || null;
     },
     
@@ -2443,7 +2447,10 @@ const WordBankLoader = {
         const usedSet = new Set((usedWords || []).map(w => w.toLowerCase()));
         usedSet.add(correctWord.toLowerCase());
         
-        let candidates = bank.filter(item => !usedSet.has(item.en.toLowerCase()));
+        let candidates = bank.filter(item => {
+            const en = item.en || item.word || item.enRaw || '';
+            return !usedSet.has(en.toLowerCase());
+        });
         
         // L1 优先选有 emoji/imgPath 的词
         if (level === 1) {
@@ -2461,10 +2468,15 @@ const WordBankLoader = {
         
         // 兜底：候选池不足3个时，从全单元随机补
         if (distractors.length < 3) {
-            const fallback = bank.filter(item => 
-                item.en.toLowerCase() !== correctWord.toLowerCase() &&
-                !distractors.some(d => d.en === item.en)
-            );
+            const fallback = bank.filter(item => {
+                const en = item.en || item.word || item.enRaw || '';
+                const correctEn = correctWord.toLowerCase();
+                return en.toLowerCase() !== correctEn &&
+                    !distractors.some(d => {
+                        const dEn = d.en || d.word || d.enRaw || '';
+                        return dEn === en;
+                    });
+            });
             const fbShuffled = [...fallback].sort(() => Math.random() - 0.5);
             for (const c of fbShuffled) {
                 if (distractors.length >= 3) break;
@@ -5724,6 +5736,24 @@ const L3Engine = {
 
 // 初始化L3
 function initL3() {
+    // 修复：直接打开L3时确保词库已加载（防止 currentUnitWords 为空导致无格子）
+    if (!currentUnitWords || currentUnitWords.length === 0) {
+        let unitId = (currentParams && currentParams.unit) || 'pep-grade3-u1';
+        // 兼容开发阶段 level 按钮传 test-unit 的情况
+        if (unitId === 'test-unit' || unitId === 'dev-preview') {
+            unitId = 'pep-grade3-u1';
+        }
+        console.log('[L3] 直接打开，加载词库:', unitId);
+        loadUnitWords(unitId);
+        if (currentUnitWords && currentUnitWords.length > 0) {
+            currentLevelVocab = currentUnitWords;
+        }
+    }
+    
+    // 修复：重置L3分数，防止直接打开时残留旧分数
+    levelScores.l3 = 0;
+    levelStars.l3 = 0;
+    
     const words = currentLevelVocab || UNIT1_VOCAB;
     L3Engine.init(words);
     
